@@ -96,7 +96,7 @@
                 </span>
             </a>
 
-            <!-- QR code toggle/container -->
+            <!-- QR code container -->
             <div class="bg-white rounded-2xl p-4 text-center shadow-inner flex flex-col items-center justify-center">
                 <div id="qrcode" class="p-1 border border-slate-200 rounded-lg mb-2"></div>
                 <p class="text-[11px] font-medium text-slate-600 flex items-center gap-1">
@@ -147,17 +147,17 @@
                     </div>
                     <div class="relative">
                         <i class="fa-solid fa-receipt absolute left-3.5 top-3.5 text-slate-500 text-sm"></i>
-                        <input type="text" id="cust-utr" required pattern="[0-9]{12}" maxlength="12" placeholder="उदा. 408512345678" 
+                        <input type="text" id="cust-utr" required pattern="[0-9]{12}" maxlength="12" placeholder="उदा. 629522830727" 
                                class="w-full bg-slate-900/80 border border-slate-700 rounded-xl py-2.5 pl-10 pr-3 text-sm font-mono text-emerald-300 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition">
                     </div>
-                    <p class="text-[10px] text-slate-400 mt-1">बैंक ऐप में Transaction Details के अंदर 12 अंकों का UTR / Ref No. मिलेगा।</p>
+                    <p class="text-[10px] text-slate-400 mt-1">UPI transaction ID के 12 अंक ही UTR नंबर होते हैं।</p>
                 </div>
 
                 <!-- Submit Button -->
                 <button type="submit" 
                         class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition active:scale-98">
-                    <i class="fa-solid fa-paper-plane"></i>
-                    <span>सत्यापन विवरण सबमिट करें (WhatsApp पर भेजें)</span>
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span>सत्यापन विवरण सबमिट करें (WhatsApp)</span>
                 </button>
             </form>
 
@@ -167,9 +167,9 @@
                     <i class="fa-solid fa-circle-info text-indigo-400"></i> UTR नंबर चेक करने का तरीका:
                 </p>
                 <ul class="space-y-1.5 list-disc list-inside text-slate-400">
-                    <li><strong class="text-slate-200">PhonePe:</strong> Payment Details &rarr; <span class="text-emerald-400">UTR: 4xxxxxxxxxxx</span></li>
-                    <li><strong class="text-slate-200">Google Pay:</strong> Payment Details &rarr; <span class="text-emerald-400">UPI Transaction ID: 4xxxxxxxxxxx</span></li>
-                    <li><strong class="text-slate-200">Paytm:</strong> Order Summary &rarr; <span class="text-emerald-400">UPI Ref No: 4xxxxxxxxxxx</span></li>
+                    <li><strong class="text-slate-200">PhonePe:</strong> Payment Details &rarr; <span class="text-emerald-400">UTR: 12 अंक</span></li>
+                    <li><strong class="text-slate-200">Google Pay / Navi:</strong> Payment Details &rarr; <span class="text-emerald-400">UPI transaction ID: 12 अंक</span></li>
+                    <li><strong class="text-slate-200">Paytm:</strong> Order Summary &rarr; <span class="text-emerald-400">UPI Ref No: 12 अंक</span></li>
                 </ul>
             </div>
         </div>
@@ -182,8 +182,7 @@
 
     <!-- Scripts -->
     <script>
-        // Store Admin Details
-        const adminWhatsapp = "919661692365"; // Your WhatsApp number with country code (91)
+        const adminWhatsapp = "919661692365"; // Your WhatsApp Number
         const upiId = "9661692365@ybl";
         const payeeName = "Prem Raj";
         const amount = "499";
@@ -235,23 +234,26 @@
 
             const now = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
 
-            // Compose direct message for WhatsApp verification
-            const message = `*🔔 नया UPI भुगतान सत्यापन अनुरोध*%0A%0A` +
-                            `👤 *ग्राहक का नाम:* ${encodeURIComponent(name)}%0A` +
-                            `📱 *मोबाइल नंबर:* ${encodeURIComponent(phone)}%0A` +
-                            `💰 *भुगतान राशि:* ₹499.00%0A` +
-                            `🔢 *UTR / Ref No:* ${encodeURIComponent(utr)}%0A` +
-                            `⏰ *समय:* ${encodeURIComponent(now)}%0A%0A` +
-                            `_कृपया बैंक खाते में इस UTR का सत्यापन करें।_`;
+            // Professional, clean WhatsApp template (No broken characters)
+            const rawMessage = 
+`*PAYMENT VERIFICATION REQUEST*
+----------------------------------------
+*Customer Name:* ${name}
+*Mobile Number:* ${phone}
+*Amount Paid:* Rs. 499.00
+*UTR / Ref No:* ${utr}
+*Date & Time:* ${now}
+----------------------------------------
+Payment verification pending at bank.`;
 
-            // Redirect user to WhatsApp with pre-filled details to Admin
-            const waUrl = `https://wa.me/${adminWhatsapp}?text=${message}`;
+            // Standard URL encode
+            const waUrl = `https://wa.me/${adminWhatsapp}?text=${encodeURIComponent(rawMessage)}`;
             
-            showToast("विवरण तैयार है! WhatsApp पर भेजा जा रहा है...");
+            showToast("WhatsApp पर भेजा जा रहा है...");
             
             setTimeout(() => {
                 window.location.href = waUrl;
-            }, 1000);
+            }, 600);
         }
 
         // Toast Helper
