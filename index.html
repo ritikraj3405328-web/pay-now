@@ -23,16 +23,16 @@
         <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2">
             <span class="text-xs font-extrabold text-emerald-400">⚡ LIVE STUDIO:</span>
             <div class="flex flex-wrap items-center gap-1.5">
-                <button type="button" onclick="autoFillTest()" class="text-xs font-extrabold px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 hover:bg-amber-400 shadow">
+                <button type="button" onclick="autoFillTest()" class="text-xs font-extrabold px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 hover:bg-amber-400 shadow cursor-pointer">
                     ⚡ 1-Click Auto Fill & Test
                 </button>
-                <button type="button" onclick="togglePrice()" id="modeBtn" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                <button type="button" onclick="togglePrice()" id="modeBtn" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 cursor-pointer">
                     Mode: ₹1 (Test)
                 </button>
-                <button type="button" onclick="openTab('checkout')" id="btnTab1" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-blue-600 text-white">
+                <button type="button" onclick="openTab('checkout')" id="btnTab1" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-blue-600 text-white cursor-pointer">
                     1. Payment
                 </button>
-                <button type="button" onclick="openTab('dashboard')" id="btnTab2" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700">
+                <button type="button" onclick="openTab('dashboard')" id="btnTab2" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">
                     2. Leads Portal
                 </button>
             </div>
@@ -45,7 +45,7 @@
             <h1 class="text-xl font-black text-white">AutoLeads <span class="text-xs bg-blue-600 px-2 py-0.5 rounded text-white">PRO</span></h1>
             <p class="text-xs text-slate-400">Verified B2B Retailers & Shop Directory</p>
         </div>
-        <button type="button" onclick="generateMoreLeads()" class="text-xs font-bold px-3 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white shadow">
+        <button type="button" onclick="generateMoreLeads()" class="text-xs font-bold px-3 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white shadow cursor-pointer">
             + Generate 5 Leads
         </button>
     </header>
@@ -66,7 +66,7 @@
                 </div>
             </div>
 
-            <!-- Direct Image QR Code (100% Guaranteed Load) -->
+            <!-- Direct Image QR Code -->
             <div class="bg-slate-950 rounded-2xl p-4 border border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center text-center sm:text-left">
                 <div class="flex flex-col items-center">
                     <img id="qrImg" 
@@ -84,7 +84,7 @@
                     </a>
                     <div class="bg-slate-900 p-2 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
                         <span class="font-mono text-slate-300">9661692365@ybl</span>
-                        <button type="button" onclick="copyUpiId()" class="text-cyan-400 font-bold">Copy</button>
+                        <button type="button" onclick="copyUpiId()" class="text-cyan-400 font-bold cursor-pointer">Copy</button>
                     </div>
                 </div>
             </div>
@@ -93,7 +93,7 @@
             <form id="utrForm" onsubmit="handleFormSubmit(event)" class="space-y-3.5 pt-2">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-bold text-amber-400 uppercase">Step 2: Enter Details & UTR</span>
-                    <button type="button" onclick="autoFillTest()" class="text-xs font-bold text-amber-300 underline">
+                    <button type="button" onclick="autoFillTest()" class="text-xs font-bold text-amber-300 underline cursor-pointer">
                         ⚡ Click to Auto-Fill Test Data
                     </button>
                 </div>
@@ -116,7 +116,7 @@
                            class="w-full bg-slate-900 border border-amber-500/60 rounded-xl px-3.5 py-2.5 text-sm font-mono text-amber-300">
                 </div>
 
-                <button type="submit" id="subBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold py-3.5 rounded-xl shadow-lg text-sm">
+                <button type="submit" id="subBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold py-3.5 rounded-xl shadow-lg text-sm cursor-pointer">
                     🔓 Verify UTR & Open Leads Dashboard
                 </button>
             </form>
@@ -136,7 +136,7 @@
                 </div>
             </div>
 
-            <button type="button" onclick="openTab('dashboard')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 font-bold py-3 rounded-xl border border-slate-700 text-xs">
+            <button type="button" onclick="openTab('dashboard')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 font-bold py-3 rounded-xl border border-slate-700 text-xs cursor-pointer">
                 Direct Open Leads Portal &rarr;
             </button>
         </div>
@@ -167,7 +167,7 @@
                     <option value="Jaipur">Jaipur</option>
                 </select>
 
-                <button type="button" onclick="exportCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl px-4 py-2 text-sm">
+                <button type="button" onclick="exportCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl px-4 py-2 text-sm cursor-pointer">
                     📥 Download Excel (CSV)
                 </button>
             </div>
@@ -175,11 +175,11 @@
             <!-- Colour Filter Pills -->
             <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-800 text-xs">
                 <div class="flex flex-wrap gap-1.5">
-                    <button type="button" onclick="setCat('ALL')" class="px-2.5 py-1 rounded-full bg-slate-800 text-white font-bold">All</button>
-                    <button type="button" onclick="setCat('Mobile & Electronics')" class="px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">🔵 Mobile</button>
-                    <button type="button" onclick="setCat('Electrical & Hardware')" class="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">🟠 Electrical</button>
-                    <button type="button" onclick="setCat('Clothing & Garments')" class="px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 font-bold">🟣 Clothing</button>
-                    <button type="button" onclick="setCat('Grocery & Supermart')" class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold">🟢 Grocery</button>
+                    <button type="button" onclick="setCat('ALL')" class="px-2.5 py-1 rounded-full bg-slate-800 text-white font-bold cursor-pointer">All</button>
+                    <button type="button" onclick="setCat('Mobile & Electronics')" class="px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold cursor-pointer">🔵 Mobile</button>
+                    <button type="button" onclick="setCat('Electrical & Hardware')" class="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold cursor-pointer">🟠 Electrical</button>
+                    <button type="button" onclick="setCat('Clothing & Garments')" class="px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 font-bold cursor-pointer">🟣 Clothing</button>
+                    <button type="button" onclick="setCat('Grocery & Supermart')" class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold cursor-pointer">🟢 Grocery</button>
                 </div>
                 <span id="leadCountText" class="text-slate-400 font-mono font-bold">0 Leads</span>
             </div>
@@ -189,7 +189,7 @@
         <div id="leadsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
     </section>
 
-    <!-- CRASH-PROOF SCRIPT (Works 100% Even Offline) -->
+    <!-- SCRIPT SECTION -->
     <script>
         let currentPrice = 1;
         let localHistory = [];
@@ -209,7 +209,7 @@
             setTimeout(() => b.classList.add("hidden"), 2500);
         }
 
-        // 1. Toggle Price Mode (₹1 vs ₹499) - Updates QR Image Instantly
+        // 1. Toggle Price Mode (₹1 vs ₹499)
         function togglePrice() {
             currentPrice = (currentPrice === 1) ? 499 : 1;
             const upiData = encodeURIComponent(`upi://pay?pa=9661692365@ybl&pn=Prem Raj&am=${currentPrice}`);
@@ -221,12 +221,12 @@
             showAlert(`Switched to ₹${currentPrice} Mode!`);
         }
 
-        // 2. Switch Tabs (Payment vs Leads Portal)
+        // 2. Switch Tabs
         function openTab(tab) {
             document.getElementById("secCheckout").classList.toggle("hidden", tab !== 'checkout');
             document.getElementById("secDashboard").classList.toggle("hidden", tab !== 'dashboard');
-            document.getElementById("btnTab1").className = tab === 'checkout' ? "text-xs font-bold px-3 py-1.5 rounded-lg bg-blue-600 text-white" : "text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700";
-            document.getElementById("btnTab2").className = tab === 'dashboard' ? "text-xs font-bold px-3 py-1.5 rounded-lg bg-blue-600 text-white" : "text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700";
+            document.getElementById("btnTab1").className = tab === 'checkout' ? "text-xs font-bold px-3 py-1.5 rounded-lg bg-blue-600 text-white cursor-pointer" : "text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer";
+            document.getElementById("btnTab2").className = tab === 'dashboard' ? "text-xs font-bold px-3 py-1.5 rounded-lg bg-blue-600 text-white cursor-pointer" : "text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer";
             if (tab === 'dashboard') renderLeads();
         }
 
@@ -240,8 +240,8 @@
             document.getElementById("fUtr").value = randomUtr;
 
             saveOrderRecord("Ritik Raj (Live Test)", "7808990039", "Electrical & Hardware", randomUtr, currentPrice);
-            showAlert("Auto-Filled & Saved to History! Opening Portal...");
-            setTimeout(() => openTab('dashboard'), 900);
+            showAlert("Auto-Filled & Saved! Opening Portal...");
+            setTimeout(() => openTab('dashboard'), 800);
         }
 
         // 4. Form Submit Handler
@@ -320,11 +320,9 @@
                 return mText && mCat && mCity;
             });
 
-            document.getElementById("leadCountText").innerText = `${filtered.length} Verified Leads`;
+            document.getElementById("leadCountText").innerText = `${filtered.length} Leads`;
             const grid = document.getElementById("leadsGrid");
 
             const colors = {
                 "Mobile & Electronics": "bg-cyan-500/20 text-cyan-300 border-cyan-500/40",
-                "Electrical & Hardware": "bg-amber-500/20 text-amber-300 border-amber-500/40",
-                "Clothing & Garments": "bg-purple-500/20 text-purple-300 border-purple-500/40",
-  
+                "Electrical & Hardwa
