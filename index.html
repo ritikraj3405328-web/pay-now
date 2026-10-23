@@ -10,6 +10,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   body {
+    <!-- INSTALL BANNER (PWA) -->
+<div id="installBanner" class="hidden bg-gradient-to-r from-blue-900 to-indigo-900 border-b border-blue-500/30 p-3 px-4 flex items-center justify-between shadow-lg sticky top-0 z-50">
+  <div class="flex items-center space-x-3">
+    <div class="bg-blue-600 p-2 rounded-xl text-white font-bold text-xs">⚡</div>
+    <div>
+      <h4 class="text-xs font-bold text-white">AutoLeads PRO App Install Karein</h4>
+      <p class="text-[10px] text-blue-200">Fast access ke liye home screen par jodein!</p>
+    </div>
+  </div>
+  <button id="installBtn" class="bg-white text-slate-950 font-black text-xs px-3 py-1.5 rounded-xl shadow cursor-pointer">Install Now</button>
+</div>
+  
     font-family: 'Plus Jakarta Sans', sans-serif;
     background-color: #020617;
     color: #f8fafc;
@@ -547,5 +559,105 @@
     navigator.serviceWorker.register('/sw.js').catch(function(err) {});
   }
 </script>
+  <!-- SECURE HIDDEN ADMIN PANEL (Customers ko nahi dikhega) -->
+<div id="secretAdminWrapper" class="max-w-5xl mx-auto px-4 pt-8 pb-12" style="display: none;">
+  <div class="glass rounded-3xl p-6 border-red-500/30 space-y-4 bg-slate-900/90 border border-red-500/20">
+    <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+      <div>
+        <span class="text-[10px] font-extrabold text-red-400 uppercase tracking-widest">🔒 OWNER CONTROL ROOM</span>
+        <h3 class="text-lg font-black text-white">Secret Admin Lead Adder</h3>
+      </div>
+      <button type="button" onclick="lockAdminPanel()" class="bg-slate-800 text-slate-300 text-xs px-3 py-1.5 rounded-xl font-bold cursor-pointer">Lock Panel 🔒</button>
+    </div>
+
+    <!-- 1-Click Lead Add Form -->
+    <div class="space-y-3">
+      <p class="text-xs text-slate-300">Yahan se aap jo bhi lead add karenge, vah turant aapke portal par live ho jayegi:</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <input type="text" id="admShop" placeholder="Shop Name (Eg. Balaji Store)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+        <input type="text" id="admOwner" placeholder="Owner Name" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+        <select id="admCat" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+          <option value="Mobile & Electronics">Mobile & Electronics</option>
+          <option value="Electrical & Hardware">Electrical & Hardware</option>
+          <option value="Clothing & Garments">Clothing & Garments</option>
+          <option value="Grocery & Supermart">Grocery & Supermart</option>
+          <option value="Medical & Pharmacy">Medical & Pharmacy</option>
+        </select>
+        <input type="text" id="admCity" placeholder="City (Eg. Patna)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+        <input type="text" id="admArea" placeholder="Area (Eg. Boring Road)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+        <input type="tel" id="admPhone" maxlength="10" placeholder="10 Digit WhatsApp No" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+      </div>
+      <button type="button" onclick="adminAddNewLead()" class="w-full bg-gradient-to-r from-red-600 to-amber-600 text-white font-extrabold py-3 rounded-xl text-xs shadow-lg cursor-pointer">⚡ 1-Click Instant Add Lead</button>
+    </div>
+  </div>
+</div>
+
+<!-- CATCHY SECRET OPEN TRIGGER (Footer ke andar chhota sa link) -->
+<div class="text-center py-6">
+  <button type="button" onclick="requestAdminAccess()" class="text-[10px] text-slate-600 hover:text-slate-400 font-mono cursor-pointer">⚙️ Owner Portal Login</button>
+</div>
+  <script>
+  window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      showInstallBanner();
+    }, 1000);
+  });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(function(err) {});
+  }
+  </script>
+  <script>
+  function requestAdminAccess() {
+    var pin = prompt("Enter Owner Secret PIN:");
+    if (pin === "7808") { 
+      document.getElementById('secretAdminWrapper').style.display = 'block';
+      if(typeof window.showToast === 'function') window.showToast("🔓 Admin Panel Unlocked!");
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    } else if(pin !== null) {
+      alert("Galat PIN hai!");
+    }
+  }
+
+  function lockAdminPanel() {
+    document.getElementById('secretAdminWrapper').style.display = 'none';
+    if(typeof window.showToast === 'function') window.showToast("🔒 Admin Panel Locked!");
+  }
+
+  function adminAddNewLead() {
+    var shop = document.getElementById('admShop').value.trim();
+    var owner = document.getElementById('admOwner').value.trim();
+    var cat = document.getElementById('admCat').value;
+    var city = document.getElementById('admCity').value.trim() || "Patna";
+    var area = document.getElementById('admArea').value.trim() || "Main Market";
+    var phone = document.getElementById('admPhone').value.trim();
+
+    if(!shop || !phone || phone.length < 10) {
+      alert("Kripya Shop Name aur sahi 10 digit Phone Number bharein!");
+      return;
+    }
+
+    var newLead = { shop: shop, owner: owner, cat: cat, city: city, area: area, phone: phone };
+    
+    if(window.masterLeads) {
+      window.masterLeads.unshift(newLead);
+    }
+
+    localStorage.setItem('autoleads_extra_leads', JSON.stringify(window.masterLeads));
+    if(typeof window.showToast === 'function') {
+      window.showToast("🎉 Lead Safalpurvak Add Ho Gayi!");
+    } else {
+      alert("Lead Safalpurvak Add Ho Gayi!");
+    }
+    
+    document.getElementById('admShop').value = '';
+    document.getElementById('admOwner').value = '';
+    document.getElementById('admPhone').value = '';
+    
+    if(typeof window.renderLeadsGrid === 'function') {
+      window.renderLeadsGrid();
+    }
+  }
+  </script>
 </body>
 </html>
