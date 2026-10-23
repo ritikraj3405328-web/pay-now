@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AutoLeads PRO | Automated B2B Lead Generator & Free Seller Tools</title>
+<link rel="manifest" href="manifest.json">
+<title>AutoLeads PRO | Ultimate B2B Lead Generator & Free Seller Tools</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -30,7 +31,8 @@
   window.clientData = { name: "", phone: "", businessName: "Your Wholesale Business", category: "ALL", city: "ALL" };
   window.recentBuyers = [
     { name: "Vikram Gupta", biz: "Vikram Switchgear Co.", cat: "Electrical & Hardware", utr: "4128****9012", amt: 499 },
-    { name: "Aman Verma", biz: "Aman MobiWorld", cat: "Mobile & Electronics", utr: "6295****4418", amt: 499 }
+    { name: "Aman Verma", biz: "Aman MobiWorld", cat: "Mobile & Electronics", utr: "6295****4418", amt: 499 },
+    { name: "Sandeep Jain", biz: "Royal Kurti House", cat: "Clothing & Garments", utr: "3310****7821", amt: 499 }
   ];
   window.masterLeads = [
     { shop: "Agni Telecom & Mobile Hub", owner: "Rajesh Verma", cat: "Mobile & Electronics", city: "Patna", area: "Boring Road", phone: "9835012345" },
@@ -47,22 +49,22 @@
     "Medical & Pharmacy": "bg-rose-500/15 text-rose-300 border-rose-500/30"
   };
 
-  window.showToast = function(msg) {
+  window.showToast = function(msgText) {
     var t = document.getElementById('toastBox');
     if (!t) return;
-    t.innerText = msg;
+    t.innerText = msgText;
     t.classList.remove('hidden');
     setTimeout(function() { t.classList.add('hidden'); }, 2800);
   };
 
   window.copyUpiId = function() {
     if (navigator.clipboard) navigator.clipboard.writeText('9661692365@ybl');
-    window.showToast("⚡ UPI ID Copied!");
+    window.showToast("⚡ UPI ID (9661692365@ybl) Copied!");
   };
 
   window.showTab = function(tabName) {
     if (tabName === 'leads' && !window.isUnlocked) {
-      window.showToast("🔒 Leads Vault Locked! Complete ₹499 Onboarding first.");
+      window.showToast("🔒 Leads Vault Locked! Complete ₹499 Onboarding & UTR Verification first.");
       tabName = 'pay';
     }
     var viewMap = { home: 'viewHome', pay: 'viewPay', leads: 'viewLeads', catalog: 'viewCatalog', waGen: 'viewWaGen', freeLeads: 'viewFreeLeads', listShop: 'viewListShop' };
@@ -91,6 +93,22 @@
 </script>
 </head>
 <body class="min-h-screen pb-16">
+
+<!-- PWA Install Banner -->
+<div id="installBanner" class="hidden bg-gradient-to-r from-blue-600 to-emerald-600 text-white px-4 py-3 flex items-center justify-between shadow-2xl sticky top-0 z-50">
+  <div class="flex items-center gap-2.5">
+    <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center font-black">⚡</div>
+    <div>
+      <b class="text-xs block">AutoLeads PRO App Install Karein</b>
+      <span class="text-[10px] text-slate-100">Fast access ke liye home screen par jodein!</span>
+    </div>
+  </div>
+  <div class="flex items-center gap-2">
+    <button type="button" id="installBtn" class="bg-white text-slate-950 font-extrabold text-xs px-3 py-1.5 rounded-lg shadow cursor-pointer">Install Now</button>
+    <button type="button" onclick="document.getElementById('installBanner').classList.add('hidden')" class="text-white text-xs px-2 py-1 font-bold">✕</button>
+  </div>
+</div>
+
 <div id="toastBox" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white font-extrabold px-6 py-3 rounded-full shadow-2xl text-xs text-center min-w-[270px]"></div>
 
 <nav class="bg-slate-950/90 border-b border-slate-800 px-3 py-3 sticky top-0 z-40">
@@ -111,13 +129,23 @@
 </nav>
 
 <!-- VIEW 1: HOME -->
-<div id="viewHome" class="max-w-6xl mx-auto px-4 pt-8 space-y-8">
-  <div class="glass rounded-3xl p-8 text-center space-y-5 border-blue-500/30 shadow-2xl">
-    <h1 class="text-2xl sm:text-4xl font-black text-white">Apne Business Ke Hisab Se Verified B2B Leads Payein</h1>
-    <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto">100% verified dukandaron ke WhatsApp numbers aur free seller tools ka anand lein.</p>
-    <div class="flex flex-wrap justify-center gap-3">
-      <button type="button" onclick="showTab('pay')" class="btn-gradient text-white font-extrabold px-6 py-3.5 rounded-xl text-xs cursor-pointer">🚀 Start Onboarding (₹499)</button>
-      <button type="button" onclick="showTab('freeLeads')" class="bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 font-bold px-6 py-3.5 rounded-xl text-xs cursor-pointer">🎁 Claim Daily 3 Free Leads</button>
+<div id="viewHome" class="max-w-6xl mx-auto px-4 pt-8 space-y-10">
+  <div class="glass rounded-3xl p-6 sm:p-12 text-center space-y-6 border-blue-500/30 shadow-2xl">
+    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
+      <i class="fa-solid fa-circle-check text-emerald-400"></i> INDIA'S #1 AUTOMATED B2B RETAILER DIRECTORY
+    </div>
+    <h1 class="text-3xl sm:text-5xl font-black text-white leading-tight max-w-3xl mx-auto">
+      Apne Business Requirement Ke Hisab Se Payein <br>
+      <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-emerald-400">
+        100% Verified Dukandaron Ke WhatsApp Numbers
+      </span>
+    </h1>
+    <p class="text-xs sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
+      Apna Business Name aur Target Category select karein. System automatic aapke business ke liye Custom Leads Portal aur 1-Click WhatsApp Pitch tayar kar dega!
+    </p>
+    <div class="flex flex-wrap justify-center gap-3.5 pt-2">
+      <button type="button" onclick="showTab('pay')" class="btn-gradient text-white font-extrabold px-8 py-4 rounded-2xl text-sm shadow-xl cursor-pointer">🚀 Start Business Onboarding (₹499)</button>
+      <button type="button" onclick="showTab('freeLeads')" class="bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 font-bold px-6 py-4 rounded-2xl text-sm cursor-pointer">🎁 Claim Daily 3 Free Leads</button>
     </div>
   </div>
   <div id="teaserContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
@@ -125,126 +153,207 @@
 
 <!-- VIEW 2: CHECKOUT -->
 <div id="viewPay" class="max-w-6xl mx-auto px-4 pt-6 hidden">
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-    <div class="lg:col-span-7 glass rounded-3xl p-6 space-y-4 shadow-2xl">
-      <h2 class="text-lg font-black text-white">Business Onboarding & Unlock (₹499)</h2>
-      <div class="bg-slate-950 p-4 rounded-2xl text-center space-y-2">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi%3A%2F%2Fpay%3Fpa%3D9661692365%40ybl%26pn%3DPrem%2520Raj%26am%3D499" class="w-32 h-32 bg-white p-2 rounded-xl mx-auto">
-        <a href="upi://pay?pa=9661692365@ybl&pn=Prem%20Raj&am=499" class="block bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold">Pay ₹499 via UPI App</a>
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div class="lg:col-span-7 glass rounded-3xl p-6 space-y-5 border-emerald-500/30 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+        <div>
+          <span class="text-[11px] font-extrabold text-emerald-400 uppercase"><i class="fa-solid fa-shield-halved"></i> Automated Setup</span>
+          <h2 class="text-xl sm:text-2xl font-black text-white">Business Onboarding & Unlock</h2>
+        </div>
+        <div class="text-right bg-slate-900 px-4 py-2 rounded-2xl border border-slate-800">
+          <span class="text-[10px] text-slate-400 line-through block">₹1,999</span>
+          <span class="text-2xl font-black text-emerald-400">₹499</span>
+        </div>
       </div>
-      <form onsubmit="submitOnboarding(event)" class="space-y-3">
-        <input type="text" id="inpName" required placeholder="Aapka Naam" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
-        <input type="tel" id="inpPhone" required maxlength="10" placeholder="WhatsApp Number" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
-        <input type="text" id="inpBiz" required placeholder="Business Name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
-        <select id="inpCat" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
-          <option>Mobile & Electronics</option><option>Electrical & Hardware</option><option>Clothing & Garments</option><option>Grocery & Supermart</option><option>Medical & Pharmacy</option>
-        </select>
-        <select id="inpCity" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
-          <option value="ALL">All Cities</option><option>Patna</option><option>Delhi</option><option>Mumbai</option><option>Jaipur</option><option>Lucknow</option>
-        </select>
-        <input type="text" id="inpUtr" required maxlength="12" placeholder="12-Digit UTR Number" class="w-full bg-slate-900 border border-amber-500 rounded-xl px-3.5 py-2.5 text-xs font-mono text-amber-300">
-        <button type="submit" class="w-full btn-gradient text-white font-extrabold py-3 rounded-xl text-xs cursor-pointer">🔓 Verify UTR & Unlock Leads</button>
+      <div class="bg-slate-950 rounded-2xl p-4 border border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-5 items-center text-center sm:text-left">
+        <div class="flex flex-col items-center">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi%3A%2F%2Fpay%3Fpa%3D9661692365%40ybl%26pn%3DPrem%2520Raj%26am%3D499" class="w-36 h-36 bg-white p-2 rounded-2xl shadow-lg">
+          <span class="text-[11px] text-slate-400 mt-2">Scan with PhonePe / GPay / Paytm</span>
+        </div>
+        <div class="space-y-3">
+          <span class="text-xs font-extrabold text-cyan-400 uppercase">Step 1: Complete ₹499 Payment</span>
+          <p class="text-xs text-slate-300">QR Code scan karein ya UPI App se pay karein:</p>
+          <a href="upi://pay?pa=9661692365@ybl&pn=Prem%20Raj&am=499" class="block w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-extrabold py-3 rounded-xl text-center text-sm shadow-lg">Pay ₹499 via UPI App</a>
+          <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+            <span class="font-mono text-slate-200">9661692365@ybl</span>
+            <button type="button" onclick="copyUpiId()" class="text-cyan-400 font-extrabold cursor-pointer">Copy UPI</button>
+          </div>
+        </div>
+      </div>
+      <form onsubmit="submitOnboarding(event)" class="space-y-3.5 pt-1">
+        <div class="flex justify-between items-center"><span class="text-xs font-extrabold text-amber-400 uppercase">Step 2: Enter Business Details & UTR</span></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div><label class="text-[11px] text-slate-400 block mb-1">Aapka Naam *</label><input type="text" id="inpName" required placeholder="Eg. Rajesh Kumar" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+          <div><label class="text-[11px] text-slate-400 block mb-1">WhatsApp Number *</label><input type="tel" id="inpPhone" required maxlength="10" placeholder="Eg. 9876543210" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+          <div><label class="text-[11px] text-slate-400 block mb-1">Business Name *</label><input type="text" id="inpBiz" required placeholder="Eg. Agni Volt Electronic" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+          <div>
+            <label class="text-[11px] text-slate-400 block mb-1">Target Category *</label>
+            <select id="inpCat" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
+              <option value="Mobile & Electronics">🔵 Mobile & Electronics</option>
+              <option value="Electrical & Hardware">🟠 Electrical & Hardware</option>
+              <option value="Clothing & Garments">🟣 Clothing & Garments</option>
+              <option value="Grocery & Supermart">🟢 Grocery & Supermart</option>
+              <option value="Medical & Pharmacy">🔴 Medical & Pharmacy</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="text-[11px] text-slate-400 block mb-1">City Filter</label>
+            <select id="inpCity" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
+              <option value="ALL">All Cities</option><option value="Patna">Patna</option><option value="Delhi">Delhi</option><option value="Mumbai">Mumbai</option><option value="Jaipur">Jaipur</option><option value="Lucknow">Lucknow</option><option value="Kolkata">Kolkata</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[11px] text-amber-300 font-bold block mb-1">12-Digit UTR No. *</label>
+            <input type="text" id="inpUtr" required maxlength="12" minlength="12" placeholder="12-Digit UTR" class="w-full bg-slate-900 border border-amber-500/70 rounded-xl px-3.5 py-2.5 text-xs font-mono text-amber-300 outline-none">
+          </div>
+        </div>
+        <button type="submit" class="w-full btn-gradient text-white font-extrabold py-3.5 rounded-xl text-sm shadow-xl cursor-pointer">🔓 Verify UTR & Generate Custom Leads Vault</button>
       </form>
     </div>
-    <div class="lg:col-span-5 glass rounded-3xl p-6 space-y-3 shadow-2xl">
-      <b class="text-xs text-white block">🟢 Recent Onboarded Buyers</b>
-      <div id="recentBuyersList" class="space-y-2 max-h-72 overflow-y-auto"></div>
+    <div class="lg:col-span-5 glass rounded-3xl p-6 flex flex-col justify-between space-y-5 shadow-2xl">
+      <div>
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3">
+          <b class="text-sm text-white">🟢 Recent Onboarded Businesses</b>
+          <span class="text-xs font-mono bg-emerald-500/15 text-emerald-300 px-2.5 py-1 rounded-full font-bold">Live</span>
+        </div>
+        <div id="recentBuyersList" class="space-y-2.5 max-h-80 overflow-y-auto pr-1"></div>
+      </div>
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 text-xs text-slate-300 flex items-center gap-3">
+        <i class="fa-brands fa-whatsapp text-2xl text-emerald-400"></i>
+        <div>
+          <b class="text-white block">Payment Support</b>
+          <a href="https://wa.me/919661692365?text=Hi,%20mujhe%20madad%20chahiye" target="_blank" class="text-cyan-400 underline font-bold">Chat on WhatsApp &rarr;</a>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-<!-- VIEW 3: LEADS VAULT -->
-<div id="viewLeads" class="max-w-6xl mx-auto px-4 pt-6 hidden space-y-4">
-  <div class="glass rounded-3xl p-5 bg-gradient-to-r from-blue-950 to-emerald-950 border border-cyan-500/40 flex flex-wrap justify-between items-center gap-3">
-    <div>
-      <span class="text-[10px] font-extrabold text-emerald-400">✔ PRO VAULT ACTIVE</span>
-      <h2 id="customBusinessHeading" class="text-lg font-black text-white">🏢 Custom B2B Leads Portal</h2>
+  </div>
+  <!-- VIEW 3: LEADS VAULT -->
+<div id="viewLeads" class="max-w-6xl mx-auto px-4 pt-6 hidden space-y-5">
+  <div class="glass rounded-3xl p-5 sm:p-6 bg-gradient-to-r from-blue-950/60 via-slate-900 to-emerald-950/50 border border-cyan-500/40 shadow-2xl flex flex-wrap items-center justify-between gap-4">
+    <div class="space-y-1">
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300">✔ PRO VAULT ACTIVE</span>
+        <span id="customPortalCatBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-cyan-500/20 text-cyan-300">All Categories</span>
+      </div>
+      <h2 id="customBusinessHeading" class="text-xl sm:text-2xl font-black text-white">🏢 Custom B2B Leads Portal</h2>
+      <p id="customPitchSubtext" class="text-xs text-slate-300">1-Click WhatsApp buttons are customized for your business!</p>
     </div>
-    <div class="flex gap-2">
-      <button type="button" onclick="loadMoreCustomLeads()" class="bg-purple-600 text-white font-bold px-3 py-2 rounded-xl text-xs cursor-pointer">+ Load Leads</button>
-      <button type="button" onclick="downloadLeadsCsv()" class="bg-emerald-600 text-white font-bold px-3 py-2 rounded-xl text-xs cursor-pointer">📥 Excel</button>
+    <div class="flex flex-wrap gap-2.5">
+      <button type="button" onclick="loadMoreCustomLeads()" class="bg-purple-600 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer">+ Load Fresh Leads</button>
+      <button type="button" onclick="downloadLeadsCsv()" class="bg-emerald-600 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer">📥 Download Excel</button>
     </div>
   </div>
-  <div class="glass rounded-3xl p-4 space-y-3">
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-      <input type="text" id="filterSearch" oninput="renderLeadsGrid()" placeholder="🔍 Search shop, city..." class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-      <select id="filterCat" onchange="renderLeadsGrid()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-        <option value="ALL">All Categories</option><option>Mobile & Electronics</option><option>Electrical & Hardware</option><option>Clothing & Garments</option><option>Grocery & Supermart</option><option>Medical & Pharmacy</option>
+
+  <div class="glass rounded-3xl p-5 space-y-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <input type="text" id="filterSearch" oninput="renderLeadsGrid()" placeholder="🔍 Search shop name, owner, city..." class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
+      <select id="filterCat" onchange="renderLeadsGrid()" class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
+        <option value="ALL">All Categories</option><option value="Mobile & Electronics">Mobile & Electronics</option><option value="Electrical & Hardware">Electrical & Hardware</option><option value="Clothing & Garments">Clothing & Garments</option><option value="Grocery & Supermart">Grocery & Supermart</option><option value="Medical & Pharmacy">Medical & Pharmacy</option>
       </select>
-      <select id="filterCity" onchange="renderLeadsGrid()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-        <option value="ALL">All Cities</option><option>Patna</option><option>Delhi</option><option>Mumbai</option><option>Jaipur</option><option>Lucknow</option><option>Kolkata</option>
+      <select id="filterCity" onchange="renderLeadsGrid()" class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
+        <option value="ALL">All Cities</option><option value="Patna">Patna</option><option value="Delhi">Delhi</option><option value="Mumbai">Mumbai</option><option value="Jaipur">Jaipur</option><option value="Lucknow">Lucknow</option><option value="Kolkata">Kolkata</option>
       </select>
     </div>
   </div>
-  <div id="leadsCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+  <div id="leadsCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
 </div>
 
 <!-- VIEW 4: CATALOG MAKER -->
-<div id="viewCatalog" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-4">
-  <div class="glass rounded-3xl p-6 space-y-4 shadow-2xl border-purple-500/30">
-    <h2 class="text-lg font-black text-white">🛍️ Digital Catalog & Rate-List Maker</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      <input type="text" id="catShopName" placeholder="Shop Name" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
-      <input type="text" id="catProdName" placeholder="Product Name" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
-      <input type="tel" id="catPhone" maxlength="10" placeholder="WhatsApp Number" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
-      <input type="number" id="catPrice" placeholder="Wholesale Price (₹)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
-      <input type="number" id="catMrp" placeholder="MRP (₹)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
-      <input type="text" id="catMoq" placeholder="MOQ (e.g. Min 10 Pcs)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
-      <textarea id="catDesc" rows="2" placeholder="Features / Warranty" class="sm:col-span-2 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white"></textarea>
+<div id="viewCatalog" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-6">
+  <div class="glass rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border-purple-500/30">
+    <div class="border-b border-slate-800 pb-4">
+      <span class="text-[10px] font-extrabold text-purple-400 uppercase tracking-widest">FREE SELLER TOOL #1</span>
+      <h2 class="text-xl sm:text-2xl font-black text-white">🛍️ Digital B2B Catalog & Rate-List Maker</h2>
+      <p class="text-xs text-slate-300 mt-1">Apne products ka professional rate-list message banayein aur WhatsApp par share karein.</p>
     </div>
-    <button type="button" onclick="generateCatalogMessage()" class="w-full bg-purple-600 text-white font-bold py-3 rounded-xl text-xs cursor-pointer">Generate Catalog</button>
-    <div class="bg-slate-950 p-3 rounded-xl text-xs font-mono text-slate-300 whitespace-pre-line border border-slate-800" id="catalogOutputBox">Preview here...</div>
-    <div class="flex gap-2">
-      <button type="button" onclick="copyCatalogMessage()" class="flex-1 bg-slate-800 text-white py-2.5 rounded-xl text-xs font-bold cursor-pointer">📋 Copy Text</button>
-      <button type="button" onclick="sendCatalogOnWhatsApp()" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-xl text-xs font-bold cursor-pointer">💬 Share on WhatsApp</button>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div><label class="text-xs text-slate-400 block mb-1">Shop Name *</label><input type="text" id="catShopName" placeholder="Eg. Agni Volt" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Product Name *</label><input type="text" id="catProdName" placeholder="Eg. SMPS Module" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">WhatsApp No *</label><input type="tel" id="catPhone" maxlength="10" placeholder="9661692365" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Wholesale Price (₹) *</label><input type="number" id="catPrice" placeholder="145" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">MRP (₹)</label><input type="number" id="catMrp" placeholder="299" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">MOQ</label><input type="text" id="catMoq" placeholder="Min 20 Pcs" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+      <div class="sm:col-span-3"><label class="text-xs text-slate-400 block mb-1">Features / Notes</label><textarea id="catDesc" rows="2" placeholder="1 Year Warranty..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></textarea></div>
+    </div>
+    <button type="button" onclick="generateCatalogMessage()" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-extrabold py-3.5 rounded-xl text-xs shadow-lg cursor-pointer">✨ Generate WhatsApp Rate-List</button>
+    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
+      <span class="text-[11px] font-bold text-amber-400 uppercase">📱 Preview:</span>
+      <div id="catalogOutputBox" class="bg-slate-900 p-4 rounded-xl text-xs font-mono text-slate-200 whitespace-pre-line border border-slate-800">Catalog yahan aayega...</div>
+      <div class="flex gap-3">
+        <button type="button" onclick="copyCatalogMessage()" class="flex-1 bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs cursor-pointer">📋 Copy Text</button>
+        <button type="button" onclick="sendCatalogOnWhatsApp()" class="flex-1 bg-emerald-600 text-white font-extrabold py-2.5 rounded-xl text-xs shadow cursor-pointer">💬 Share on WhatsApp</button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- VIEW 5: WA LINK & QR -->
-<div id="viewWaGen" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-4">
-  <div class="glass rounded-3xl p-6 space-y-4 shadow-2xl border-cyan-500/30">
-    <h2 class="text-lg font-black text-white">💬 WhatsApp Link & QR Generator</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      <input type="tel" id="genWaPhone" maxlength="10" placeholder="10-Digit WhatsApp No" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
-      <input type="text" id="genWaMsg" placeholder="Pre-filled Message" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+<div id="viewWaGen" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-6">
+  <div class="glass rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border-cyan-500/30">
+    <div class="border-b border-slate-800 pb-4">
+      <span class="text-[10px] font-extrabold text-cyan-400 uppercase tracking-widest">FREE SELLER TOOL #2</span>
+      <h2 class="text-xl sm:text-2xl font-black text-white">💬 WhatsApp Link & QR Generator</h2>
     </div>
-    <button type="button" onclick="generateWaLink()" class="w-full bg-cyan-600 text-white font-bold py-3 rounded-xl text-xs cursor-pointer">Generate Link & QR</button>
-    <div id="waResultBox" class="hidden bg-slate-950 p-4 rounded-2xl border border-slate-800 grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-      <div class="sm:col-span-4 text-center"><img id="waQrImg" src="" class="w-28 h-28 bg-white p-1 rounded-xl mx-auto"></div>
-      <div class="sm:col-span-8 space-y-2">
-        <input type="text" id="waResultUrl" readonly class="w-full bg-slate-900 p-2 text-xs font-mono text-cyan-300 rounded">
-        <a id="waOpenBtn" href="#" target="_blank" class="block bg-emerald-600 text-white text-center py-2 rounded text-xs font-bold">Open Chat</a>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div><label class="text-xs text-slate-400 block mb-1">WhatsApp Number *</label><input type="tel" id="genWaPhone" maxlength="10" placeholder="9835012345" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Pre-filled Message *</label><input type="text" id="genWaMsg" placeholder="Hi, mujhe catalog chahiye!" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+    </div>
+    <button type="button" onclick="generateWaLink()" class="w-full bg-cyan-600 text-white font-extrabold py-3.5 rounded-xl text-xs shadow-lg cursor-pointer">🔗 Generate Link & QR Code</button>
+    <div id="waResultBox" class="hidden bg-slate-950 p-5 rounded-2xl border border-slate-800 grid grid-cols-1 sm:grid-cols-12 gap-5 items-center">
+      <div class="sm:col-span-4 text-center"><img id="waQrImg" src="" class="w-36 h-36 bg-white p-2 rounded-2xl shadow mx-auto"></div>
+      <div class="sm:col-span-8 space-y-3">
+        <span class="text-xs text-emerald-400 font-extrabold block">✔ Link Tayar Hai:</span>
+        <input type="text" id="waResultUrl" readonly class="w-full bg-slate-900 p-3 text-xs font-mono text-cyan-300 rounded-xl border border-slate-800">
+        <div class="flex gap-2.5">
+          <button type="button" onclick="copyWaLink()" class="flex-1 bg-slate-800 text-white py-2.5 rounded-xl text-xs font-bold cursor-pointer">📋 Copy Link</button>
+          <a id="waOpenBtn" href="#" target="_blank" class="flex-1 bg-emerald-600 text-white text-center py-2.5 rounded-xl text-xs font-extrabold">🚀 Test Link</a>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<!-- VIEW 6: FREE LEADS -->
-<div id="viewFreeLeads" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-4">
-  <div class="glass rounded-3xl p-6 space-y-4 shadow-2xl border-emerald-500/30 text-center">
-    <h2 class="text-lg font-black text-white">🎁 Rozana 3 Free Sample Verified Leads</h2>
-    <div id="freeLeadsStatus" class="text-xs text-slate-300">Loading quota...</div>
-    <div id="freeLeadsContainer" class="grid grid-cols-1 md:grid-cols-3 gap-3 text-left"></div>
+          </div>
+  <!-- VIEW 6: FREE LEADS -->
+<div id="viewFreeLeads" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-6">
+  <div class="glass rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border-emerald-500/30">
+    <div class="border-b border-slate-800 pb-4 flex flex-wrap justify-between items-center gap-3">
+      <div>
+        <span class="text-[10px] font-extrabold text-emerald-400 uppercase tracking-widest">DAILY TRAFFIC BOOSTER</span>
+        <h2 class="text-xl sm:text-2xl font-black text-white">🎁 Rozana 3 Free Sample Verified Leads</h2>
+      </div>
+      <button type="button" onclick="showTab('pay')" class="bg-blue-600 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer">🔓 Unlock All (₹499)</button>
+    </div>
+    <div id="freeLeadsStatus" class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs text-slate-300 text-center">Checking quota...</div>
+    <div id="freeLeadsContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
   </div>
 </div>
 
 <!-- VIEW 7: LIST SHOP -->
-<div id="viewListShop" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-4">
-  <div class="glass rounded-3xl p-6 space-y-4 shadow-2xl border-amber-500/30">
-    <h2 class="text-lg font-black text-white">➕ List Your Shop Free</h2>
-    <form onsubmit="submitFreeShopListing(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      <input type="text" id="freeShopName" required placeholder="Shop Name" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
-      <input type="text" id="freeShopOwner" required placeholder="Owner Name" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
-      <select id="freeShopCat" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
-        <option>Mobile & Electronics</option><option>Electrical & Hardware</option><option>Clothing & Garments</option><option>Grocery & Supermart</option><option>Medical & Pharmacy</option>
-      </select>
-      <input type="text" id="freeShopCity" required placeholder="City" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
-      <input type="text" id="freeShopArea" required placeholder="Area" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
-      <input type="tel" id="freeShopPhone" required maxlength="10" placeholder="WhatsApp Number" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
-      <button type="submit" class="sm:col-span-2 w-full bg-amber-600 text-white font-bold py-3 rounded-xl text-xs cursor-pointer">Submit Shop Free</button>
+<div id="viewListShop" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-6">
+  <div class="glass rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border-amber-500/30">
+    <div class="border-b border-slate-800 pb-4">
+      <span class="text-[10px] font-extrabold text-amber-400 uppercase tracking-widest">VIRAL DIRECTORY LOOP</span>
+      <h2 class="text-xl sm:text-2xl font-black text-white">➕ List Your Shop Free in Directory</h2>
+    </div>
+    <form onsubmit="submitFreeShopListing(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div><label class="text-xs text-slate-400 block mb-1">Shop Name *</label><input type="text" id="freeShopName" required placeholder="Eg. Balaji Electricals" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Owner Name *</label><input type="text" id="freeShopOwner" required placeholder="Eg. Ramesh" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+      <div>
+        <label class="text-xs text-slate-400 block mb-1">Category *</label>
+        <select id="freeShopCat" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
+          <option value="Mobile & Electronics">Mobile & Electronics</option><option value="Electrical & Hardware">Electrical & Hardware</option><option value="Clothing & Garments">Clothing & Garments</option><option value="Grocery & Supermart">Grocery & Supermart</option><option value="Medical & Pharmacy">Medical & Pharmacy</option>
+        </select>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">City *</label><input type="text" id="freeShopCity" required placeholder="Patna" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Area *</label><input type="text" id="freeShopArea" required placeholder="Station Road" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">WhatsApp No *</label><input type="tel" id="freeShopPhone" required maxlength="10" placeholder="9835012345" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+      <div class="sm:col-span-2"><button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-extrabold py-3.5 rounded-xl text-xs shadow-lg cursor-pointer">🚀 Submit Shop Free</button></div>
     </form>
-    <div class="space-y-2 pt-2 border-t border-slate-800">
-      <span class="text-xs font-bold text-emerald-400">🟢 Recently Listed Shops:</span>
-      <div id="recentlyListedShopsBox" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+    <div class="pt-4 border-t border-slate-800 space-y-2.5">
+      <span class="text-xs font-extrabold text-emerald-400 uppercase">🟢 Recently Listed Shops:</span>
+      <div id="recentlyListedShopsBox" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
     </div>
   </div>
 </div>
@@ -254,46 +363,32 @@
     var box = document.getElementById('teaserContainer');
     if (!box) return;
     var sample = window.masterLeads.slice(0, 3);
-    box.innerHTML = sample.map(function(l) {
-      return '<div class="glass neon-hover rounded-2xl p-4 space-y-2">' +
-        '<b class="text-white text-sm block">' + l.shop + '</b>' +
-        '<p class="text-xs text-slate-400">📍 ' + l.area + ', ' + l.city + '</p>' +
-        '<button type="button" onclick="showTab(\'pay\')" class="w-full bg-slate-800 text-cyan-300 text-xs font-bold py-2 rounded-xl cursor-pointer">🔓 Unlock Number</button>' +
+    var html = "";
+    for (var i = 0; i < sample.length; i++) {
+      var l = sample[i];
+      var bStyle = window.catBadgeStyles[l.cat] || window.catBadgeStyles["Mobile & Electronics"];
+      html += '<div class="glass neon-hover rounded-2xl p-5 space-y-3">' +
+        '<div class="flex justify-between items-center"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ' + bStyle + '">' + l.cat + '</span><span class="text-[10px] text-emerald-400 font-bold">✔ Verified</span></div>' +
+        '<b class="text-base text-white block">' + l.shop + '</b>' +
+        '<p class="text-xs text-slate-400">📍 ' + l.area + ', <b class="text-white">' + l.city + '</b></p>' +
+        '<button type="button" onclick="showTab(\'pay\')" class="w-full bg-slate-800 text-cyan-300 text-xs font-bold py-2.5 rounded-xl cursor-pointer">🔓 Unlock WhatsApp Number</button>' +
       '</div>';
-    }).join('');
+    }
+    box.innerHTML = html;
   };
 
   window.renderBuyersFeed = function() {
     var box = document.getElementById('recentBuyersList');
     if (!box) return;
-    box.innerHTML = window.recentBuyers.map(function(b) {
-      return '<div class="bg-slate-900 p-2.5 rounded-xl text-xs flex justify-between"><b>✔ ' + b.biz + '</b><span class="text-emerald-400">₹499</span></div>';
-    }).join('');
-  };
-
-  window.applyUnlockedState = function() {
-    window.isUnlocked = true;
-    document.getElementById('vaultLockIcon').className = "fa-solid fa-lock-open text-emerald-400";
-    document.getElementById('customBusinessHeading').innerText = "🏢 " + window.clientData.businessName + " — Custom Leads Vault";
-    document.getElementById('filterCat').value = window.clientData.category;
-  };
-
-  window.submitOnboarding = function(e) {
-    e.preventDefault();
-    var name = document.getElementById('inpName').value.trim();
-    var phone = document.getElementById('inpPhone').value.trim();
-    var biz = document.getElementById('inpBiz').value.trim();
-    var cat = document.getElementById('inpCat').value;
-    var city = document.getElementById('inpCity').value;
-    var utr = document.getElementById('inpUtr').value.trim();
-    if (utr.length !== 12) { alert("Sahi 12-digit UTR dalein"); return; }
-
-    window.clientData = { name: name, phone: phone, businessName: biz, category: cat, city: city };
-    window.recentBuyers.unshift({ name: name, biz: biz, cat: cat, utr: utr.slice(0,4)+"****" });
-    window.renderBuyersFeed();
-    window.applyUnlockedState();
-    window.showToast("UTR Verified Successfully!");
-    window.showTab('leads');
+    var html = "";
+    for (var i = 0; i < window.recentBuyers.length; i++) {
+      var b = window.recentBuyers[i];
+      html += '<div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 text-xs space-y-1">' +
+        '<div class="flex justify-between"><b class="text-white">✔ ' + b.biz + '</b><span class="text-emerald-400 font-bold">₹499</span></div>' +
+        '<div class="flex justify-between text-[11px] text-slate-400"><span>' + b.name + '</span><span class="font-mono text-amber-300">UTR: ' + b.utr + '</span></div>' +
+      '</div>';
+    }
+    box.innerHTML = html;
   };
 
   window.renderLeadsGrid = function() {
@@ -332,8 +427,10 @@
     var prod = document.getElementById('catProdName').value.trim() || "Product";
     var ph = document.getElementById('catPhone').value.trim() || "9661692365";
     var price = document.getElementById('catPrice').value.trim() || "0";
+    var mrp = document.getElementById('catMrp').value.trim() || "0";
     var moq = document.getElementById('catMoq').value.trim() || "Min 10 Pcs";
-    window.generatedCatalogText = "🛍️ *RATE-LIST*\nShop: " + shop + "\nProduct: " + prod + "\nPrice: ₹" + price + "\nMOQ: " + moq + "\nContact: +91" + ph;
+    var desc = document.getElementById('catDesc').value.trim() || "Best Quality";
+    window.generatedCatalogText = "🛍️ *RATE-LIST*\nShop: " + shop + "\nProduct: " + prod + "\nPrice: ₹" + price + " (MRP: ₹" + mrp + ")\nMOQ: " + moq + "\nDetails: " + desc + "\nContact: +91" + ph;
     document.getElementById('catalogOutputBox').innerText = window.generatedCatalogText;
     window.showToast("Catalog Generated!");
   };
@@ -400,6 +497,30 @@
     window.renderFreeListedPreview();
     window.showTab('home');
   };
+
+  // PWA & Service Worker
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    var banner = document.getElementById('installBanner');
+    if (banner) banner.classList.remove('hidden');
+  });
+
+  var installBtn = document.getElementById('installBtn');
+  if (installBtn) {
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt = null;
+        document.getElementById('installBanner').classList.add('hidden');
+      }
+    });
+  }
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(function(err) {});
+  }
 
   window.addEventListener('DOMContentLoaded', function() {
     window.renderHomeTeasers();
