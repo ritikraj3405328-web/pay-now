@@ -3,297 +3,269 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AutoLeads PRO | India's #1 B2B Verified Retailer Directory</title>
+<title>AutoLeads PRO | Verified B2B Directory</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #f8fafc; background-image: radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.12), transparent 35%), radial-gradient(circle at 85% 80%, rgba(139, 92, 246, 0.12), transparent 35%); }
-  .glass { background: linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(9, 13, 24, 0.96)); border: 1px solid rgba(51, 65, 85, 0.65); backdrop-filter: blur(16px); }
-  .neon-card:hover { border-color: rgba(56, 189, 248, 0.5); box-shadow: 0 10px 30px -10px rgba(56, 189, 248, 0.2); transform: translateY(-2px); }
-  .shimmer { background: linear-gradient(90deg, #2563eb, #7c3aed, #059669); background-size: 200% auto; animation: shine 4s linear infinite; }
-  @keyframes shine { to { background-position: 200% center; } }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #030712; color: #f8fafc; }
+  .glass { background: linear-gradient(145deg, rgba(17, 24, 39, 0.94), rgba(9, 13, 22, 0.98)); border: 1px solid rgba(51, 65, 85, 0.8); backdrop-filter: blur(12px); }
 </style>
 </head>
 <body class="min-h-screen pb-16">
 
 <!-- Notification Toast -->
-<div id="toast" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 border border-emerald-400 text-white font-extrabold px-6 py-3 rounded-full shadow-2xl text-xs sm:text-sm"></div>
+<div id="toast" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 border border-emerald-400 text-white font-extrabold px-6 py-2.5 rounded-full shadow-2xl text-xs sm:text-sm"></div>
 
-<!-- Live Social Proof Top Ticker -->
-<div class="bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 border-b border-indigo-500/30 py-1.5 px-3 text-center text-[11px] font-semibold text-indigo-200">
-  <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-ping mr-1.5"></span>
-  <span id="liveTicker">🔥 420+ Wholesalers & Manufacturers unlocked B2B Leads this week!</span>
-</div>
-
-<!-- STICKY PREMIUM NAVBAR -->
-<nav class="bg-slate-950/85 backdrop-blur-lg border-b border-slate-800/80 px-4 py-3 sticky top-0 z-40">
-  <div class="max-w-6xl mx-auto flex items-center justify-between">
-    <div class="flex items-center gap-2.5 cursor-pointer" onclick="go('home')">
-      <div class="w-10 h-10 rounded-2xl shimmer flex items-center justify-center shadow-lg shadow-blue-500/30">
-        <i class="fa-solid fa-bolt-lightning text-white text-base"></i>
+<!-- TOP NAVBAR -->
+<nav class="bg-slate-950/95 border-b border-slate-800 px-4 py-3 sticky top-0 z-40 backdrop-blur-md">
+  <div class="max-w-5xl mx-auto flex items-center justify-between">
+    <div class="flex items-center gap-2 cursor-pointer" onclick="showTab('home')">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+        <i class="fa-solid fa-bolt text-white text-sm"></i>
       </div>
       <div>
-        <span class="text-base sm:text-lg font-black tracking-tight text-white">AutoLeads</span>
-        <span class="text-[10px] font-black bg-emerald-500 text-slate-950 px-1.5 py-0.5 rounded ml-1">PRO</span>
-        <p class="text-[10px] text-slate-400 hidden sm:block">Verified B2B Retailer Database</p>
+        <span class="font-black text-white text-sm sm:text-base">AutoLeads</span>
+        <span class="text-[9px] font-black bg-emerald-500 text-slate-950 px-1.5 py-0.5 rounded ml-1">PRO</span>
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <button onclick="go('home')" id="bHome" class="text-xs font-extrabold px-3.5 py-2 rounded-xl bg-blue-600 text-white shadow">Home</button>
-      <button onclick="go('pay')" id="bPay" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700">Get Access</button>
-      <button onclick="tryOpenLeads()" id="bLeads" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-900 text-amber-400 border border-amber-500/30 flex items-center gap-1">
-        <i id="lockIcon" class="fa-solid fa-lock text-[10px]"></i> Leads Vault
+      <button onclick="showTab('home')" id="tabHome" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-blue-600 text-white shadow cursor-pointer">🏠 Home</button>
+      <button onclick="showTab('pay')" id="tabPay" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">💳 Get Access</button>
+      <button onclick="checkVaultAccess()" id="tabLeads" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-800 text-amber-400 border border-amber-500/30 flex items-center gap-1 cursor-pointer">
+        <i class="fa-solid fa-lock text-[10px]"></i> Leads Vault
       </button>
     </div>
   </div>
 </nav>
 
-<!-- ================= PAGE 1: UNIQUE HIGH-CONVERTING HOME ================= -->
-<div id="pHome" class="max-w-6xl mx-auto px-4 pt-8 space-y-12">
-  
-  <!-- Hero Banner -->
-  <div class="glass rounded-3xl p-6 sm:p-12 text-center space-y-6 border-blue-500/30 shadow-2xl relative overflow-hidden">
-    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-extrabold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
-      <i class="fa-solid fa-circle-check text-emerald-400"></i> 100% GST & Shop Verified B2B Directory
-    </div>
-    <h1 class="text-3xl sm:text-5xl font-black text-white leading-tight max-w-3xl mx-auto">
-      Apna Maal Bechne Ke Liye Payein <br>
-      <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-emerald-400">Hazaron Dukandaron Ke Direct WhatsApp Numbers</span>
-    </h1>
-    <p class="text-xs sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
-      Bina broker ya agent ke seedha Mobile, Electrical, Hardware, Garments aur Grocery retailers se judein. 1-Click me apna rate-list bhejein aur rozana wholesale orders payein!
-    </p>
-    <div class="flex flex-wrap justify-center gap-4 pt-2">
-      <button onclick="go('pay')" class="shimmer text-white font-extrabold px-8 py-4 rounded-2xl text-sm sm:text-base shadow-xl shadow-blue-600/30 flex items-center gap-2 hover:scale-105 transition">
+<!-- ================= PAGE 1: HOME ================= -->
+<div id="pageHome" class="max-w-5xl mx-auto px-4 pt-8 space-y-8">
+  <div class="glass rounded-3xl p-6 sm:p-10 text-center space-y-5 border-blue-500/40 shadow-2xl">
+    <span class="px-3 py-1 rounded-full text-[11px] font-extrabold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">🔥 INDIA'S #1 B2B DIRECTORY</span>
+    <h1 class="text-2xl sm:text-4xl font-black text-white leading-tight">Apne Business Ke Liye Payein <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">100% Verified Retailers WhatsApp Leads</span></h1>
+    <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">Mobile, Electrical, Garments aur Grocery dukandaron se seedha WhatsApp par judein aur rozana wholesale orders payein.</p>
+    <div class="flex justify-center pt-2">
+      <button onclick="showTab('pay')" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-95 text-white font-extrabold px-8 py-4 rounded-2xl text-sm shadow-xl cursor-pointer">
         🚀 Unlock Complete Directory (₹499 Only)
       </button>
-      <a href="#previewBox" class="bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold px-6 py-4 rounded-2xl text-sm sm:text-base flex items-center gap-2 transition">
-        👁️ See Live Sample Leads
-      </a>
     </div>
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-slate-800/80 text-center">
-      <div class="bg-slate-900/60 p-3 rounded-2xl border border-slate-800"><b class="text-xl text-white">18,500+</b><p class="text-[11px] text-slate-400">Verified Retailers</p></div>
-      <div class="bg-slate-900/60 p-3 rounded-2xl border border-slate-800"><b class="text-xl text-emerald-400">5 Niches</b><p class="text-[11px] text-slate-400">Colour-Coded</p></div>
-      <div class="bg-slate-900/60 p-3 rounded-2xl border border-slate-800"><b class="text-xl text-cyan-400">1-Click</b><p class="text-[11px] text-slate-400">WhatsApp Pitch</p></div>
-      <div class="bg-slate-900/60 p-3 rounded-2xl border border-slate-800"><b class="text-xl text-amber-400">Instant</b><p class="text-[11px] text-slate-400">Excel CSV Download</p></div>
+    <div class="grid grid-cols-3 gap-2 pt-4 border-t border-slate-800/80 text-center">
+      <div><b class="text-base sm:text-lg text-white">15,400+</b><p class="text-[10px] text-slate-400">Verified Shops</p></div>
+      <div><b class="text-base sm:text-lg text-emerald-400">100%</b><p class="text-[10px] text-slate-400">WhatsApp Active</p></div>
+      <div><b class="text-base sm:text-lg text-cyan-400">Instant</b><p class="text-[10px] text-slate-400">Excel Export</p></div>
     </div>
   </div>
-
-  <!-- Interactive Blurred Lead Teaser (Forces Conversion) -->
-  <div id="previewBox" class="space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-2">
-      <div>
-        <span class="text-xs font-extrabold text-amber-400 uppercase tracking-wider">⚡ Live Database Sneak Peek</span>
-        <h2 class="text-xl sm:text-2xl font-black text-white">Dekhiye Andar Kaisi Leads Milengi</h2>
-      </div>
-      <button onclick="go('pay')" class="text-xs font-extrabold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-4 py-2 rounded-xl hover:bg-emerald-500/25">
-        🔓 Unlock All Numbers (₹499) &rarr;
-      </button>
-    </div>
-    <div id="teaserGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="glass rounded-2xl p-5 space-y-1.5"><b class="text-sm text-white">🎯 Targeted Niches</b><p class="text-xs text-slate-400">Mobile, Electrical, Clothing aur Grocery shops ke exact colour-coded filters.</p></div>
+    <div class="glass rounded-2xl p-5 space-y-1.5"><b class="text-sm text-white">💬 1-Click WhatsApp</b><p class="text-xs text-slate-400">Bina number save kiye seedha dukandar ko WhatsApp par catalog bhejein.</p></div>
+    <div class="glass rounded-2xl p-5 space-y-1.5"><b class="text-sm text-white">📥 Excel CSV Export</b><p class="text-xs text-slate-400">Saari leads ko ek click me Excel sheet me download karein.</p></div>
   </div>
-
-  <!-- Why Choose Us Cards -->
-  <div id="featBox" class="grid grid-cols-1 sm:grid-cols-3 gap-5"></div>
 </div>
 
-<!-- ================= PAGE 2: SECURE ₹499 CHECKOUT ================= -->
-<div id="pPay" class="max-w-5xl mx-auto px-4 pt-6 hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
-  <div class="lg:col-span-7 glass rounded-3xl p-6 space-y-5 border-emerald-500/30 shadow-2xl">
-    <div class="flex justify-between items-center border-b border-slate-800 pb-4">
-      <div>
-        <span class="text-[11px] font-extrabold text-emerald-400 uppercase flex items-center gap-1"><i class="fa-solid fa-shield-halved"></i> Instant Auto-Activation</span>
-        <h2 class="text-xl sm:text-2xl font-black text-white">Unlock B2B Leads Vault</h2>
-      </div>
-      <div class="text-right bg-slate-900 px-4 py-2 rounded-2xl border border-slate-800">
+<!-- ================= PAGE 2: CHECKOUT (₹499) ================= -->
+<div id="pagePay" class="max-w-5xl mx-auto px-4 pt-6 hidden grid grid-cols-1 md:grid-cols-12 gap-5">
+  <div class="md:col-span-7 glass rounded-3xl p-6 space-y-4 shadow-2xl border-emerald-500/30">
+    <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+      <div><span class="text-[10px] font-extrabold text-emerald-400 uppercase">Secure Checkout</span><h2 class="text-lg font-black text-white">Unlock B2B Leads Vault</h2></div>
+      <div class="text-right bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
         <span class="text-[10px] text-slate-400 line-through block">₹1,999</span>
-        <span class="text-2xl font-black text-emerald-400">₹499</span>
+        <span class="text-xl font-black text-emerald-400">₹499</span>
       </div>
     </div>
-
-    <!-- Step 1: QR & UPI -->
-    <div class="bg-slate-950 rounded-2xl p-4 border border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-5 items-center text-center sm:text-left">
+    <div class="bg-slate-950 rounded-2xl p-4 border border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center text-center sm:text-left">
       <div class="flex flex-col items-center">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=upi%3A%2F%2Fpay%3Fpa%3D9661692365%40ybl%26pn%3DPrem%2520Raj%26am%3D499" class="w-36 h-36 bg-white p-2 rounded-2xl shadow-lg">
-        <span class="text-[11px] text-slate-400 mt-2">Scan with PhonePe, GPay or Paytm</span>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=upi%3A%2F%2Fpay%3Fpa%3D9661692365%40ybl%26pn%3DPrem%2520Raj%26am%3D499" class="w-32 h-32 bg-white p-2 rounded-xl mx-auto shadow">
+        <span class="text-[10px] text-slate-400 mt-1">Scan via PhonePe/GPay</span>
       </div>
-      <div class="space-y-3">
-        <span class="text-xs font-extrabold text-cyan-400 uppercase">Step 1: Pay ₹499 via UPI</span>
-        <p class="text-xs text-slate-300 leading-relaxed">QR Code scan karein ya niche button daba kar apne UPI app se ₹499 pay karein:</p>
-        <a href="upi://pay?pa=9661692365@ybl&pn=Prem%20Raj&am=499" class="block w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 text-white font-extrabold py-3 rounded-xl text-center text-sm shadow-lg">
-          <i class="fa-solid fa-mobile-screen-button mr-1"></i> Pay ₹499 via UPI App
-        </a>
-        <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
-          <span class="font-mono text-slate-200">9661692365@ybl</span>
-          <button type="button" onclick="navigator.clipboard.writeText('9661692365@ybl');msg('UPI ID Copied!')" class="text-cyan-400 font-bold">Copy ID</button>
+      <div class="space-y-2.5">
+        <p class="text-xs text-slate-300">Step 1: Scan QR ya UPI app se pay karein:</p>
+        <a href="upi://pay?pa=9661692365@ybl&pn=Prem%20Raj&am=499" class="block w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-extrabold py-2.5 rounded-xl text-center text-xs shadow">Pay ₹499 via UPI App</a>
+        <div class="bg-slate-900 p-2 rounded-xl border border-slate-800 flex justify-between text-xs items-center">
+          <span class="font-mono text-slate-300">9661692365@ybl</span>
+          <button type="button" onclick="navigator.clipboard.writeText('9661692365@ybl');showToast('UPI ID Copied!')" class="text-cyan-400 font-bold cursor-pointer">Copy</button>
         </div>
       </div>
     </div>
-
-    <!-- Step 2: UTR Verification Form -->
-    <form onsubmit="verifyUtr(event)" class="space-y-3.5 pt-1">
-      <div class="flex justify-between items-center">
-        <span class="text-xs font-extrabold text-amber-400 uppercase"><i class="fa-solid fa-key mr-1"></i> Step 2: Enter Payment UTR to Unlock</span>
-        <span class="text-[11px] text-slate-400">100% Instant Unlock</span>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <input id="iName" required placeholder="Aapka Poora Naam" class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-blue-500 outline-none">
-        <input id="iPhone" required maxlength="10" pattern="[6-9][0-9]{9}" placeholder="10-Digit WhatsApp Number" class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-blue-500 outline-none">
-        <select id="iCat" class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white">
+    <form onsubmit="verifyUtr(event)" class="space-y-3">
+      <div class="flex justify-between text-xs items-center"><b class="text-amber-400">Step 2: Enter 12-Digit UTR Number</b><span class="text-slate-400 text-[10px]">Instant Activation</span></div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <input id="fName" required placeholder="Aapka Poora Naam" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-blue-500">
+        <input id="fPhone" required maxlength="10" placeholder="10-Digit WhatsApp No." class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-blue-500">
+        <select id="fCat" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
           <option>Mobile & Electronics</option><option>Electrical & Hardware</option><option>Clothing & Garments</option><option>Grocery & Supermart</option><option>Medical & Pharmacy</option>
         </select>
-        <input id="iUtr" required maxlength="12" minlength="12" placeholder="12-Digit UPI UTR / Ref No." class="bg-slate-900 border border-amber-500/60 rounded-xl px-3.5 py-2.5 text-sm font-mono text-amber-300 focus:border-amber-400 outline-none">
+        <input id="fUtr" required maxlength="12" minlength="12" placeholder="12-Digit UTR Number" class="bg-slate-900 border border-amber-500/60 rounded-xl px-3 py-2 text-xs font-mono text-amber-300 outline-none">
       </div>
-      <button type="submit" class="w-full shimmer text-white font-extrabold py-3.5 rounded-xl text-sm shadow-xl">
-        🔓 Verify UTR & Unlock All Leads Now
-      </button>
+      <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-95 text-white font-extrabold py-3 rounded-xl text-xs shadow cursor-pointer">🔓 Verify UTR & Unlock Leads Vault</button>
     </form>
   </div>
-
-  <!-- Right: Verified Subscribers Feed -->
-  <div class="lg:col-span-5 glass rounded-3xl p-6 flex flex-col justify-between space-y-4">
+  <div class="md:col-span-5 glass rounded-3xl p-5 flex flex-col justify-between space-y-4 shadow-2xl">
     <div>
-      <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3">
-        <div>
-          <b class="text-sm text-white flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> Recent Verified Buyers</b>
-          <p class="text-[11px] text-slate-400">Live ₹499 Activations</p>
-        </div>
-        <span id="lCnt" class="text-xs font-mono bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full font-bold">Live</span>
-      </div>
-      <div id="lBox" class="space-y-2.5 max-h-80 overflow-y-auto pr-1"></div>
+      <div class="flex justify-between border-b border-slate-800 pb-2 mb-3 items-center"><b class="text-xs text-white">🟢 Recent Buyers</b><span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded-full font-bold">Live Feed</span></div>
+      <div id="buyerBox" class="space-y-2 max-h-64 overflow-y-auto text-xs text-slate-400"></div>
     </div>
-    <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 text-xs text-slate-300 flex items-center gap-3">
-      <i class="fa-brands fa-whatsapp text-2xl text-emerald-400"></i>
-      <div>
-        <b class="text-white block">Need Help with Activation?</b>
-        <a href="https://wa.me/919661692365?text=Hi,%20mujhe%20AutoLeads%20PRO%20subscription%20ke%20bare%20me%20madad%20chahiye" target="_blank" class="text-cyan-400 underline font-bold">Chat with Support &rarr;</a>
-      </div>
+    <div class="bg-slate-900 p-3 rounded-xl text-xs text-slate-300 flex items-center gap-2 border border-slate-800">
+      <i class="fa-brands fa-whatsapp text-xl text-emerald-400"></i>
+      <div><b>Payment me dikkat hai?</b><br><a href="https://wa.me/919661692365?text=Hi,%20mujhe%20AutoLeads%20ke%20liye%20madad%20chahiye" target="_blank" class="text-cyan-400 underline font-bold">WhatsApp Support</a></div>
     </div>
   </div>
 </div>
 
-<!-- ================= PAGE 3: UNLOCKED B2B LEADS VAULT ================= -->
-<div id="pLeads" class="max-w-6xl mx-auto px-4 pt-6 hidden space-y-5">
-  <div class="glass rounded-3xl p-5 space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
-      <div>
-        <span class="text-[11px] font-extrabold text-emerald-400 uppercase">✔ PRO MEMBERSHIP ACTIVE</span>
-        <h2 class="text-xl font-black text-white">Verified B2B Retailers Vault</h2>
-      </div>
-      <div class="flex gap-2">
-        <button onclick="genLeads()" class="bg-purple-600 hover:bg-purple-500 text-white font-extrabold px-3.5 py-2 rounded-xl text-xs shadow">+ Load More Leads</button>
-        <button onclick="dlCsv()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold px-4 py-2 rounded-xl text-xs shadow"><i class="fa-solid fa-file-excel mr-1"></i> Download Excel</button>
-      </div>
+<!-- ================= PAGE 3: LEADS VAULT (LOCKED) ================= -->
+<div id="pageLeads" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-4">
+  <div class="glass rounded-2xl p-4 space-y-3 shadow-xl">
+    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+      <b class="text-xs text-emerald-400 uppercase">✔ PRO MEMBERSHIP ACTIVE</b>
+      <button type="button" onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl px-3 py-1.5 text-xs shadow cursor-pointer">📥 Download Excel</button>
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-      <input id="sQ" oninput="drawLeads()" placeholder="🔍 Search shop name, owner, area..." class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white">
-      <select id="sCat" onchange="drawLeads()" class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white">
-        <option value="ALL">All 5 Categories (Colour-Coded)</option><option>Mobile & Electronics</option><option>Electrical & Hardware</option><option>Clothing & Garments</option><option>Grocery & Supermart</option><option>Medical & Pharmacy</option>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+      <input id="qSearch" oninput="drawGrid()" placeholder="🔍 Search shop, city..." class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+      <select id="qCat" onchange="drawGrid()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+        <option value="ALL">All Categories</option><option>Mobile & Electronics</option><option>Electrical & Hardware</option><option>Clothing & Garments</option><option>Grocery & Supermart</option><option>Medical & Pharmacy</option>
       </select>
-      <select id="sCity" onchange="drawLeads()" class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white">
-        <option value="ALL">All Cities (Pan-India)</option><option>Patna</option><option>Delhi</option><option>Mumbai</option><option>Jaipur</option><option>Lucknow</option><option>Kolkata</option>
+      <select id="qCity" onchange="drawGrid()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+        <option value="ALL">All Cities</option><option>Patna</option><option>Delhi</option><option>Mumbai</option><option>Jaipur</option><option>Lucknow</option>
       </select>
     </div>
   </div>
-  <div id="lGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+  <div id="leadsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5"></div>
 </div>
 
 <script>
 var isUnlocked = false;
-var logs = [
-  { n: "Vikram Traders", c: "Electrical & Hardware", u: "4128****9012", a: 499, t: "Verified" },
-  { n: "Aman Enterprises", c: "Mobile & Electronics", u: "6295****4418", a: 499, t: "Verified" },
-  { n: "Royal Wholesale", c: "Clothing & Garments", u: "3310****7821", a: 499, t: "Verified" }
+var buyers = [
+  { n: "Vikram Traders", c: "Electrical & Hardware", u: "4128****9012" },
+  { n: "Aman Enterprises", c: "Mobile & Electronics", u: "6295****4418" }
 ];
-var leads = [
-  { s: "Agni Telecom & Mobile Hub", o: "Rajesh Verma", c: "Mobile & Electronics", ct: "Patna", ar: "Boring Road", ph: "9835012345" },
-  { s: "Shree Krishna Switchgear", o: "Mukesh Gupta", c: "Electrical & Hardware", ct: "Patna", ar: "Station Road", ph: "9431056789" },
-  { s: "Royal Ethnic Garments", o: "Ankit Sharma", c: "Clothing & Garments", ct: "Delhi", ar: "Karol Bagh", ph: "9811223344" },
-  { s: "SuperMart Kirana Wholesale", o: "Vikas Agrawal", c: "Grocery & Supermart", ct: "Jaipur", ar: "Malviya Nagar", ph: "9829011223" },
-  { s: "LifeCare Medico & Pharma", o: "S. K. Sinha", c: "Medical & Pharmacy", ct: "Patna", ar: "Govind Mitra Road", ph: "9934011223" },
-  { s: "Patna Power & LED House", o: "Santosh Kumar", c: "Electrical & Hardware", ct: "Patna", ar: "Exhibition Road", ph: "9934098765" },
-  { s: "Digital Galaxy Accessories", o: "Faizan Khan", c: "Mobile & Electronics", ct: "Lucknow", ar: "Hazratganj", ph: "9795044556" },
-  { s: "Metro Cash & Carry Mart", o: "Pradeep Jain", c: "Grocery & Supermart", ct: "Mumbai", ar: "Andheri East", ph: "9820199887" },
-  { s: "Vastra Villa Studio", o: "Neha Singhania", c: "Clothing & Garments", ct: "Kolkata", ar: "Burrabazar", ph: "9123456780" }
+var leadsList = [
+  { s: "Agni Telecom Hub", o: "Rajesh Verma", c: "Mobile & Electronics", ct: "Patna", ar: "Boring Road", ph: "9835012345" },
+  { s: "Shree Krishna Electricals", o: "Mukesh Gupta", c: "Electrical & Hardware", ct: "Patna", ar: "Station Road", ph: "9431056789" },
+  { s: "Royal Garments", o: "Ankit Sharma", c: "Clothing & Garments", ct: "Delhi", ar: "Karol Bagh", ph: "9811223344" },
+  { s: "SuperMart Kirana", o: "Vikas Agrawal", c: "Grocery & Supermart", ct: "Jaipur", ar: "Malviya Nagar", ph: "9829011223" },
+  { s: "LifeCare Medico", o: "S. K. Sinha", c: "Medical & Pharmacy", ct: "Patna", ar: "Govind Mitra Rd", ph: "9934011223" }
 ];
 
-var cl = {
-  "Mobile & Electronics": "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
-  "Electrical & Hardware": "bg-amber-500/15 text-amber-300 border-amber-500/30",
-  "Clothing & Garments": "bg-purple-500/15 text-purple-300 border-purple-500/30",
-  "Grocery & Supermart": "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  "Medical & Pharmacy": "bg-rose-500/15 text-rose-300 border-rose-500/30"
-};
-
-// Render Blurred Teaser Cards on Home Page
-document.getElementById('teaserGrid').innerHTML = leads.slice(0,3).map(l => `
-  <div class="glass neon-card rounded-2xl p-5 space-y-3 transition">
-    <div class="flex justify-between items-center">
-      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${cl[l.c]}">${l.c}</span>
-      <span class="text-[10px] text-emerald-400 font-bold">✔ GST Verified</span>
-    </div>
-    <b class="text-base text-white block">${l.s}</b>
-    <p class="text-xs text-slate-400">📍 ${l.ar}, <b class="text-white">${l.ct}</b></p>
-    <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 text-xs flex justify-between items-center">
-      <span class="text-slate-300">👤 ${l.o}</span>
-      <span class="font-mono text-amber-300 font-bold">+91 ${l.ph.slice(0,5)}-XXXXX 🔒</span>
-    </div>
-    <button onclick="go('pay')" class="w-full bg-slate-800 hover:bg-blue-600 text-cyan-300 hover:text-white text-xs font-extrabold py-2.5 rounded-xl border border-slate-700 transition">
-      🔓 Unlock Full WhatsApp Number
-    </button>
-  </div>
-`).join('');
-
-document.getElementById('featBox').innerHTML = [
-  ["🎯 5 High-Demand Categories","Mobile, Electrical, Hardware, Garments, Grocery aur Medical shops ke exact colour-coded filters."],
-  ["💬 1-Click WhatsApp Pitch","Number save kiye bina seedha dukandar ke WhatsApp par apna wholesale catalog aur rate list bhejein."],
-  ["📥 Instant Excel (CSV) Export","Saari verified leads ko ek click me Excel sheet me download karke apni sales team ko dein."]
-].map(f => `<div class="glass rounded-2xl p-5 space-y-2 border-t-2 border-t-blue-500"><b class="text-base text-white block">${f[0]}</b><p class="text-xs text-slate-400 leading-relaxed">${f[1]}</p></div>`).join('');
-
-function msg(t){ var e=document.getElementById('toast'); e.innerText=t; e.classList.remove('hidden'); setTimeout(()=>e.classList.add('hidden'),2600); }
-
-function tryOpenLeads(){
-  if(!isUnlocked){
-    msg("🔒 Leads Vault Locked! Pay ₹499 & Enter UTR to Unlock.");
-    go('pay');
-  } else {
-    go('leads');
-  }
+function showToast(txt) {
+  var t = document.getElementById('toast');
+  t.innerText = "⚡ " + txt;
+  t.classList.remove('hidden');
+  setTimeout(function() { t.classList.add('hidden'); }, 2500);
 }
 
-function go(p){
-  ['home','pay','leads'].forEach(x => {
-    document.getElementById('p'+x[0].toUpperCase()+x.slice(1)).classList.toggle('hidden', x!==p);
-  });
-  if(p==='leads') drawLeads();
+function showTab(target) {
+  if(target === 'leads' && !isUnlocked) {
+    showToast("🔒 Leads Vault Locked! Pay ₹499 & Enter UTR First.");
+    showTab('pay');
+    return;
+  }
+  document.getElementById('pageHome').classList.toggle('hidden', target !== 'home');
+  document.getElementById('pagePay').classList.toggle('hidden', target !== 'pay');
+  document.getElementById('pageLeads').classList.toggle('hidden', target !== 'leads');
+
+  document.getElementById('tabHome').className = target === 'home' ? "text-xs font-bold px-3.5 py-2 rounded-xl bg-blue-600 text-white shadow" : "text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700";
+  document.getElementById('tabPay').className = target === 'pay' ? "text-xs font-bold px-3.5 py-2 rounded-xl bg-blue-600 text-white shadow" : "text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700";
+  
+  if (target === 'leads') drawGrid();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function renderLogs(){
-  document.getElementById('lBox').innerHTML = logs.map(d=>`
-    <div class="bg-slate-900/95 border border-slate-800 rounded-2xl p-3 text-xs space-y-1">
-      <div class="flex justify-between"><b class="text-white">✔ ${d.n}</b><b class="text-emerald-400">₹${d.a}</b></div>
-      <div class="flex justify-between text-[11px] text-slate-400"><span>${d.c}</span><span class="font-mono text-amber-300">UTR: ${d.u}</span></div>
-    </div>
-  `).join('');
+function checkVaultAccess() {
+  if(!isUnlocked) {
+    showToast("🔒 Please complete ₹499 payment & verify UTR.");
+    showTab('pay');
+  } else {
+    showTab('leads');
+  }
 }
-renderLogs();
 
-function verifyUtr(e){
+function renderBuyers() {
+  document.getElementById('buyerBox').innerHTML = buyers.map(function(d) {
+    return '<div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 space-y-1">' +
+      '<div class="flex justify-between"><b class="text-white">✔ ' + d.n + '</b><b class="text-emerald-400">₹499</b></div>' +
+      '<div class="flex justify-between text-[10px] font-mono text-amber-300"><span>' + d.c + '</span><span>UTR: ' + d.u + '</span></div>' +
+    '</div>';
+  }).join('');
+}
+renderBuyers();
+
+function verifyUtr(e) {
   e.preventDefault();
-  var u = iUtr.value.trim();
-  if(!/^\d{12}$/.test(u) || /^(\d)\1{11}$/.test(u) || u==="123456789012"){
-    alert("⚠️ Invalid UTR! Kripya apne ₹499 UPI payment ka sahi 12-digit UTR number daalein.");
+  var name = document.getElementById('fName').value.trim();
+  var phone = document.getElementById('fPhone').value.trim();
+  var cat = document.getElementById('fCat').value;
+  var utr = document.getElementById('fUtr').value.trim();
+
+  if(utr.length !== 12 || /^(\d)\1{11}$/.test(utr) || utr === "123456789012") {
+    alert("⚠️ Invalid UTR! Kripya apna sahi 12-digit UPI UTR number daalein.");
     return;
   }
+
   isUnlocked = true;
-  document.getElementById('lockIcon').className = "fa-solid fa-lock-open text-emerald-400 text-[10px]";
-  var masked = u.slice(0,4) + "****" + u.slice(8);
-  logs.unshift({ n: iName.value.trim(), c: iCat.value, u: masked, a: 499, t: "Just Now" });
-  renderLogs();
-  if(window.db){
-    window.db.collection("subscribers").add({ name: iName.value.trim(), phone: iPhone.value.trim(), business: iCat.value, utr: u, amount: 499, createdAt: firebase.firestore.FieldValue.serverTimestamp() }).catch(()=>{});
+  document.getElementById('tabLeads').innerHTML = '<i class="fa-solid fa-lock-open text-emerald-400 text-[10px]"></i> Leads Vault';
+  
+  var maskedUtr = utr.slice(0,4) + "****" + utr.slice(8);
+  buyers.unshift({ n: name, c: cat, u: maskedUtr });
+  renderBuyers();
+
+  if (window.db) {
+    window.db.collection("subscribers").add({
+      name: name, phone: phone, business: cat, utr: utr, amount: 499,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(function(){});
   }
-  document.getElementById('sCat').value = iCat.value;
-  ms
+
+  showToast("🎉 UTR Verified! Leads Vault Unlocked.");
+  showTab('leads');
+}
+
+function drawGrid() {
+  var q = (document.getElementById('qSearch').value || "").toLowerCase();
+  var cat = document.getElementById('qCat').value;
+  var city = document.getElementById('qCity').value;
+  
+  var badgeMap = {
+    "Mobile & Electronics": "text-cyan-300 border-cyan-500/40 bg-cyan-500/10",
+    "Electrical & Hardware": "text-amber-300 border-amber-500/40 bg-amber-500/10",
+    "Clothing & Garments": "text-purple-300 border-purple-500/40 bg-purple-500/10",
+    "Grocery & Supermart": "text-emerald-300 border-emerald-500/40 bg-emerald-500/10",
+    "Medical & Pharmacy": "text-rose-300 border-rose-500/40 bg-rose-500/10"
+  };
+
+  var filtered = leadsList.filter(function(l) {
+    return (l.s + l.ct + l.o + l.ar).toLowerCase().includes(q) && (cat === "ALL" || l.c === cat) && (city === "ALL" || l.ct === city);
+  });
+
+  document.getElementById('leadsGrid').innerHTML = filtered.map(function(l) {
+    var bCls = badgeMap[l.c] || badgeMap["Mobile & Electronics"];
+    return '<div class="glass rounded-2xl p-4 space-y-2.5">' +
+      '<div class="flex justify-between items-center"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ' + bCls + '">' + l.c + '</span><span class="text-[10px] text-emerald-400">✔ Verified</span></div>' +
+      '<b class="text-sm text-white block">' + l.s + '</b>' +
+      '<p class="text-xs text-slate-400">📍 ' + l.ar + ', <b class="text-white">' + l.ct + '</b></p>' +
+      '<div class="bg-slate-900 p-2.5 rounded-xl text-xs flex justify-between border border-slate-800"><span>👤 ' + l.o + '</span><b class="text-amber-300 font-mono">+91 ' + l.ph + '</b></div>' +
+      '<a href="https://wa.me/91' + l.ph + '?text=Namaste%20' + encodeURIComponent(l.o) + '%20ji%20(' + encodeURIComponent(l.s) + '),%20hum%20B2B%20wholesale%20supply%20me%20deal%20karte%20hain.%20Kya%20hum%20apna%20rate%20catalog%20bhej%20sakte%20hain?" target="_blank" class="block w-full bg-emerald-600 hover:bg-emerald-500 text-white text-center text-xs font-extrabold py-2 rounded-xl shadow">💬 1-Click WhatsApp Pitch</a>' +
+    '</div>';
+  }).join('');
+}
+
+function exportExcel() {
+  var csv = "Shop Name,Owner,Category,City,Area,WhatsApp\n" + leadsList.map(function(l) {
+    return '"' + l.s + '","' + l.o + '","' + l.c + '","' + l.ct + '","' + l.ar + '","91' + l.ph + '"';
+  }).join("\n");
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = "AutoLeads_PRO_Verified_Directory.csv";
+  a.click();
+  showToast("Excel CSV Downloaded!");
+}
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script>
+try {
+  firebase.initializeApp({ apiKey: "AIzaSyAa7lt4jyDSVpxlNq5pp3RYZ8K1i8tr86A", authDomain: "auto-leads-ce2cb.firebaseapp.com", projectId: "auto-leads-ce2cb" });
+  window.db = firebase.firestore();
+} catch(e){}
+</script>
+</body>
+</html>
