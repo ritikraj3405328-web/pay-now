@@ -61,9 +61,6 @@
     "Medical & Pharmacy": "bg-rose-500/15 text-rose-300 border-rose-500/30"
   };
 
-  window.showToast = function(msgText) {
-    document.getElementById('aiVipBanner').style.display = (tabName === 'home') ? 'block' : 'none';
-    var t = document.getElementById('toastBox');
     if (!t) return;
     t.innerText = msgText;
     t.classList.remove('hidden');
@@ -80,6 +77,15 @@
       window.showToast("🔒 Leads Vault Locked! Complete ₹499 Onboarding & UTR Verification first.");
       tabName = 'pay';
     }
+    var vipBanner = document.getElementById('aiVipBanner');
+if (vipBanner) {
+  if (tabName === 'home') {
+    vipBanner.classList.remove('hidden');
+  } else {
+    vipBanner.classList.add('hidden');
+  }
+}
+    
     var viewMap = { home: 'viewHome', pay: 'viewPay', leads: 'viewLeads', catalog: 'viewCatalog', waGen: 'viewWaGen', freeLeads: 'viewFreeLeads', listShop: 'viewListShop' };
     var navMap = { home: 'navHome', pay: 'navPay', leads: 'navLeads', catalog: 'navCatalog', waGen: 'navWaGen', freeLeads: 'navFreeLeads', listShop: 'navListShop' };
 
