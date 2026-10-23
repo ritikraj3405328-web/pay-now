@@ -1,0 +1,20 @@
+{
+  "name": "AutoLeads PRO",
+  "short_name": "AutoLeads",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=AutoLeads",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=AutoLeads",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
