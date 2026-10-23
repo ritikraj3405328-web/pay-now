@@ -3,260 +3,391 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AutoLeads PRO</title>
+<title>AutoLeads PRO | Automated B2B Lead Generator & Free Seller Tools</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #f8fafc; }
-  .glass { background: linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(9, 13, 24, 0.98)); border: 1px solid rgba(51, 65, 85, 0.75); backdrop-filter: blur(16px); }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #020617;
+    color: #f8fafc;
+    background-image: radial-gradient(circle at 12% 10%, rgba(37, 99, 235, 0.16), transparent 35%),
+                      radial-gradient(circle at 88% 85%, rgba(16, 185, 129, 0.14), transparent 35%);
+  }
+  .glass {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(9, 13, 24, 0.98));
+    border: 1px solid rgba(51, 65, 85, 0.75);
+    backdrop-filter: blur(16px);
+  }
+  .neon-hover { transition: all 0.25s ease; }
+  .neon-hover:hover { border-color: rgba(56, 189, 248, 0.6); box-shadow: 0 12px 32px -10px rgba(56, 189, 248, 0.28); transform: translateY(-2px); }
+  .btn-gradient { background: linear-gradient(90deg, #2563eb, #7c3aed, #059669); background-size: 200% auto; }
 </style>
 <script>
   window.isUnlocked = false;
-  window.clientData = { name: "", phone: "", businessName: "Your Business", category: "ALL", city: "ALL" };
+  window.generatedCatalogText = "";
+  window.clientData = { name: "", phone: "", businessName: "Your Wholesale Business", category: "ALL", city: "ALL" };
+  window.recentBuyers = [
+    { name: "Vikram Gupta", biz: "Vikram Switchgear Co.", cat: "Electrical & Hardware", utr: "4128****9012", amt: 499 },
+    { name: "Aman Verma", biz: "Aman MobiWorld", cat: "Mobile & Electronics", utr: "6295****4418", amt: 499 }
+  ];
+  window.masterLeads = [
+    { shop: "Agni Telecom & Mobile Hub", owner: "Rajesh Verma", cat: "Mobile & Electronics", city: "Patna", area: "Boring Road", phone: "9835012345" },
+    { shop: "Shree Krishna Switchgear", owner: "Mukesh Gupta", cat: "Electrical & Hardware", city: "Patna", area: "Station Road", phone: "9431056789" },
+    { shop: "Royal Ethnic Garments", owner: "Ankit Sharma", cat: "Clothing & Garments", city: "Delhi", area: "Karol Bagh", phone: "9811223344" },
+    { shop: "SuperMart Kirana Wholesale", owner: "Vikas Agrawal", cat: "Grocery & Supermart", city: "Jaipur", area: "Malviya Nagar", phone: "9829011223" },
+    { shop: "LifeCare Medico & Pharma", owner: "S. K. Sinha", cat: "Medical & Pharmacy", city: "Patna", area: "Govind Mitra Road", phone: "9934011223" }
+  ];
+  window.catBadgeStyles = {
+    "Mobile & Electronics": "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
+    "Electrical & Hardware": "bg-amber-500/15 text-amber-300 border-amber-500/30",
+    "Clothing & Garments": "bg-purple-500/15 text-purple-300 border-purple-500/30",
+    "Grocery & Supermart": "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+    "Medical & Pharmacy": "bg-rose-500/15 text-rose-300 border-rose-500/30"
+  };
 
-  function showToast(msg) {
+  window.showToast = function(msg) {
     var t = document.getElementById('toastBox');
     if (!t) return;
     t.innerText = msg;
     t.classList.remove('hidden');
     setTimeout(function() { t.classList.add('hidden'); }, 2800);
-  }
+  };
 
-  function checkDailyFreeLeads() {
-    var container = document.getElementById('freeLeadsContainer');
-    var statusBox = document.getElementById('freeLeadsStatus');
-    if (!container || !statusBox) return;
-    var todayStr = new Date().toDateString();
-    var claimedDate = localStorage.getItem('autoleads_free_claimed');
-    if (claimedDate === todayStr) {
-      statusBox.innerHTML = "✅ Aap aaj ki 3 free leads claim kar chuke hain!";
-      container.innerHTML = '<div class="glass p-4 rounded-xl col-span-full text-center text-emerald-400 font-bold">✔ Already Unlocked Today</div>';
-    } else {
-      statusBox.innerHTML = "🎁 Aaj ka 3 free leads quota available hai!";
-      container.innerHTML = '<div class="col-span-full text-center py-4"><button type="button" onclick="claimFreeLeadsToday()" class="bg-emerald-600 text-white font-bold px-6 py-3 rounded-xl text-xs cursor-pointer">🔓 Unlock 3 Free Leads</button></div>';
-    }
-  }
+  window.copyUpiId = function() {
+    if (navigator.clipboard) navigator.clipboard.writeText('9661692365@ybl');
+    window.showToast("⚡ UPI ID Copied!");
+  };
 
-  function claimFreeLeadsToday() {
-    localStorage.setItem('autoleads_free_claimed', new Date().toDateString());
-    showToast("🎉 3 Free Leads Unlocked!");
-    checkDailyFreeLeads();
-  }
-
-  function showTab(tabName) {
+  window.showTab = function(tabName) {
     if (tabName === 'leads' && !window.isUnlocked) {
-      showToast("🔒 Leads Vault Locked! Complete ₹499 Onboarding first.");
+      window.showToast("🔒 Leads Vault Locked! Complete ₹499 Onboarding first.");
       tabName = 'pay';
     }
-    var views = ['viewHome', 'viewPay', 'viewLeads', 'viewCatalog', 'viewWaGen', 'viewFreeLeads', 'viewListShop'];
-    for (var i = 0; i < views.length; i++) {
-      var el = document.getElementById(views[i]);
-      if (el) el.classList.toggle('hidden', views[i] !== 'view' + tabName.charAt(0).toUpperCase() + tabName.slice(1));
-    }
-    if (tabName === 'leads' && typeof window.renderLeadsGrid === 'function') window.renderLeadsGrid();
-    if (tabName === 'freeLeads') checkDailyFreeLeads();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+    var viewMap = { home: 'viewHome', pay: 'viewPay', leads: 'viewLeads', catalog: 'viewCatalog', waGen: 'viewWaGen', freeLeads: 'viewFreeLeads', listShop: 'viewListShop' };
+    var navMap = { home: 'navHome', pay: 'navPay', leads: 'navLeads', catalog: 'navCatalog', waGen: 'navWaGen', freeLeads: 'navFreeLeads', listShop: 'navListShop' };
 
-  function copyUpiId() {
-    if (navigator.clipboard) navigator.clipboard.writeText('9661692365@ybl');
-    showToast("⚡ UPI ID Copied!");
-  }
+    for (var key in viewMap) {
+      var vEl = document.getElementById(viewMap[key]);
+      if (vEl) vEl.classList.toggle('hidden', key !== tabName);
+    }
+    for (var nKey in navMap) {
+      var nEl = document.getElementById(navMap[nKey]);
+      if (!nEl) continue;
+      if (nKey === tabName) {
+        nEl.className = (nKey === 'leads') ? "text-xs font-extrabold px-3 py-2 rounded-xl bg-emerald-600 text-white shadow-lg cursor-pointer" : "text-xs font-extrabold px-3 py-2 rounded-xl bg-blue-600 text-white shadow-lg cursor-pointer";
+      } else if (nKey === 'leads') {
+        nEl.className = "text-xs font-bold px-3 py-2 rounded-xl bg-slate-900 text-amber-400 border border-amber-500/40 cursor-pointer";
+      } else {
+        nEl.className = "text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer";
+      }
+    }
+    if (tabName === 'leads') window.renderLeadsGrid();
+    if (tabName === 'freeLeads') window.checkDailyFreeLeads();
+    if (tabName === 'listShop') window.renderFreeListedPreview();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 </script>
 </head>
 <body class="min-h-screen pb-16">
-<div id="toastBox" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white font-extrabold px-6 py-3 rounded-full shadow-2xl text-xs text-center"></div>
+<div id="toastBox" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white font-extrabold px-6 py-3 rounded-full shadow-2xl text-xs text-center min-w-[270px]"></div>
 
 <nav class="bg-slate-950/90 border-b border-slate-800 px-3 py-3 sticky top-0 z-40">
   <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-    <span class="text-white font-black cursor-pointer text-sm" onclick="showTab('home')">⚡ AutoLeads <span class="bg-emerald-500 text-black px-1 rounded text-[10px]">PRO</span></span>
-    <div class="flex flex-wrap gap-1">
-      <button type="button" onclick="showTab('home')" class="text-[11px] bg-blue-600 text-white px-2.5 py-1.5 rounded-lg font-bold cursor-pointer">Home</button>
-      <button type="button" onclick="showTab('pay')" class="text-[11px] bg-slate-800 text-slate-300 px-2.5 py-1.5 rounded-lg font-bold cursor-pointer">Access</button>
-      <button type="button" onclick="showTab('catalog')" class="text-[11px] bg-slate-800 text-slate-300 px-2.5 py-1.5 rounded-lg font-bold cursor-pointer">Catalog</button>
-      <button type="button" onclick="showTab('waGen')" class="text-[11px] bg-slate-800 text-slate-300 px-2.5 py-1.5 rounded-lg font-bold cursor-pointer">WA Link</button>
-      <button type="button" onclick="showTab('freeLeads')" class="text-[11px] bg-slate-800 text-slate-300 px-2.5 py-1.5 rounded-lg font-bold cursor-pointer">Free Leads</button>
-      <button type="button" onclick="showTab('listShop')" class="text-[11px] bg-slate-800 text-slate-300 px-2.5 py-1.5 rounded-lg font-bold cursor-pointer">List Shop</button>
-      <button type="button" onclick="showTab('leads')" class="text-[11px] bg-slate-900 text-amber-400 border border-amber-500/40 px-2.5 py-1.5 rounded-lg font-bold cursor-pointer">🔒 Vault</button>
+    <div class="flex items-center gap-2 cursor-pointer" onclick="showTab('home')">
+      <span class="text-white font-black text-sm">⚡ AutoLeads <span class="bg-emerald-500 text-black px-1 rounded text-[10px]">PRO</span></span>
+    </div>
+    <div class="flex flex-wrap items-center gap-1">
+      <button type="button" onclick="showTab('home')" id="navHome" class="text-xs font-bold px-3 py-2 rounded-xl bg-blue-600 text-white cursor-pointer">Home</button>
+      <button type="button" onclick="showTab('pay')" id="navPay" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">Access</button>
+      <button type="button" onclick="showTab('freeLeads')" id="navFreeLeads" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">Free Leads</button>
+      <button type="button" onclick="showTab('catalog')" id="navCatalog" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">Catalog</button>
+      <button type="button" onclick="showTab('waGen')" id="navWaGen" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">WA Link</button>
+      <button type="button" onclick="showTab('listShop')" id="navListShop" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">List Shop</button>
+      <button type="button" onclick="showTab('leads')" id="navLeads" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-900 text-amber-400 border border-amber-500/40 cursor-pointer"><i id="vaultLockIcon" class="fa-solid fa-lock text-[10px]"></i> Vault</button>
     </div>
   </div>
 </nav>
 
-<!-- HOME VIEW -->
-<div id="viewHome" class="max-w-6xl mx-auto px-4 pt-8 space-y-6 text-center">
-  <div class="glass rounded-3xl p-8 space-y-4 shadow-2xl">
-    <h1 class="text-2xl sm:text-4xl font-black text-white">B2B Verified Retailers WhatsApp Leads</h1>
-    <p class="text-xs text-slate-300">Apne business ke liye targeted leads payein aur free tools ka anand lein.</p>
+<!-- VIEW 1: HOME -->
+<div id="viewHome" class="max-w-6xl mx-auto px-4 pt-8 space-y-8">
+  <div class="glass rounded-3xl p-8 text-center space-y-5 border-blue-500/30 shadow-2xl">
+    <h1 class="text-2xl sm:text-4xl font-black text-white">Apne Business Ke Hisab Se Verified B2B Leads Payein</h1>
+    <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto">100% verified dukandaron ke WhatsApp numbers aur free seller tools ka anand lein.</p>
     <div class="flex flex-wrap justify-center gap-3">
-      <button type="button" onclick="showTab('pay')" class="bg-blue-600 text-white font-bold px-6 py-3 rounded-2xl text-xs cursor-pointer">🚀 Start Business Onboarding (₹499)</button>
-      <button type="button" onclick="showTab('freeLeads')" class="bg-emerald-600 text-white font-bold px-6 py-3 rounded-2xl text-xs cursor-pointer">🎁 Claim Daily 3 Free Leads</button>
+      <button type="button" onclick="showTab('pay')" class="btn-gradient text-white font-extrabold px-6 py-3.5 rounded-xl text-xs cursor-pointer">🚀 Start Onboarding (₹499)</button>
+      <button type="button" onclick="showTab('freeLeads')" class="bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 font-bold px-6 py-3.5 rounded-xl text-xs cursor-pointer">🎁 Claim Daily 3 Free Leads</button>
     </div>
   </div>
+  <div id="teaserContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
 </div>
 
-<!-- PAY VIEW -->
+<!-- VIEW 2: CHECKOUT -->
 <div id="viewPay" class="max-w-6xl mx-auto px-4 pt-6 hidden">
-  <div class="glass rounded-3xl p-6 space-y-4 shadow-2xl">
-    <h2 class="text-lg font-black text-white">Business Onboarding & Unlock (₹499)</h2>
-    <div class="bg-slate-950 p-4 rounded-2xl text-center space-y-2">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x160&data=upi%3A%2F%2Fpay%3Fpa%3D9661692365%40ybl%26pn%3DPrem%2520Raj%26am%3D499" class="w-32 h-32 bg-white p-2 rounded-xl mx-auto">
-      <a href="upi://pay?pa=9661692365@ybl&pn=Prem%20Raj&am=499" class="block bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold">Pay ₹499 via UPI App</a>
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+    <div class="lg:col-span-7 glass rounded-3xl p-6 space-y-4 shadow-2xl">
+      <h2 class="text-lg font-black text-white">Business Onboarding & Unlock (₹499)</h2>
+      <div class="bg-slate-950 p-4 rounded-2xl text-center space-y-2">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi%3A%2F%2Fpay%3Fpa%3D9661692365%40ybl%26pn%3DPrem%2520Raj%26am%3D499" class="w-32 h-32 bg-white p-2 rounded-xl mx-auto">
+        <a href="upi://pay?pa=9661692365@ybl&pn=Prem%20Raj&am=499" class="block bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold">Pay ₹499 via UPI App</a>
+      </div>
+      <form onsubmit="submitOnboarding(event)" class="space-y-3">
+        <input type="text" id="inpName" required placeholder="Aapka Naam" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+        <input type="tel" id="inpPhone" required maxlength="10" placeholder="WhatsApp Number" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+        <input type="text" id="inpBiz" required placeholder="Business Name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+        <select id="inpCat" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+          <option>Mobile & Electronics</option><option>Electrical & Hardware</option><option>Clothing & Garments</option><option>Grocery & Supermart</option><option>Medical & Pharmacy</option>
+        </select>
+        <select id="inpCity" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+          <option value="ALL">All Cities</option><option>Patna</option><option>Delhi</option><option>Mumbai</option><option>Jaipur</option><option>Lucknow</option>
+        </select>
+        <input type="text" id="inpUtr" required maxlength="12" placeholder="12-Digit UTR Number" class="w-full bg-slate-900 border border-amber-500 rounded-xl px-3.5 py-2.5 text-xs font-mono text-amber-300">
+        <button type="submit" class="w-full btn-gradient text-white font-extrabold py-3 rounded-xl text-xs cursor-pointer">🔓 Verify UTR & Unlock Leads</button>
+      </form>
     </div>
-    <form onsubmit="submitOnboarding(event)" class="space-y-3">
-      <input type="text" id="inpName" required placeholder="Aapka Naam" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-      <input type="tel" id="inpPhone" required maxlength="10" placeholder="WhatsApp Number" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-      <input type="text" id="inpBiz" required placeholder="Business Name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-      <select id="inpCat" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-        <option>Mobile & Electronics</option><option>Electrical & Hardware</option><option>Clothing & Garments</option><option>Grocery & Supermart</option>
-      </select>
-      <select id="inpCity" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-        <option value="ALL">All Cities</option><option>Patna</option><option>Delhi</option><option>Mumbai</option>
-      </select>
-      <input type="text" id="inpUtr" required maxlength="12" placeholder="12-Digit UTR Number" class="w-full bg-slate-900 border border-amber-500 rounded-xl px-3 py-2 text-xs font-mono text-amber-300">
-      <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl text-xs cursor-pointer">Verify UTR & Unlock Leads</button>
-    </form>
+    <div class="lg:col-span-5 glass rounded-3xl p-6 space-y-3 shadow-2xl">
+      <b class="text-xs text-white block">🟢 Recent Onboarded Buyers</b>
+      <div id="recentBuyersList" class="space-y-2 max-h-72 overflow-y-auto"></div>
+    </div>
   </div>
 </div>
-
-<!-- LEADS VAULT VIEW -->
+<!-- VIEW 3: LEADS VAULT -->
 <div id="viewLeads" class="max-w-6xl mx-auto px-4 pt-6 hidden space-y-4">
-  <div class="glass rounded-3xl p-6 space-y-4 shadow-2xl">
-    <h2 id="customBusinessHeading" class="text-lg font-black text-emerald-400">🏢 Custom B2B Leads Portal</h2>
+  <div class="glass rounded-3xl p-5 bg-gradient-to-r from-blue-950 to-emerald-950 border border-cyan-500/40 flex flex-wrap justify-between items-center gap-3">
+    <div>
+      <span class="text-[10px] font-extrabold text-emerald-400">✔ PRO VAULT ACTIVE</span>
+      <h2 id="customBusinessHeading" class="text-lg font-black text-white">🏢 Custom B2B Leads Portal</h2>
+    </div>
+    <div class="flex gap-2">
+      <button type="button" onclick="loadMoreCustomLeads()" class="bg-purple-600 text-white font-bold px-3 py-2 rounded-xl text-xs cursor-pointer">+ Load Leads</button>
+      <button type="button" onclick="downloadLeadsCsv()" class="bg-emerald-600 text-white font-bold px-3 py-2 rounded-xl text-xs cursor-pointer">📥 Excel</button>
+    </div>
+  </div>
+  <div class="glass rounded-3xl p-4 space-y-3">
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
       <input type="text" id="filterSearch" oninput="renderLeadsGrid()" placeholder="🔍 Search shop, city..." class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
       <select id="filterCat" onchange="renderLeadsGrid()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-        <option value="ALL">All Categories</option><option>Mobile & Electronics</option><option>Electrical & Hardware</option><option>Clothing & Garments</option><option>Grocery & Supermart</option>
+        <option value="ALL">All Categories</option><option>Mobile & Electronics</option><option>Electrical & Hardware</option><option>Clothing & Garments</option><option>Grocery & Supermart</option><option>Medical & Pharmacy</option>
       </select>
       <select id="filterCity" onchange="renderLeadsGrid()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-        <option value="ALL">All Cities</option><option>Patna</option><option>Delhi</option><option>Mumbai</option>
+        <option value="ALL">All Cities</option><option>Patna</option><option>Delhi</option><option>Mumbai</option><option>Jaipur</option><option>Lucknow</option><option>Kolkata</option>
       </select>
     </div>
-    <div id="leadsCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
   </div>
+  <div id="leadsCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
 </div>
-<!-- CATALOG VIEW -->
+
+<!-- VIEW 4: CATALOG MAKER -->
 <div id="viewCatalog" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-4">
-  <div class="glass rounded-3xl p-6 space-y-4 shadow-2xl">
-    <h2 class="text-lg font-black text-white">🛍️ Digital Catalog Maker</h2>
-    <input type="text" id="catShopName" placeholder="Shop Name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-    <input type="text" id="catProdName" placeholder="Product Name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-    <input type="number" id="catPrice" placeholder="Wholesale Price (₹)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-    <input type="text" id="catMoq" placeholder="MOQ (e.g. Min 10 Pcs)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-    <textarea id="catDesc" rows="2" placeholder="Features" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"></textarea>
-    <button type="button" onclick="generateCatalogMessage()" class="w-full bg-purple-600 text-white py-2.5 rounded-xl text-xs font-bold cursor-pointer">Generate Catalog</button>
-    <div class="bg-slate-950 p-3 rounded-xl text-xs font-mono text-slate-300" id="catalogOutputBox">Preview here...</div>
-    <button type="button" onclick="sendCatalogOnWhatsApp()" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl text-xs font-bold cursor-pointer">Share on WhatsApp</button>
-  </div>
-</div>
-
-<!-- WA GEN VIEW -->
-<div id="viewWaGen" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-4">
-  <div class="glass rounded-3xl p-6 space-y-4 shadow-2xl">
-    <h2 class="text-lg font-black text-white">💬 WhatsApp Link Generator</h2>
-    <input type="text" id="genWaPhone" placeholder="Phone (919835012345)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-    <textarea id="genWaMsg" rows="2" placeholder="Message" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"></textarea>
-    <button type="button" onclick="generateWaLink()" class="w-full bg-cyan-600 text-white py-2.5 rounded-xl text-xs font-bold cursor-pointer">Generate Link</button>
-    <div id="waResultBox" class="hidden space-y-2">
-      <input type="text" id="waResultUrl" readonly class="w-full bg-slate-900 p-2 text-xs font-mono text-cyan-300 rounded">
-      <a id="waOpenBtn" href="#" target="_blank" class="block bg-emerald-600 text-white text-center py-2 rounded text-xs font-bold">Open Chat</a>
+  <div class="glass rounded-3xl p-6 space-y-4 shadow-2xl border-purple-500/30">
+    <h2 class="text-lg font-black text-white">🛍️ Digital Catalog & Rate-List Maker</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <input type="text" id="catShopName" placeholder="Shop Name" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+      <input type="text" id="catProdName" placeholder="Product Name" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+      <input type="tel" id="catPhone" maxlength="10" placeholder="WhatsApp Number" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+      <input type="number" id="catPrice" placeholder="Wholesale Price (₹)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+      <input type="number" id="catMrp" placeholder="MRP (₹)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+      <input type="text" id="catMoq" placeholder="MOQ (e.g. Min 10 Pcs)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+      <textarea id="catDesc" rows="2" placeholder="Features / Warranty" class="sm:col-span-2 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white"></textarea>
+    </div>
+    <button type="button" onclick="generateCatalogMessage()" class="w-full bg-purple-600 text-white font-bold py-3 rounded-xl text-xs cursor-pointer">Generate Catalog</button>
+    <div class="bg-slate-950 p-3 rounded-xl text-xs font-mono text-slate-300 whitespace-pre-line border border-slate-800" id="catalogOutputBox">Preview here...</div>
+    <div class="flex gap-2">
+      <button type="button" onclick="copyCatalogMessage()" class="flex-1 bg-slate-800 text-white py-2.5 rounded-xl text-xs font-bold cursor-pointer">📋 Copy Text</button>
+      <button type="button" onclick="sendCatalogOnWhatsApp()" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-xl text-xs font-bold cursor-pointer">💬 Share on WhatsApp</button>
     </div>
   </div>
 </div>
 
-<!-- FREE LEADS VIEW -->
-<div id="viewFreeLeads" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-4 text-center">
-  <div class="glass rounded-3xl p-6 space-y-4 shadow-2xl">
-    <h2 class="text-lg font-black text-white">🎁 Daily 3 Free Leads</h2>
-    <div id="freeLeadsStatus" class="text-xs text-slate-300">Loading...</div>
-    <div id="freeLeadsContainer" class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left"></div>
+<!-- VIEW 5: WA LINK & QR -->
+<div id="viewWaGen" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-4">
+  <div class="glass rounded-3xl p-6 space-y-4 shadow-2xl border-cyan-500/30">
+    <h2 class="text-lg font-black text-white">💬 WhatsApp Link & QR Generator</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <input type="tel" id="genWaPhone" maxlength="10" placeholder="10-Digit WhatsApp No" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+      <input type="text" id="genWaMsg" placeholder="Pre-filled Message" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+    </div>
+    <button type="button" onclick="generateWaLink()" class="w-full bg-cyan-600 text-white font-bold py-3 rounded-xl text-xs cursor-pointer">Generate Link & QR</button>
+    <div id="waResultBox" class="hidden bg-slate-950 p-4 rounded-2xl border border-slate-800 grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+      <div class="sm:col-span-4 text-center"><img id="waQrImg" src="" class="w-28 h-28 bg-white p-1 rounded-xl mx-auto"></div>
+      <div class="sm:col-span-8 space-y-2">
+        <input type="text" id="waResultUrl" readonly class="w-full bg-slate-900 p-2 text-xs font-mono text-cyan-300 rounded">
+        <a id="waOpenBtn" href="#" target="_blank" class="block bg-emerald-600 text-white text-center py-2 rounded text-xs font-bold">Open Chat</a>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- VIEW 6: FREE LEADS -->
+<div id="viewFreeLeads" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-4">
+  <div class="glass rounded-3xl p-6 space-y-4 shadow-2xl border-emerald-500/30 text-center">
+    <h2 class="text-lg font-black text-white">🎁 Rozana 3 Free Sample Verified Leads</h2>
+    <div id="freeLeadsStatus" class="text-xs text-slate-300">Loading quota...</div>
+    <div id="freeLeadsContainer" class="grid grid-cols-1 md:grid-cols-3 gap-3 text-left"></div>
   </div>
 </div>
 
-<!-- LIST SHOP VIEW -->
+<!-- VIEW 7: LIST SHOP -->
 <div id="viewListShop" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-4">
-  <div class="glass rounded-3xl p-6 space-y-4 shadow-2xl">
+  <div class="glass rounded-3xl p-6 space-y-4 shadow-2xl border-amber-500/30">
     <h2 class="text-lg font-black text-white">➕ List Your Shop Free</h2>
-    <form onsubmit="submitFreeShopListing(event)" class="space-y-3">
-      <input type="text" id="freeShopName" required placeholder="Shop Name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-      <input type="text" id="freeShopOwner" required placeholder="Owner Name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-      <select id="freeShopCat" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-        <option>Mobile & Electronics</option><option>Electrical & Hardware</option><option>Clothing & Garments</option><option>Grocery & Supermart</option>
+    <form onsubmit="submitFreeShopListing(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <input type="text" id="freeShopName" required placeholder="Shop Name" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+      <input type="text" id="freeShopOwner" required placeholder="Owner Name" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+      <select id="freeShopCat" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+        <option>Mobile & Electronics</option><option>Electrical & Hardware</option><option>Clothing & Garments</option><option>Grocery & Supermart</option><option>Medical & Pharmacy</option>
       </select>
-      <input type="text" id="freeShopCity" required placeholder="City" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-      <input type="text" id="freeShopArea" required placeholder="Area" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-      <input type="tel" id="freeShopPhone" required maxlength="10" placeholder="WhatsApp Number" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-      <button type="submit" class="w-full bg-amber-600 text-white py-2.5 rounded-xl text-xs font-bold cursor-pointer">Submit Shop</button>
+      <input type="text" id="freeShopCity" required placeholder="City" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+      <input type="text" id="freeShopArea" required placeholder="Area" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+      <input type="tel" id="freeShopPhone" required maxlength="10" placeholder="WhatsApp Number" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white">
+      <button type="submit" class="sm:col-span-2 w-full bg-amber-600 text-white font-bold py-3 rounded-xl text-xs cursor-pointer">Submit Shop Free</button>
     </form>
+    <div class="space-y-2 pt-2 border-t border-slate-800">
+      <span class="text-xs font-bold text-emerald-400">🟢 Recently Listed Shops:</span>
+      <div id="recentlyListedShopsBox" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+    </div>
   </div>
 </div>
 
 <script>
-  var masterLeads = [
-    { shop: "Agni Telecom Hub", owner: "Rajesh Verma", cat: "Mobile & Electronics", city: "Patna", area: "Boring Road", phone: "9835012345" },
-    { shop: "Shree Krishna Switchgear", owner: "Mukesh Gupta", cat: "Electrical & Hardware", city: "Patna", area: "Station Road", phone: "9431056789" },
-    { shop: "Royal Garments", owner: "Ankit Sharma", cat: "Clothing & Garments", city: "Delhi", area: "Karol Bagh", phone: "9811223344" },
-    { shop: "SuperMart Kirana", owner: "Vikas Agrawal", cat: "Grocery & Supermart", city: "Jaipur", area: "Malviya Nagar", phone: "9829011223" }
-  ];
+  window.renderHomeTeasers = function() {
+    var box = document.getElementById('teaserContainer');
+    if (!box) return;
+    var sample = window.masterLeads.slice(0, 3);
+    box.innerHTML = sample.map(function(l) {
+      return '<div class="glass neon-hover rounded-2xl p-4 space-y-2">' +
+        '<b class="text-white text-sm block">' + l.shop + '</b>' +
+        '<p class="text-xs text-slate-400">📍 ' + l.area + ', ' + l.city + '</p>' +
+        '<button type="button" onclick="showTab(\'pay\')" class="w-full bg-slate-800 text-cyan-300 text-xs font-bold py-2 rounded-xl cursor-pointer">🔓 Unlock Number</button>' +
+      '</div>';
+    }).join('');
+  };
 
-  function submitOnboarding(e) {
+  window.renderBuyersFeed = function() {
+    var box = document.getElementById('recentBuyersList');
+    if (!box) return;
+    box.innerHTML = window.recentBuyers.map(function(b) {
+      return '<div class="bg-slate-900 p-2.5 rounded-xl text-xs flex justify-between"><b>✔ ' + b.biz + '</b><span class="text-emerald-400">₹499</span></div>';
+    }).join('');
+  };
+
+  window.applyUnlockedState = function() {
+    window.isUnlocked = true;
+    document.getElementById('vaultLockIcon').className = "fa-solid fa-lock-open text-emerald-400";
+    document.getElementById('customBusinessHeading').innerText = "🏢 " + window.clientData.businessName + " — Custom Leads Vault";
+    document.getElementById('filterCat').value = window.clientData.category;
+  };
+
+  window.submitOnboarding = function(e) {
     e.preventDefault();
     var name = document.getElementById('inpName').value.trim();
+    var phone = document.getElementById('inpPhone').value.trim();
     var biz = document.getElementById('inpBiz').value.trim();
     var cat = document.getElementById('inpCat').value;
+    var city = document.getElementById('inpCity').value;
     var utr = document.getElementById('inpUtr').value.trim();
     if (utr.length !== 12) { alert("Sahi 12-digit UTR dalein"); return; }
-    window.isUnlocked = true;
-    window.clientData = { name: name, businessName: biz, category: cat };
-    document.getElementById('customBusinessHeading').innerText = "🏢 " + biz + " — Leads Vault";
-    document.getElementById('filterCat').value = cat;
-    showToast("UTR Verified Successfully!");
-    showTab('leads');
-  }
+
+    window.clientData = { name: name, phone: phone, businessName: biz, category: cat, city: city };
+    window.recentBuyers.unshift({ name: name, biz: biz, cat: cat, utr: utr.slice(0,4)+"****" });
+    window.renderBuyersFeed();
+    window.applyUnlockedState();
+    window.showToast("UTR Verified Successfully!");
+    window.showTab('leads');
+  };
 
   window.renderLeadsGrid = function() {
     var q = (document.getElementById('filterSearch').value || "").toLowerCase();
     var cat = document.getElementById('filterCat').value;
     var city = document.getElementById('filterCity').value;
-    var filtered = masterLeads.filter(function(l) {
+    var filtered = window.masterLeads.filter(function(l) {
       return (l.shop + l.owner + l.city).toLowerCase().includes(q) && (cat === "ALL" || l.cat === cat) && (city === "ALL" || l.city === city);
     });
     var grid = document.getElementById('leadsCardsGrid');
     if (!grid) return;
+    var senderBiz = window.clientData.businessName || "Wholesale Hub";
     grid.innerHTML = filtered.map(function(l) {
-      var waUrl = "https://wa.me/91" + l.phone + "?text=" + encodeURIComponent("Namaste " + l.owner + " ji, hum " + (window.clientData.businessName || "Wholesale") + " se hain.");
+      var waUrl = "https://wa.me/91" + l.phone + "?text=" + encodeURIComponent("Namaste " + l.owner + " ji, hum " + senderBiz + " se hain. Rate list bhejein?");
       return '<div class="glass p-4 rounded-xl space-y-2"><b class="text-white text-sm">' + l.shop + '</b><p class="text-xs text-slate-400">' + l.city + ' | ' + l.owner + '</p><a href="' + waUrl + '" target="_blank" class="block bg-emerald-600 text-white text-center py-2 rounded text-xs font-bold">💬 WhatsApp Pitch</a></div>';
     }).join('');
   };
 
-  var generatedCatalogText = "";
-  function generateCatalogMessage() {
+  window.loadMoreCustomLeads = function() {
+    window.masterLeads.unshift({ shop: "Bharat Hub #" + Math.floor(Math.random()*90+10), owner: "Sandeep Kumar", cat: "Grocery & Supermart", city: "Patna", area: "Market", phone: "9835099887" });
+    window.renderLeadsGrid();
+    window.showToast("⚡ Fresh Leads Added!");
+  };
+
+  window.downloadLeadsCsv = function() {
+    var csv = "Shop,Owner,Category,City,Phone\n" + window.masterLeads.map(l => `"${l.shop}","${l.owner}","${l.cat}","${l.city}","91${l.phone}"`).join("\n");
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    a.download = "Leads.csv";
+    a.click();
+    window.showToast("Excel Downloaded!");
+  };
+
+  window.generateCatalogMessage = function() {
     var shop = document.getElementById('catShopName').value.trim() || "Shop";
     var prod = document.getElementById('catProdName').value.trim() || "Product";
+    var ph = document.getElementById('catPhone').value.trim() || "9661692365";
     var price = document.getElementById('catPrice').value.trim() || "0";
-    generatedCatalogText = "🛍️ *RATE-LIST*\nShop: " + shop + "\nProduct: " + prod + "\nPrice: ₹" + price;
-    document.getElementById('catalogOutputBox').innerText = generatedCatalogText;
-    showToast("Catalog Generated!");
-  }
+    var moq = document.getElementById('catMoq').value.trim() || "Min 10 Pcs";
+    window.generatedCatalogText = "🛍️ *RATE-LIST*\nShop: " + shop + "\nProduct: " + prod + "\nPrice: ₹" + price + "\nMOQ: " + moq + "\nContact: +91" + ph;
+    document.getElementById('catalogOutputBox').innerText = window.generatedCatalogText;
+    window.showToast("Catalog Generated!");
+  };
+  window.copyCatalogMessage = function() {
+    if (!window.generatedCatalogText) window.generateCatalogMessage();
+    if (navigator.clipboard) navigator.clipboard.writeText(window.generatedCatalogText);
+    window.showToast("Copied!");
+  };
+  window.sendCatalogOnWhatsApp = function() {
+    if (!window.generatedCatalogText) window.generateCatalogMessage();
+    window.open("https://wa.me/?text=" + encodeURIComponent(window.generatedCatalogText), '_blank');
+  };
 
-  function sendCatalogOnWhatsApp() {
-    if (!generatedCatalogText) generateCatalogMessage();
-    window.open("https://wa.me/?text=" + encodeURIComponent(generatedCatalogText), '_blank');
-  }
-
-  function generateWaLink() {
+  window.generateWaLink = function() {
     var ph = document.getElementById('genWaPhone').value.trim();
     var msg = document.getElementById('genWaMsg').value.trim();
-    if (!ph) { alert("Phone dalein"); return; }
-    var url = "https://wa.me/" + ph + (msg ? "?text=" + encodeURIComponent(msg) : "");
+    if (!ph || ph.length < 10) { alert("Sahi number dalein"); return; }
+    var url = "https://wa.me/91" + ph + (msg ? "?text=" + encodeURIComponent(msg) : "");
     document.getElementById('waResultUrl').value = url;
     document.getElementById('waOpenBtn').href = url;
+    document.getElementById('waQrImg').src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent(url);
     document.getElementById('waResultBox').classList.remove('hidden');
-  }
+    window.showToast("WA Link Generated!");
+  };
 
-  function submitFreeShopListing(e) {
+  window.checkDailyFreeLeads = function() {
+    var container = document.getElementById('freeLeadsContainer');
+    var statusBox = document.getElementById('freeLeadsStatus');
+    if (!container || !statusBox) return;
+    var todayStr = new Date().toDateString();
+    var claimed = localStorage.getItem('autoleads_free_claimed');
+    if (claimed === todayStr) {
+      statusBox.innerHTML = "✅ Aaj ki 3 free leads unlock ho chuki hain!";
+      container.innerHTML = window.masterLeads.slice(0, 3).map(l => '<div class="glass p-3 rounded-xl"><b class="text-white text-xs">' + l.shop + '</b><p class="text-[10px] text-slate-400">📞 +91 ' + l.phone + '</p></div>').join('');
+    } else {
+      statusBox.innerHTML = "🎁 Aaj ka free quota available hai!";
+      container.innerHTML = '<div class="col-span-full text-center"><button type="button" onclick="claimFreeLeadsToday()" class="bg-emerald-600 text-white font-bold px-6 py-3 rounded-xl text-xs cursor-pointer">🔓 Unlock 3 Free Leads</button></div>';
+    }
+  };
+  window.claimFreeLeadsToday = function() {
+    localStorage.setItem('autoleads_free_claimed', new Date().toDateString());
+    window.showToast("🎉 Unlocked!");
+    window.checkDailyFreeLeads();
+  };
+
+  window.renderFreeListedPreview = function() {
+    var box = document.getElementById('recentlyListedShopsBox');
+    if (!box) return;
+    box.innerHTML = window.masterLeads.slice(0, 4).map(s => '<div class="bg-slate-900 p-2.5 rounded-xl text-xs"><b class="text-white">' + s.shop + '</b><span class="block text-[10px] text-slate-400">' + s.city + '</span></div>').join('');
+  };
+
+  window.submitFreeShopListing = function(e) {
     e.preventDefault();
-    masterLeads.unshift({
+    window.masterLeads.unshift({
       shop: document.getElementById('freeShopName').value.trim(),
       owner: document.getElementById('freeShopOwner').value.trim(),
       cat: document.getElementById('freeShopCat').value,
@@ -264,9 +395,17 @@
       area: document.getElementById('freeShopArea').value.trim(),
       phone: document.getElementById('freeShopPhone').value.trim()
     });
-    showToast("Dukan successfully list ho gayi!");
-    showTab('home');
-  }
+    window.showToast("Dukan successfully list ho gayi!");
+    e.target.reset();
+    window.renderFreeListedPreview();
+    window.showTab('home');
+  };
+
+  window.addEventListener('DOMContentLoaded', function() {
+    window.renderHomeTeasers();
+    window.renderBuyersFeed();
+    window.renderFreeListedPreview();
+  });
 </script>
 </body>
 </html>
