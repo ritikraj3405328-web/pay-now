@@ -3,294 +3,313 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoLeads PRO | B2B Lead Generation SaaS</title>
+    <title>AutoLeads MAX PRO | B2B Lead Engine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; background-color: #030712; color: #f8fafc; }
-        .glass { background: rgba(17, 24, 39, 0.92); border: 1px solid rgba(51, 65, 85, 0.8); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #030712; color: #f8fafc; }
+        .glass { background: linear-gradient(145deg, rgba(17, 24, 39, 0.92), rgba(9, 13, 22, 0.96)); border: 1px solid rgba(51, 65, 85, 0.7); }
+        .glow-blue { box-shadow: 0 0 35px -5px rgba(59, 130, 246, 0.3); }
+        .glow-emerald { box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.25); }
     </style>
-</head>
-<body class="min-h-screen pb-12">
 
-    <!-- Status Alert Banner -->
-    <div id="statusBanner" class="hidden fixed top-14 left-1/2 transform -translate-x-1/2 z-50 bg-emerald-600 text-white font-bold px-5 py-2.5 rounded-full shadow-2xl text-xs sm:text-sm border border-emerald-400">
-        Action Completed!
-    </div>
-
-    <!-- TOP LIVE TESTING BAR -->
-    <div class="bg-slate-900 border-b border-indigo-500/40 px-3 py-2.5 sticky top-0 z-40 shadow-lg">
-        <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2">
-            <span class="text-xs font-extrabold text-emerald-400">⚡ LIVE STUDIO:</span>
-            <div class="flex flex-wrap items-center gap-1.5">
-                <button type="button" onclick="autoFillTest()" class="text-xs font-extrabold px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 hover:bg-amber-400 shadow cursor-pointer">
-                    ⚡ Auto-Fill & Test
-                </button>
-                <button type="button" onclick="navigate('home')" id="navHome" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-blue-600 text-white cursor-pointer">
-                    Home Page
-                </button>
-                <button type="button" onclick="navigate('checkout')" id="navCheckout" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">
-                    Payment
-                </button>
-                <button type="button" onclick="navigate('dashboard')" id="navDash" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">
-                    Leads Portal
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= VIEW 0: HOME / LANDING PAGE ================= -->
-    <div id="viewHome" class="max-w-5xl mx-auto px-4 py-8 space-y-12">
-        <!-- Hero Section -->
-        <div class="text-center space-y-6 pt-6">
-            <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-extrabold bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                <i class="fa-solid fa-bolt"></i> India's #1 B2B Lead Generator SaaS
-            </span>
-            <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
-                Apne Business Ke Liye Paye <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Verified Retailers & Wholesalers Leads</span>
-            </h1>
-            <p class="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
-                Mobile & Electronics, Electrical, Clothing aur Grocery dukandaron ke direct WhatsApp numbers aur contact details ek hi jagah par prapt karein.
-            </p>
-            <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
-                <button type="button" onclick="navigate('checkout')" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold px-8 py-4 rounded-2xl shadow-xl text-base cursor-pointer">
-                    🚀 Get Instant Access (₹499 Only)
-                </button>
-                <button type="button" onclick="autoFillTest()" class="bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 font-bold px-6 py-4 rounded-2xl text-base cursor-pointer">
-                    ⚡ Free Test Demo
-                </button>
-            </div>
-        </div>
-
-        <!-- Features Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4">
-            <div class="glass rounded-3xl p-6 space-y-3">
-                <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-xl font-bold border border-cyan-500/20">
-                    <i class="fa-solid fa-bullseye"></i>
-                </div>
-                <h3 class="text-lg font-extrabold text-white">Targeted Niches</h3>
-                <p class="text-xs text-slate-400 leading-relaxed">Color-coded categories jisse aap apne product ke hisab se exact dukandar dhoond sakein.</p>
-            </div>
-
-            <div class="glass rounded-3xl p-6 space-y-3">
-                <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl font-bold border border-emerald-500/20">
-                    <i class="fa-brands fa-whatsapp"></i>
-                </div>
-                <h3 class="text-lg font-extrabold text-white">1-Click WhatsApp Pitch</h3>
-                <p class="text-xs text-slate-400 leading-relaxed">Har lead ke sath direct WhatsApp message button jisse aap turant apna catalog bhej sakein.</p>
-            </div>
-
-            <div class="glass rounded-3xl p-6 space-y-3">
-                <div class="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-xl font-bold border border-purple-500/20">
-                    <i class="fa-solid fa-file-excel"></i>
-                </div>
-                <h3 class="text-lg font-extrabold text-white">Excel (CSV) Export</h3>
-                <p class="text-xs text-slate-400 leading-relaxed">Saari verified leads ko ek click me Excel sheet me download karke telecalling kar sakte hain.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= VIEW 1: PAYMENT & UTR CHECKOUT ================= -->
-    <main id="viewCheckout" class="max-w-5xl mx-auto px-4 py-6 hidden grid grid-cols-1 md:grid-cols-12 gap-6">
-        <div class="md:col-span-7 glass rounded-3xl p-5 space-y-5">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                <div>
-                    <span class="text-[11px] font-bold text-cyan-400 uppercase">Secure Checkout</span>
-                    <h2 class="text-xl font-extrabold text-white">Unlock B2B Leads Portal</h2>
-                </div>
-                <div class="text-right">
-                    <span class="text-[10px] text-slate-400 block">Plan Price</span>
-                    <span id="amountDisplay" class="text-2xl font-black text-emerald-400">₹499</span>
-                </div>
-            </div>
-
-            <!-- QR Code -->
-            <div class="bg-slate-950 rounded-2xl p-4 border border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center text-center sm:text-left">
-                <div class="flex flex-col items-center">
-                    <img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=upi%3A%2F%2Fpay%3Fpa%3D9661692365%40ybl%26pn%3DPrem%2520Raj%26am%3D499" alt="QR" class="w-36 h-36 bg-white p-2 rounded-2xl shadow-lg mx-auto">
-                    <span class="text-[11px] text-slate-400 mt-1.5">Scan via PhonePe/GPay</span>
-                </div>
-                <div class="space-y-3">
-                    <p class="text-xs text-slate-300">UPI app se payment complete karein:</p>
-                    <a id="upiLink" href="upi://pay?pa=9661692365@ybl&pn=Prem%20Raj&am=499" class="block w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl text-center text-sm shadow-lg">
-                        <span id="upiBtnLabel">Pay ₹499 via UPI App</span>
-                    </a>
-                    <div class="bg-slate-900 p-2 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
-                        <span class="font-mono text-slate-300">9661692365@ybl</span>
-                        <button type="button" onclick="copyUpiId()" class="text-cyan-400 font-bold cursor-pointer">Copy</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- UTR Form -->
-            <form onsubmit="handleFormSubmit(event)" class="space-y-3.5 pt-2">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold text-amber-400 uppercase">Enter UTR & Details</span>
-                    <button type="button" onclick="autoFillTest()" class="text-xs font-bold text-amber-300 underline cursor-pointer">⚡ Auto-Fill Test Data</button>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <input type="text" id="fName" required placeholder="Aapka Naam" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white">
-                    <input type="tel" id="fPhone" required maxlength="10" placeholder="WhatsApp Number" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white">
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <select id="fCat" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white">
-                        <option value="Mobile & Electronics">🔵 Mobile & Electronics</option>
-                        <option value="Electrical & Hardware">🟠 Electrical & Hardware</option>
-                        <option value="Clothing & Garments">🟣 Clothing & Garments</option>
-                        <option value="Grocery & Supermart">🟢 Grocery & Supermart</option>
-                    </select>
-                    <input type="text" id="fUtr" required maxlength="12" placeholder="12-Digit UTR Number" class="w-full bg-slate-900 border border-amber-500/60 rounded-xl px-3.5 py-2.5 text-sm font-mono text-amber-300">
-                </div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold py-3.5 rounded-xl shadow-lg text-sm cursor-pointer">
-                    🔓 Verify UTR & Open Leads Dashboard
-                </button>
-            </form>
-        </div>
-
-        <div class="md:col-span-5 glass rounded-3xl p-5 flex flex-col justify-between space-y-4">
-            <div>
-                <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
-                    <h3 class="text-sm font-extrabold text-white">🟢 Live Payment History</h3>
-                    <span id="logCount" class="text-xs font-mono bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded-full">0 Records</span>
-                </div>
-                <div id="logsBox" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
-                    <div class="text-center py-8 text-xs text-slate-400">No records yet.</div>
-                </div>
-            </div>
-            <button type="button" onclick="navigate('dashboard')" class="w-full bg-slate-800 text-cyan-400 font-bold py-3 rounded-xl border border-slate-700 text-xs cursor-pointer">
-                Open Leads Portal &rarr;
-            </button>
-        </div>
-    </main>
-
-    <!-- ================= VIEW 2: LEADS DASHBOARD ================= -->
-    <section id="viewDashboard" class="max-w-5xl mx-auto px-4 py-6 hidden space-y-5">
-        <div class="glass rounded-3xl p-4 space-y-3">
-            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                <input type="text" id="qSearch" oninput="renderLeads()" placeholder="🔍 Search shop, owner, city..." class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white">
-                <select id="qCat" onchange="renderLeads()" class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white">
-                    <option value="ALL">All Categories</option>
-                    <option value="Mobile & Electronics">🔵 Mobile & Electronics</option>
-                    <option value="Electrical & Hardware">🟠 Electrical & Hardware</option>
-                    <option value="Clothing & Garments">🟣 Clothing & Garments</option>
-                    <option value="Grocery & Supermart">🟢 Grocery & Supermart</option>
-                </select>
-                <select id="qCity" onchange="renderLeads()" class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white">
-                    <option value="ALL">All Cities</option>
-                    <option value="Patna">Patna</option>
-                    <option value="Delhi">Delhi</option>
-                    <option value="Mumbai">Mumbai</option>
-                    <option value="Jaipur">Jaipur</option>
-                </select>
-                <button type="button" onclick="exportCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl px-4 py-2 text-sm cursor-pointer">
-                    📥 Download Excel (CSV)
-                </button>
-            </div>
-            <div class="flex justify-between items-center text-xs pt-2 border-t border-slate-800">
-                <button type="button" onclick="generateMoreLeads()" class="text-cyan-400 font-bold hover:underline cursor-pointer">+ Generate 5 More Leads</button>
-                <span id="leadCountText" class="text-slate-400 font-mono font-bold">0 Leads</span>
-            </div>
-        </div>
-        <div id="leadsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-    </section>
-
-    <!-- SCRIPT -->
+    <!-- CORE ENGINE IN HEAD (100% Instant Button Response) -->
     <script>
-        let currentPrice = 499;
-        let localHistory = [];
-        let leadsData = [
-            { shopName: "Agni Telecom & Mobile Hub", owner: "Rajesh Verma", category: "Mobile & Electronics", city: "Patna", area: "Boring Road", phone: "9835012345" },
-            { shopName: "Shree Krishna Electricals", owner: "Mukesh Gupta", category: "Electrical & Hardware", city: "Patna", area: "Station Road", phone: "9431056789" },
-            { shopName: "Royal Garments House", owner: "Ankit Sharma", category: "Clothing & Garments", city: "Delhi", area: "Karol Bagh", phone: "9811223344" },
-            { shopName: "SuperMart Kirana Bazar", owner: "Vikas Agrawal", category: "Grocery & Supermart", city: "Jaipur", area: "Malviya Nagar", phone: "9829011223" }
+        var currentPrice = 499;
+        var historyLogs = [];
+        var b2bLeads = [
+            { shop: "Agni Telecom & Mobile Hub", owner: "Rajesh Verma", cat: "Mobile & Electronics", city: "Patna", area: "Boring Road", phone: "9835012345" },
+            { shop: "Shree Krishna Switchgear", owner: "Mukesh Gupta", cat: "Electrical & Hardware", city: "Patna", area: "Station Road", phone: "9431056789" },
+            { shop: "Royal Ethnic Garments", owner: "Ankit Sharma", cat: "Clothing & Garments", city: "Delhi", area: "Karol Bagh", phone: "9811223344" },
+            { shop: "SuperMart Kirana Wholesale", owner: "Vikas Agrawal", cat: "Grocery & Supermart", city: "Jaipur", area: "Malviya Nagar", phone: "9829011223" },
+            { shop: "Patna Power & LED House", owner: "Santosh Kumar", cat: "Electrical & Hardware", city: "Patna", area: "Exhibition Road", phone: "9934098765" },
+            { shop: "Metro Cash & Carry Mart", owner: "Pradeep Jain", cat: "Grocery & Supermart", city: "Mumbai", area: "Andheri East", phone: "9820199887" }
         ];
 
-        function showAlert(msg) {
-            const b = document.getElementById("statusBanner");
-            b.innerText = "✅ " + msg;
-            b.classList.remove("hidden");
-            setTimeout(() => b.classList.add("hidden"), 2500);
+        function notify(msg) {
+            var t = document.getElementById('toastBox');
+            if (!t) return;
+            t.innerText = "⚡ " + msg;
+            t.classList.remove('hidden');
+            setTimeout(function() { t.classList.add('hidden'); }, 2500);
         }
 
-        function navigate(view) {
-            document.getElementById("viewHome").classList.toggle("hidden", view !== 'home');
-            document.getElementById("viewCheckout").classList.toggle("hidden", view !== 'checkout');
-            document.getElementById("viewDashboard").classList.toggle("hidden", view !== 'dashboard');
+        function showPage(p) {
+            document.getElementById('pageHome').classList.toggle('hidden', p !== 'home');
+            document.getElementById('pagePay').classList.toggle('hidden', p !== 'pay');
+            document.getElementById('pageLeads').classList.toggle('hidden', p !== 'leads');
 
-            document.getElementById("navHome").className = view === 'home' ? "text-xs font-bold px-3 py-1.5 rounded-lg bg-blue-600 text-white cursor-pointer" : "text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer";
-            document.getElementById("navCheckout").className = view === 'checkout' ? "text-xs font-bold px-3 py-1.5 rounded-lg bg-blue-600 text-white cursor-pointer" : "text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer";
-            document.getElementById("navDash").className = view === 'dashboard' ? "text-xs font-bold px-3 py-1.5 rounded-lg bg-blue-600 text-white cursor-pointer" : "text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer";
+            var activeCls = "text-xs font-extrabold px-3.5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg";
+            var idleCls = "text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-800/90 text-slate-300 border border-slate-700 hover:bg-slate-700";
 
-            if (view === 'dashboard') renderLeads();
+            document.getElementById('navHome').className = (p === 'home') ? activeCls : idleCls;
+            document.getElementById('navPay').className = (p === 'pay') ? activeCls : idleCls;
+            document.getElementById('navLeads').className = (p === 'leads') ? activeCls : idleCls;
+
+            if (p === 'leads') renderLeads();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function autoFillTest() {
-            navigate('checkout');
-            currentPrice = 1;
-            updatePriceUI();
-            const rUtr = "6295" + Math.floor(10000000 + Math.random() * 89999999);
-            document.getElementById("fName").value = "Ritik Raj (Test)";
-            document.getElementById("fPhone").value = "7808990039";
-            document.getElementById("fCat").value = "Electrical & Hardware";
-            document.getElementById("fUtr").value = rUtr;
-            saveRecord("Ritik Raj (Test)", "7808990039", "Electrical & Hardware", rUtr, 1);
-            showAlert("Test Mode Enabled (₹1) & Form Auto-Filled!");
-            setTimeout(() => navigate('dashboard'), 900);
+        function toggleMode() {
+            currentPrice = (currentPrice === 499) ? 1 : 499;
+            var upi = encodeURIComponent("upi://pay?pa=9661692365@ybl&pn=Prem Raj&am=" + currentPrice);
+            document.getElementById('qrImg').src = "https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=" + upi;
+            document.getElementById('upiBtn').href = "upi://pay?pa=9661692365@ybl&pn=Prem%20Raj&am=" + currentPrice;
+            document.getElementById('upiBtnTxt').innerText = "Pay ₹" + currentPrice + " via UPI App";
+            document.getElementById('priceTag').innerText = "₹" + currentPrice;
+            document.getElementById('modeBtn').innerText = (currentPrice === 1) ? "🟢 Mode: ₹1 (Test)" : "🟣 Mode: ₹499 (Live)";
+            notify("Switched to ₹" + currentPrice + " Mode!");
         }
 
-        function updatePriceUI() {
-            const upiData = encodeURIComponent(`upi://pay?pa=9661692365@ybl&pn=Prem Raj&am=${currentPrice}`);
-            document.getElementById("qrImg").src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${upiData}`;
-            document.getElementById("upiLink").href = `upi://pay?pa=9661692365@ybl&pn=Prem%20Raj&am=${currentPrice}`;
-            document.getElementById("upiBtnLabel").innerText = `Pay ₹${currentPrice} via UPI App`;
-            document.getElementById("amountDisplay").innerText = `₹${currentPrice}`;
+        function autoTestOrder() {
+            showPage('pay');
+            if (currentPrice !== 1) toggleMode();
+            var utr = "6295" + Math.floor(10000000 + Math.random() * 89999999);
+            document.getElementById('inpName').value = "Ritik Raj (VIP Test)";
+            document.getElementById('inpPhone').value = "7808990039";
+            document.getElementById('inpCat').value = "Electrical & Hardware";
+            document.getElementById('inpUtr').value = utr;
+            addOrder("Ritik Raj (VIP Test)", "7808990039", "Electrical & Hardware", utr, 1);
+            notify("Auto-Filled & Saved! Opening Leads Portal...");
+            setTimeout(function() { showPage('leads'); }, 900);
         }
 
-        function handleFormSubmit(e) {
+        function submitOrder(e) {
             e.preventDefault();
-            const name = document.getElementById("fName").value.trim();
-            const phone = document.getElementById("fPhone").value.trim();
-            const cat = document.getElementById("fCat").value;
-            const utr = document.getElementById("fUtr").value.trim();
-            saveRecord(name, phone, cat, utr, currentPrice);
-            document.getElementById("qCat").value = cat;
-            showAlert("UTR Verified! Dashboard Unlocked.");
-            navigate('dashboard');
+            var n = document.getElementById('inpName').value.trim();
+            var ph = document.getElementById('inpPhone').value.trim();
+            var c = document.getElementById('inpCat').value;
+            var u = document.getElementById('inpUtr').value.trim();
+            if (u.length < 10) { alert("Kripya 12-digit UTR daalein!"); return; }
+            addOrder(n, ph, c, u, currentPrice);
+            document.getElementById('fCat').value = c;
+            notify("UTR Verified! Dashboard Unlocked.");
+            showPage('leads');
         }
 
-        function saveRecord(name, phone, business, utr, amount) {
-            const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            localHistory.unshift({ name, phone, business, utr, amount, time: timeStr });
+        function addOrder(name, phone, cat, utr, amt) {
+            var time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            historyLogs.unshift({ name: name, phone: phone, cat: cat, utr: utr, amt: amt, time: time });
             renderLogs();
             if (window.db) {
-                window.db.collection("subscribers").add({ name, phone, business, utr, amount, createdAt: firebase.firestore.FieldValue.serverTimestamp() }).catch(e => {});
+                window.db.collection("subscribers").add({
+                    name: name, phone: phone, business: cat, utr: utr, amount: amt,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(function(){});
             }
         }
 
         function renderLogs() {
-            const box = document.getElementById("logsBox");
-            document.getElementById("logCount").innerText = `${localHistory.length} Records`;
-            box.innerHTML = localHistory.map(d => `
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 text-xs space-y-1">
-                    <div class="flex justify-between"><strong class="text-white">✔ ${d.name}</strong><span class="font-black text-emerald-400">₹${d.amount}</span></div>
-                    <div class="flex justify-between text-[11px] text-slate-400"><span>📞 ${d.phone}</span><span class="text-cyan-400">${d.business}</span></div>
-                    <div class="flex justify-between text-[10px] pt-1 border-t border-slate-800 font-mono text-amber-300"><span>UTR: ${d.utr}</span><span class="text-slate-500">${d.time}</span></div>
-                </div>
-            `).join("");
+            var box = document.getElementById('logsContainer');
+            document.getElementById('logBadge').innerText = historyLogs.length + " Orders";
+            if (historyLogs.length === 0) return;
+            box.innerHTML = historyLogs.map(function(d) {
+                return '<div class="bg-slate-950/90 border border-slate-800 rounded-2xl p-3 text-xs space-y-1">' +
+                    '<div class="flex justify-between"><strong class="text-white">✔ ' + d.name + '</strong><span class="text-emerald-400 font-black">₹' + d.amt + '</span></div>' +
+                    '<div class="flex justify-between text-[11px] text-slate-400"><span>📞 ' + d.phone + '</span><span class="text-cyan-400 font-semibold">' + d.cat + '</span></div>' +
+                    '<div class="flex justify-between text-[10px] pt-1 border-t border-slate-800 font-mono text-amber-300"><span>UTR: ' + d.utr + '</span><span class="text-slate-500">' + d.time + '</span></div>' +
+                '</div>';
+            }).join('');
         }
 
-        function copyUpiId() {
-            navigator.clipboard.writeText("9661692365@ybl");
-            showAlert("UPI ID Copied!");
+        function setCategoryFilter(c) {
+            document.getElementById('fCat').value = c;
+            renderLeads();
         }
 
         function renderLeads() {
-            const q = document.getElementById("qSearch").value.toLowerCase();
-            const cat = document.getElementById("qCat").value;
-            const city = document.getElementById("qCity").value;
-            const filtered = leadsData.filter(l => {
-                return (l.shopName + " " + l.owner + " " + l.city).toLowerCase().includes(q) && (cat === "ALL" || l.category === cat) && (city === "ALL" || l.city === city);
+            var q = (document.getElementById('fSearch').value || "").toLowerCase();
+            var cat = document.getElementById('fCat').value;
+            var city = document.getElementById('fCity').value;
+
+            var list = b2bLeads.filter(function(l) {
+                var mQ = (l.shop + " " + l.owner + " " + l.area + " " + l.city).toLowerCase().includes(q);
+                var mCat = (cat === "ALL") || (l.cat === cat);
+                var mCity = (city === "ALL") || (l.city === city);
+                return mQ && mCat && mCity;
             });
-            document.getElementById("leadCountText").innerText = `${filtered.length} Leads`;
-   
+
+            document.getElementById('totalLeadsCount').innerText = b2bLeads.length;
+            document.getElementById('showingTxt').innerText = "Showing " + list.length + " Verified Leads";
+
+            var badgeStyles = {
+                "Mobile & Electronics": "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
+                "Electrical & Hardware": "bg-amber-500/15 text-amber-300 border-amber-500/30",
+                "Clothing & Garments": "bg-purple-500/15 text-purple-300 border-purple-500/30",
+                "Grocery & Supermart": "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+            };
+
+            document.getElementById('leadsGrid').innerHTML = list.map(function(l) {
+                var bCls = badgeStyles[l.cat] || badgeStyles["Mobile & Electronics"];
+                var msg = encodeURIComponent("Namaste " + l.owner + " ji (" + l.shop + ", " + l.city + "), hum B2B wholesale supply me deal karte hain. Kya hum apna rate catalog bhej sakte hain?");
+                return '<div class="glass rounded-3xl p-5 space-y-4 flex flex-col justify-between hover:border-blue-500/50 transition">' +
+                    '<div class="space-y-2.5">' +
+                        '<div class="flex justify-between items-center">' +
+                            '<span class="px-2.5 py-1 rounded-full text-[11px] font-extrabold border ' + bCls + '">' + l.cat + '</span>' +
+                            '<span class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">✔ GST Verified</span>' +
+                        '</div>' +
+                        '<h3 class="text-base font-extrabold text-white pt-1">' + l.shop + '</h3>' +
+                        '<p class="text-xs text-slate-400"><i class="fa-solid fa-location-dot text-rose-400 mr-1"></i>' + l.area + ', <strong class="text-white">' + l.city + '</strong></p>' +
+                        '<div class="bg-slate-950/90 p-3 rounded-2xl border border-slate-800/90 text-xs space-y-1.5">' +
+                            '<div class="flex justify-between"><span class="text-slate-400">Owner:</span><strong class="text-slate-200">' + l.owner + '</strong></div>' +
+                            '<div class="flex justify-between"><span class="text-slate-400">WhatsApp:</span><strong class="text-amber-300 font-mono">+91 ' + l.phone + '</strong></div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="flex gap-2 pt-1">' +
+                        '<a href="https://wa.me/91' + l.phone + '?text=' + msg + '" target="_blank" class="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 text-white text-center text-xs font-extrabold py-2.5 rounded-xl shadow-lg">' +
+                            '<i class="fa-brands fa-whatsapp mr-1"></i> 1-Click B2B Pitch' +
+                        '</a>' +
+                        '<a href="tel:+91' + l.phone + '" class="bg-slate-800 hover:bg-slate-700 text-white px-3.5 py-2.5 rounded-xl border border-slate-700 text-xs"><i class="fa-solid fa-phone"></i></a>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        }
+
+        function addMoreDemoLeads() {
+            var cities = ["Patna", "Delhi", "Mumbai", "Jaipur"];
+            var cats = ["Mobile & Electronics", "Electrical & Hardware", "Clothing & Garments", "Grocery & Supermart"];
+            for (var i = 0; i < 4; i++) {
+                var c = cats[Math.floor(Math.random() * cats.length)];
+                var ct = cities[Math.floor(Math.random() * cities.length)];
+                b2bLeads.unshift({
+                    shop: "Bharat " + c.split(' ')[0] + " Mart #" + Math.floor(Math.random()*90+10),
+                    owner: "Sandeep Verma",
+                    cat: c,
+                    city: ct,
+                    area: "Main Market",
+                    phone: "9" + Math.floor(100000000 + Math.random()*899999999)
+                });
+            }
+            renderLeads();
+            notify("4 New Verified B2B Leads Generated!");
+        }
+
+        function downloadExcel() {
+            var csv = "Shop Name,Owner,Category,City,Area,WhatsApp\n";
+            b2bLeads.forEach(function(l) {
+                csv += '"' + l.shop + '","' + l.owner + '","' + l.cat + '","' + l.city + '","' + l.area + '","91' + l.phone + '"\n';
+            });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+            a.download = "AutoLeads_PRO_Directory.csv";
+            a.click();
+            notify("Excel (CSV) File Downloaded!");
+        }
+    </script>
+</head>
+<body class="min-h-screen pb-16">
+
+    <!-- Floating Toast -->
+    <div id="toastBox" class="hidden fixed top-16 left-1/2 transform -translate-x-1/2 z-50 bg-emerald-600 border border-emerald-400 text-white font-extrabold px-6 py-2.5 rounded-full shadow-2xl text-xs sm:text-sm"></div>
+
+    <!-- TOP STICKY NAVIGATION & LIVE STUDIO BAR -->
+    <nav class="bg-slate-950/90 backdrop-blur-md border-b border-slate-800 px-3 py-3 sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5 cursor-pointer" onclick="showPage('home')">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                    <i class="fa-solid fa-bolt text-white"></i>
+                </div>
+                <div>
+                    <span class="text-base font-black tracking-tight text-white">AutoLeads</span>
+                    <span class="text-[10px] font-black bg-emerald-500 text-slate-950 px-1.5 py-0.5 rounded ml-1">PRO</span>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-1.5">
+                <button onclick="showPage('home')" id="navHome" class="text-xs font-extrabold px-3.5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg">
+                    🏠 Home
+                </button>
+                <button onclick="showPage('pay')" id="navPay" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-800/90 text-slate-300 border border-slate-700">
+                    💳 Checkout
+                </button>
+                <button onclick="showPage('leads')" id="navLeads" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-slate-800/90 text-slate-300 border border-slate-700">
+                    📊 Leads Portal
+                </button>
+                <button onclick="autoTestOrder()" class="text-xs font-extrabold px-3 py-2 rounded-xl bg-amber-500 text-slate-950 hover:bg-amber-400 shadow-lg">
+                    ⚡ 1-Click Test
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========================================== -->
+    <!-- PAGE 1: VIP SAAS HOME / LANDING PAGE       -->
+    <!-- ========================================== -->
+    <div id="pageHome" class="max-w-6xl mx-auto px-4 pt-8 space-y-12">
+        
+        <!-- Hero Section -->
+        <div class="glass glow-blue rounded-3xl p-6 sm:p-12 text-center space-y-6 relative overflow-hidden">
+            <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-extrabold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+                🔥 INDIA'S #1 B2B RETAILER & WHOLESALER DIRECTORY
+            </span>
+
+            <h1 class="text-3xl sm:text-5xl font-black text-white leading-tight max-w-3xl mx-auto">
+                Apne Business Ke Liye Payein <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400">
+                    100% Verified Dukandaron Ke WhatsApp Numbers
+                </span>
+            </h1>
+
+            <p class="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
+                Mobile, Electrical, Hardware, Garments aur Grocery retailers se seedha WhatsApp par judein. Ek click me apna B2B catalog bhejein aur rozana naye wholesale orders payein!
+            </p>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap items-center justify-center gap-3.5 pt-2">
+                <button onclick="showPage('pay')" class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:opacity-95 text-white font-extrabold px-8 py-4 rounded-2xl shadow-xl shadow-indigo-600/30 text-sm sm:text-base flex items-center gap-2">
+                    🚀 Unlock Instant Access (₹499)
+                </button>
+                <button onclick="autoTestOrder()" class="bg-slate-800/90 hover:bg-slate-700 text-amber-300 border border-amber-500/40 font-extrabold px-6 py-4 rounded-2xl text-sm sm:text-base flex items-center gap-2">
+                    ⚡ Try 1-Click Live Demo
+                </button>
+            </div>
+
+            <!-- Live Trust Metrics -->
+            <div class="grid grid-cols-3 gap-4 max-w-xl mx-auto pt-6 border-t border-slate-800/80">
+                <div>
+                    <p class="text-xl sm:text-2xl font-black text-white">15,400+</p>
+                    <span class="text-[11px] text-slate-400">Verified Shops</span>
+                </div>
+                <div>
+                    <p class="text-xl sm:text-2xl font-black text-emerald-400">100%</p>
+                    <span class="text-[11px] text-slate-400">WhatsApp Active</span>
+                </div>
+                <div>
+                    <p class="text-xl sm:text-2xl font-black text-cyan-400">Instant</p>
+                    <span class="text-[11px] text-slate-400">Excel CSV Export</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3 Feature Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div class="glass rounded-3xl p-6 space-y-3 border-t-2 border-t-cyan-500">
+                <div class="w-11 h-11 rounded-2xl bg-cyan-500/15 text-cyan-400 flex items-center justify-center text-lg"><i class="fa-solid fa-layer-group"></i></div>
+                <h3 class="text-lg font-extrabold text-white">Colour-Coded Categories</h3>
+                <p class="text-xs text-slate-400 leading-relaxed">Mobile, Electrical, Clothing aur Grocery shops ko alag-alag colour badges ke sath filter karein.</p>
+            </div>
+            <div class="glass rounded-3xl p-6 space-y-3 border-t-2 border-t-emerald-500">
+                <div class="w-11 h-11 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-lg"><i class="fa-brands fa-whatsapp"></i></div>
+                <h3 class="text-lg font-extrabold text-white">1-Click WhatsApp Pitch</h3>
+                <p class="text-xs text-slate-400 leading-relaxed">Number save kiye bina seedha dukandar ke WhatsApp par pre-written business message bhejein.</p>
+            </div>
+            <div class="glass rounded-3xl p-6 space-y-3 border-t-2 border-t-purple-500">
+                <div class="w-11 h-11 rounded-2xl bg-purple-500/15 text-purple-400 flex items-center justify-center text-lg"><i class="fa-solid fa-file-csv"></i></div>
+                <h3 class="text-lg font-extrabold text-white">1-Click Excel Download</h3>
+                <p class="text-xs text-slate-400 leading-relaxed">Poori list ko Excel (CSV) me download karke apni sales team ya telecallers ko de sakte hain.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 2: PAYMENT & LIVE FIREBASE CHECKOUT   -->
+    <!-- ========================================== -->
+    <div id="pagePay" class="max-w-6xl mx-auto px-4 pt-6 hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left: QR & UTR Form -->
+            <div class="lg:col-span-7 glass glow-emerald rounded-3xl p-6 space-y-5">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                    <div>
+                        <span class="text-[11px] font-extrabold text-emerald-400 uppercase">Instant Activation<
