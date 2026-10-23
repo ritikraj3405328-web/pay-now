@@ -78,15 +78,8 @@
       tabName = 'pay';
     }
     var vipBanner = document.getElementById('aiVipBanner');
-if (vipBanner) {
-  if (tabName === 'home') {
-    vipBanner.classList.remove('hidden');
-  } else {
-    vipBanner.classList.add('hidden');
-  }
-}
     
-    var viewMap = { home: 'viewHome', pay: 'viewPay', leads: 'viewLeads', catalog: 'viewCatalog', waGen: 'viewWaGen', freeLeads: 'viewFreeLeads', listShop: 'viewListShop' };
+var viewMap = { home: 'viewHome', pay: 'viewPay', leads: 'viewLeads', catalog: 'viewCatalog', waGen: 'viewWaGen', freeLeads: 'viewFreeLeads', listShop: 'viewListShop' };
     var navMap = { home: 'navHome', pay: 'navPay', leads: 'navLeads', catalog: 'navCatalog', waGen: 'navWaGen', freeLeads: 'navFreeLeads', listShop: 'navListShop' };
 
     for (var key in viewMap) {
