@@ -1,18 +1,18 @@
 {
   "name": "AutoLeads PRO",
   "short_name": "AutoLeads",
-  "start_url": "/",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#020617",
   "theme_color": "#2563eb",
   "icons": [
     {
-      "src": "https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=AutoLeads",
+      "src": "https://img.icons8.com/fluents/512/lightning-bolt.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=AutoLeads",
+      "src": "https://img.icons8.com/fluents/512/lightning-bolt.png",
       "sizes": "512x512",
       "type": "image/png"
     }
