@@ -74,32 +74,34 @@
 
   window.showTab = function(tabName) {
     if (tabName === 'leads' && !window.isUnlocked) {
-      window.showToast("🔒 Leads Vault Locked! Complete ₹499 Onboarding & UTR Verification first.");
-      tabName = 'pay';
-    }
-    var vipBanner = document.getElementById('aiVipBanner');
-    
-var viewMap = { home: 'viewHome', pay: 'viewPay', leads: 'viewLeads', catalog: 'viewCatalog', waGen: 'viewWaGen', freeLeads: 'viewFreeLeads', listShop: 'viewListShop' };
-    var navMap = { home: 'navHome', pay: 'navPay', leads: 'navLeads', catalog: 'navCatalog', waGen: 'navWaGen', freeLeads: 'navFreeLeads', listShop: 'navListShop' };
+      window.showTab = function(tabName) {
+  if (tabName === 'leads' && !window.isUnlocked) {
+    window.showToast("🔒 Leads Vault Locked! Complete ₹499 Onboarding & UTR Verification first.");
+    tabName = 'pay';
+  }
 
-    for (var key in viewMap) {
-      var vEl = document.getElementById(viewMap[key]);
-      if (vEl) vEl.classList.toggle('hidden', key !== tabName);
+  var viewMap = { home: 'viewHome', pay: 'viewPay', leads: 'viewLeads', catalog: 'viewCatalog', waGen: 'viewWaGen', freeLeads: 'viewFreeLeads', listShop: 'viewListShop' };
+  var navMap = { home: 'navHome', pay: 'navPay', leads: 'navLeads', catalog: 'navCatalog', waGen: 'navWaGen', freeLeads: 'navFreeLeads', listShop: 'navListShop' };
+
+  for (var key in viewMap) {
+    var vEl = document.getElementById(viewMap[key]);
+    if (vEl) vEl.classList.toggle('hidden', key !== tabName);
+  }
+
+  for (var nkey in navMap) {
+    var nEl = document.getElementById(navMap[nkey]);
+    if (nEl) {
+      if (nkey === tabName) nEl.className = 'text-xs font-extrabold px-3 py-2 rounded-xl bg-emerald-600 text-white shadow-lg shadow-emerald-950/20';
+      else nEl.className = 'text-xs font-bold px-3 py-2 rounded-xl bg-slate-900 text-slate-400 border border-slate-700 cursor-pointer hover:bg-slate-800 hover:text-white transition-all';
     }
-    for (var nKey in navMap) {
-      var nEl = document.getElementById(navMap[nKey]);
-      if (!nEl) continue;
-      if (nKey === tabName) {
-        nEl.className = (nKey === 'leads') ? "text-xs font-extrabold px-3 py-2 rounded-xl bg-emerald-600 text-white shadow-lg cursor-pointer" : "text-xs font-extrabold px-3 py-2 rounded-xl bg-blue-600 text-white shadow-lg cursor-pointer";
-      } else if (nKey === 'leads') {
-        nEl.className = "text-xs font-bold px-3 py-2 rounded-xl bg-slate-900 text-amber-400 border border-amber-500/40 cursor-pointer";
-      } else {
-        nEl.className = "text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer";
+  }
+
+  if (tabName === 'leads') window.renderLeadsGrid();
+  if (tabName === 'freeLeads') window.checkDailyFreeLeads();
+  if (tabName === 'listShop') window.renderFreeListedPreview();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
       }
-    }
-    if (tabName === 'leads') window.renderLeadsGrid();
-    if (tabName === 'freeLeads') window.checkDailyFreeLeads();
-    if (tabName === 'listShop') window.renderFreeListedPreview();
+      
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 </script>
