@@ -1,9 +1,15 @@
-self.addEventListener('install', function(e) {
+self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
-self.addEventListener('activate', function(e) {
-  console.log('Service Worker Activated');
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(clients.claim());
 });
-self.addEventListener('fetch', function(e) {
-  // Pass through fetch
+
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
 });
