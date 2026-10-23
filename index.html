@@ -498,35 +498,54 @@
     window.showTab('home');
   };
 
-  // PWA & Service Worker
+    // PWA & Service Worker (Updated for Refresh Force Show)
   let deferredPrompt;
+
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    var banner = document.getElementById('installBanner');
-    if (banner) banner.classList.remove('hidden');
+    showInstallBanner();
   });
+
+  function showInstallBanner() {
+    var banner = document.getElementById('installBanner');
+    if (banner) {
+      banner.classList.remove('hidden');
+    }
+  }
 
   var installBtn = document.getElementById('installBtn');
   if (installBtn) {
     installBtn.addEventListener('click', async () => {
       if (deferredPrompt) {
         deferredPrompt.prompt();
+        var result = await deferredPrompt.userChoice;
+        if (result.outcome === 'accepted') {
+          console.log('App Installed Successfully');
+        }
         deferredPrompt = null;
-        document.getElementById('installBanner').classList.add('hidden');
+      } else {
+        alert("Aapke browser me app already installed hai, ya aap Chrome menu (3 dots) par click karke 'Install App' / 'Add to Home Screen' select kar sakte hain!");
       }
+      var banner = document.getElementById('installBanner');
+      if (banner) banner.classList.add('hidden');
     });
-  }
-
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(function(err) {});
   }
 
   window.addEventListener('DOMContentLoaded', function() {
     window.renderHomeTeasers();
     window.renderBuyersFeed();
     window.renderFreeListedPreview();
+
+    // Page refresh hote hi banner force show karega
+    setTimeout(function() {
+      showInstallBanner();
+    }, 1000);
   });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(function(err) {});
+  }
 </script>
 </body>
 </html>
