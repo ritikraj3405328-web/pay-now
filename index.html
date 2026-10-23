@@ -73,11 +73,16 @@
   };
 
   window.showTab = function(tabName) {
-    if (tabName === 'leads' && !window.isUnlocked) {
-      window.showTab = function(tabName) {
+window.showTab = function(tabName) {
   if (tabName === 'leads' && !window.isUnlocked) {
     window.showToast("🔒 Leads Vault Locked! Complete ₹499 Onboarding & UTR Verification first.");
     tabName = 'pay';
+  }
+
+  var vipBanner = document.getElementById('aiVipBanner');
+  if (vipBanner) {
+    if (tabName === 'home') vipBanner.classList.remove('hidden');
+    else vipBanner.classList.add('hidden');
   }
 
   var viewMap = { home: 'viewHome', pay: 'viewPay', leads: 'viewLeads', catalog: 'viewCatalog', waGen: 'viewWaGen', freeLeads: 'viewFreeLeads', listShop: 'viewListShop' };
@@ -100,6 +105,8 @@
   if (tabName === 'freeLeads') window.checkDailyFreeLeads();
   if (tabName === 'listShop') window.renderFreeListedPreview();
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+    
       }
       
     window.scrollTo({ top: 0, behavior: 'smooth' });
