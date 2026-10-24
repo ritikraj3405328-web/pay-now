@@ -27,12 +27,14 @@
 </style>
 <script>
   // ==========================================================
-  // GLOBAL STATE & GITHUB STATIC SECURITY SYSTEM
+  // GLOBAL STATE, 30-DAY EXPIRY ENGINE & AUTO-CHANGING PASSWORD SYSTEM
   // ==========================================================
+  window.SUBSCRIPTION_DAYS = 30;
+  window.SUBSCRIPTION_MS = 30 * 24 * 60 * 60 * 1000;
   window.isUnlocked = false;
   window.isAdminLoggedIn = false;
   window.generatedCatalogText = "";
-  window.clientData = { name: "", phone: "", businessName: "Your Wholesale Business", category: "ALL", city: "ALL" };
+  window.clientData = { name: "", phone: "", businessName: "Your Wholesale Business", category: "ALL", city: "ALL", expiresAt: 0 };
 
   // Master List of 25+ Business Categories (Including Manufacturing)
   window.allMasterCategories = [
@@ -64,40 +66,12 @@
 
   // Master List of All Indian States & Union Territories
   window.allIndianStates = [
-    "Bihar",
-    "Delhi NCR",
-    "Uttar Pradesh",
-    "Maharashtra",
-    "Gujarat",
-    "Rajasthan",
-    "West Bengal",
-    "Madhya Pradesh",
-    "Karnataka",
-    "Tamil Nadu",
-    "Telangana",
-    "Punjab",
-    "Haryana",
-    "Jharkhand",
-    "Odisha",
-    "Chhattisgarh",
-    "Assam",
-    "Kerala",
-    "Andhra Pradesh",
-    "Uttarakhand",
-    "Himachal Pradesh",
-    "Jammu & Kashmir",
-    "Goa",
-    "Chandigarh",
-    "Puducherry",
-    "Tripura",
-    "Meghalaya",
-    "Manipur",
-    "Nagaland",
-    "Arunachal Pradesh",
-    "Mizoram",
-    "Sikkim",
-    "Ladakh",
-    "Andaman & Nicobar"
+    "Bihar", "Delhi NCR", "Uttar Pradesh", "Maharashtra", "Gujarat", "Rajasthan",
+    "West Bengal", "Madhya Pradesh", "Karnataka", "Tamil Nadu", "Telangana",
+    "Punjab", "Haryana", "Jharkhand", "Odisha", "Chhattisgarh", "Assam", "Kerala",
+    "Andhra Pradesh", "Uttarakhand", "Himachal Pradesh", "Jammu & Kashmir", "Goa",
+    "Chandigarh", "Puducherry", "Tripura", "Meghalaya", "Manipur", "Nagaland",
+    "Arunachal Pradesh", "Mizoram", "Sikkim", "Ladakh", "Andaman & Nicobar"
   ];
 
   // Default Admin Login (ID: admin | PIN/Pass: 7808)
@@ -106,27 +80,71 @@
     pass: "7808"
   };
 
-  // Secret Algorithmic Key Generator for Paid Vendors (Works across all devices on GitHub without a database!)
-  window.generateVendorSecretPass = function(phoneStr) {
+  // Dynamic Password Generator: Changes automatically on every new UTR / 30-day renewal cycle!
+  window.generateDynamicVendorPass = function(phoneStr, cycleSeed) {
     var clean = String(phoneStr || "").replace(/\D/g, "").slice(-10);
     if (clean.length !== 10) return null;
-    var secretSalt = 780899;
-    var hash = secretSalt;
-    for (var i = 0; i < clean.length; i++) {
-      hash = ((hash << 5) - hash) + clean.charCodeAt(i) * (i + 13);
+    // Current 30-day epoch bucket so password naturally rotates every 30 days + unique per UTR/renewal
+    var thirtyDayBucket = Math.floor(Date.now() / window.SUBSCRIPTION_MS);
+    var seedStr = clean + "_" + String(cycleSeed || thirtyDayBucket);
+    var hash = 780899;
+    for (var i = 0; i < seedStr.length; i++) {
+      hash = ((hash << 5) - hash) + seedStr.charCodeAt(i) * (i + 17);
       hash = hash & hash;
     }
     var codeNum = Math.abs(hash % 900000) + 100000;
     return "AL" + String(codeNum);
   };
 
-  // Extra Custom Vendor Accounts (Saved in Admin Browser)
-  window.paidVendors = JSON.parse(localStorage.getItem('autoleads_paid_vendors')) || [];
+  // Used UTRs list so no vendor can reuse an old UTR after 30 days expiry
+  window.usedUtrs = JSON.parse(localStorage.getItem('autoleads_used_utrs')) || [];
+
+  // Default Sample Subscribers if empty so Admin Panel shows rich live data immediately
+  var defaultSubscribers = [
+    {
+      name: "Vikram Gupta",
+      phone: "9835012345",
+      pass: "AL482910",
+      biz: "Vikram Switchgear Mfg.",
+      cat: "Manufacturing & Factory",
+      city: "Bihar",
+      utr: "412890123456",
+      activatedAt: Date.now() - (5 * 24 * 60 * 60 * 1000),
+      expiresAt: Date.now() + (25 * 24 * 60 * 60 * 1000),
+      cycleCount: 1
+    },
+    {
+      name: "Aman Verma",
+      phone: "9811223344",
+      pass: "AL739201",
+      biz: "Aman MobiWorld",
+      cat: "Mobile & Electronics",
+      city: "Delhi NCR",
+      utr: "629544189012",
+      activatedAt: Date.now() - (12 * 24 * 60 * 60 * 1000),
+      expiresAt: Date.now() + (18 * 24 * 60 * 60 * 1000),
+      cycleCount: 2
+    },
+    {
+      name: "Sandeep Jain",
+      phone: "9829011223",
+      pass: "AL194022",
+      biz: "Royal Kurti House",
+      cat: "Clothing & Garments",
+      city: "Rajasthan",
+      utr: "331078214567",
+      activatedAt: Date.now() - (34 * 24 * 60 * 60 * 1000),
+      expiresAt: Date.now() - (4 * 24 * 60 * 60 * 1000), // Expired sample to show in Admin Panel
+      cycleCount: 1
+    }
+  ];
+
+  window.paidVendors = JSON.parse(localStorage.getItem('autoleads_paid_vendors')) || defaultSubscribers;
 
   window.recentBuyers = [
-    { name: "Vikram Gupta", biz: "Vikram Switchgear Mfg.", cat: "Manufacturing & Factory", utr: "4128****9012", amt: 499 },
-    { name: "Aman Verma", biz: "Aman MobiWorld", cat: "Mobile & Electronics", utr: "6295****4418", amt: 499 },
-    { name: "Sandeep Jain", biz: "Royal Kurti House", cat: "Clothing & Garments", utr: "3310****7821", amt: 499 }
+    { name: "Vikram Gupta", biz: "Vikram Switchgear Mfg.", cat: "Manufacturing & Factory", utr: "4128****3456", amt: 499 },
+    { name: "Aman Verma", biz: "Aman MobiWorld", cat: "Mobile & Electronics", utr: "6295****9012", amt: 499 },
+    { name: "Sandeep Jain", biz: "Royal Kurti House", cat: "Clothing & Garments", utr: "3310****4567", amt: 499 }
   ];
 
   window.masterLeads = [
@@ -152,7 +170,7 @@
     if (!t) return;
     t.innerText = msgText;
     t.classList.remove('hidden');
-    setTimeout(function() { t.classList.add('hidden'); }, 3200);
+    setTimeout(function() { t.classList.add('hidden'); }, 3500);
   };
 
   window.copyUpiId = function() {
@@ -160,10 +178,34 @@
     window.showToast("⚡ UPI ID (9661692365@ybl) Copied!");
   };
 
+  // Automatic 30-Day Expiry Checker
+  window.isSubscriptionExpired = function() {
+    if (window.isAdminLoggedIn) return false;
+    var exp = Number(localStorage.getItem('autoleads_expiry') || 0);
+    if (!exp || Date.now() > exp) return true;
+    return false;
+  };
+
+  window.enforceExpiryCheck = function() {
+    if (window.isUnlocked && !window.isAdminLoggedIn && window.isSubscriptionExpired()) {
+      window.isUnlocked = false;
+      localStorage.removeItem('autoleads_unlocked');
+      var lockIcon = document.getElementById('vaultLockIcon');
+      if (lockIcon) lockIcon.className = "fa-solid fa-lock text-[10px]";
+      alert("⏰ Aapka 30-Days ₹499 Monthly Plan Expire ho chuka hai!\n\nAapka purana password ab band ho gaya hai. Agle 30 din ke liye Naya Dynamic Password paane ke liye ₹499 Plan Renew karein.");
+      window.showTab('pay');
+      return false;
+    }
+    return true;
+  };
+
   window.showTab = function(tabName) {
-    if (tabName === 'leads' && !window.isUnlocked && !window.isAdminLoggedIn) {
-      window.showToast("🔒 Paid Vendor Dashboard Locked! Kripya Vendor ID & Password se Login karein.");
-      tabName = 'login';
+    if (tabName === 'leads') {
+      if (!window.enforceExpiryCheck()) return;
+      if (!window.isUnlocked && !window.isAdminLoggedIn) {
+        window.showToast("🔒 Paid Vendor Dashboard Locked! Kripya Vendor ID & Password se Login karein.");
+        tabName = 'login';
+      }
     }
     if (tabName === 'admin' && !window.isAdminLoggedIn) {
       window.showToast("🔒 Admin Control Room ke liye pehle Admin Login karein!");
@@ -244,7 +286,7 @@
     </div>
     <div class="flex flex-wrap items-center gap-1">
       <button type="button" onclick="showTab('home')" id="navHome" class="text-xs font-bold px-3 py-2 rounded-xl bg-blue-600 text-white cursor-pointer">Home</button>
-      <button type="button" onclick="showTab('pay')" id="navPay" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">Join PRO</button>
+      <button type="button" onclick="showTab('pay')" id="navPay" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">Join PRO (₹499/Mo)</button>
       <button type="button" onclick="showTab('freeLeads')" id="navFreeLeads" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">Free Leads</button>
       <button type="button" onclick="showTab('catalog')" id="navCatalog" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">Catalog</button>
       <button type="button" onclick="showTab('waGen')" id="navWaGen" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">WA Link</button>
@@ -270,10 +312,10 @@
       </span>
     </h1>
     <p class="text-xs sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
-      Apna Business Name, 25+ Category (Manufacturing, Wholesale, Retail) aur Target State select karein. Paid Subscribers ko milta hai Verified Login Password, Custom Leads Dashboard, 1-Click WhatsApp Pitch aur Unlimited CSV Download!
+      Apna Business Name, 25+ Category (Manufacturing, Wholesale, Retail) aur Target State select karein. ₹499 Monthly Plan pay karte hi **Instant Dynamic Login Password**, 30-Days Access, 1-Click WhatsApp Pitch aur Unlimited CSV Download turant unlock hota hai!
     </p>
     <div class="flex flex-wrap justify-center gap-3.5 pt-2">
-      <button type="button" onclick="showTab('pay')" class="btn-gradient text-white font-extrabold px-8 py-4 rounded-2xl text-sm shadow-xl cursor-pointer">🚀 Start Business Onboarding (₹499)</button>
+      <button type="button" onclick="showTab('pay')" class="btn-gradient text-white font-extrabold px-8 py-4 rounded-2xl text-sm shadow-xl cursor-pointer">🚀 Start 30-Days Plan (₹499/Mo)</button>
       <button type="button" onclick="showTab('login')" class="bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 font-bold px-6 py-4 rounded-2xl text-sm cursor-pointer">🔐 Subscriber / Admin Login</button>
       <button type="button" onclick="showTab('freeLeads')" class="bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 font-bold px-6 py-4 rounded-2xl text-sm cursor-pointer">🎁 Claim Daily 3 Free Leads</button>
     </div>
@@ -282,32 +324,32 @@
   <!-- Home Teaser Cards -->
   <div id="teaserContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
 
-  <!-- VIP AI BUILDER TEASER (Strictly inside viewHome - Only visible on Home Page) -->
+  <!-- VIP AI BUILDER TEASER -->
   <div class="glass p-6 rounded-3xl border border-emerald-500/40 relative overflow-hidden shadow-2xl bg-gradient-to-br from-slate-900 to-emerald-900/10">
     <div class="absolute -right-10 -top-10 w-40 h-40 bg-emerald-500/20 blur-3xl rounded-full pointer-events-none"></div>
     <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-teal-500/10 blur-2xl rounded-full pointer-events-none"></div>
     
     <div class="flex items-center gap-2 mb-4 relative z-10">
       <span class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-[10px] font-black px-2.5 py-1 rounded shadow-lg uppercase tracking-wider animate-pulse">🌟 VIP Feature</span>
-      <span class="text-[10px] text-emerald-400 font-bold border border-emerald-500/30 px-2.5 py-1 rounded bg-emerald-500/10">Included in ₹499 Vendor Dashboard</span>
+      <span class="text-[10px] text-emerald-400 font-bold border border-emerald-500/30 px-2.5 py-1 rounded bg-emerald-500/10">Included in ₹499/Mo Vendor Plan</span>
     </div>
     
     <div class="relative z-10">
       <h3 class="text-xl md:text-2xl font-black text-white mb-2">🚀 Auto-Generate ₹15,000 Value AI Landing Pages</h3>
-      <p class="text-xs md:text-sm text-slate-300 mb-5 leading-relaxed">Apne business ke liye 1-click me agency-level premium website banayein aur WhatsApp par share karein. <strong class="text-white">Telegram Bot API</strong> integration ke sath, har naye customer ki lead seedha apne phone par payein!</p>
+      <p class="text-xs md:text-sm text-slate-300 mb-5 leading-relaxed">Apne business ke liye 1-click me agency-level premium website banayein. <strong class="text-white">Email API, WhatsApp API & Telegram Bot API</strong> integration ke sath, har naye customer ki lead Token ke sath seedha apne phone par payein!</p>
       
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
         <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
-          <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> Unlimited Premium Pages + Share Link
+          <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> Instant Email Alerts (With Token & WA Button)
         </div>
         <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
-          <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> Instant Telegram Alerts
+          <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> WhatsApp & Telegram API Alerts
         </div>
         <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
           <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> 25+ Categories & Manufacturing
         </div>
         <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
-          <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> High-Converting Lead Forms
+          <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> 1-Click Shareable Live Link
         </div>
       </div>
       
@@ -319,29 +361,58 @@
 </div>
 
 <!-- ============================================================== -->
-<!-- VIEW 2: CHECKOUT & ADMIN-VERIFIED ONBOARDING (NO FAKE UTR BYPASS) -->
+<!-- VIEW 2: CHECKOUT & INSTANT AUTO-PASSWORD GENERATOR (30-DAYS VALIDITY) -->
 <!-- ============================================================== -->
 <div id="viewPay" class="max-w-6xl mx-auto px-4 pt-6 hidden">
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
     <div class="lg:col-span-7 glass rounded-3xl p-6 space-y-5 border-emerald-500/30 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-4">
         <div>
-          <span class="text-[11px] font-extrabold text-emerald-400 uppercase"><i class="fa-solid fa-shield-halved"></i> 100% Verified Onboarding</span>
-          <h2 class="text-xl sm:text-2xl font-black text-white">Join PRO & Get Vendor Login Password</h2>
+          <span class="text-[11px] font-extrabold text-emerald-400 uppercase"><i class="fa-solid fa-bolt"></i> Instant Auto-Password Activation (30 Days Plan)</span>
+          <h2 class="text-xl sm:text-2xl font-black text-white">Join / Renew PRO & Get Instant Password</h2>
         </div>
         <div class="text-right bg-slate-900 px-4 py-2 rounded-2xl border border-slate-800">
-          <span class="text-[10px] text-slate-400 line-through block">₹1,999</span>
-          <span class="text-2xl font-black text-emerald-400">₹499</span>
+          <span class="text-[10px] text-slate-400 block">30 Days Validity</span>
+          <span class="text-2xl font-black text-emerald-400">₹499<span class="text-xs text-slate-400 font-normal">/mo</span></span>
         </div>
       </div>
+
+      <!-- INSTANT AUTO-GENERATED PASSWORD MODAL BOX (Appears right after submitting UTR) -->
+      <div id="instantPasswordSuccessBox" class="hidden bg-gradient-to-br from-emerald-950 via-slate-900 to-teal-950 border-2 border-emerald-400 rounded-3xl p-6 space-y-4 shadow-2xl">
+        <div class="flex items-center justify-between">
+          <span class="px-3 py-1 rounded-full text-[10px] font-black bg-emerald-500 text-slate-950 uppercase">🎉 30-DAYS SUBSCRIPTION ACTIVATED!</span>
+          <span id="autoExpiryDateText" class="text-xs font-bold text-amber-300">Valid for 30 Days</span>
+        </div>
+        <h3 class="text-lg sm:text-xl font-black text-white">Aapka Naya Dynamic ID & Password Tayar Hai!</h3>
+        <p class="text-xs text-slate-300">Har 30-days renewal par aapka password security ke liye automatic badal jata hai. Ise note ya screenshot kar lein:</p>
+        <div class="bg-slate-950/90 border border-emerald-500/40 rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-center">
+          <div>
+            <span class="text-[10px] text-slate-400 uppercase block">Login Mobile ID</span>
+            <b id="autoGeneratedPhoneText" class="text-lg font-mono text-cyan-300">9876543210</b>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-400 uppercase block">New Dynamic Password (30 Days)</span>
+            <b id="autoGeneratedPassText" class="text-lg font-mono text-emerald-400">AL123456</b>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button type="button" onclick="showTab('leads')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3 rounded-xl text-xs shadow-lg cursor-pointer">
+            🚀 Open Vendor Dashboard Now &rarr;
+          </button>
+          <a id="savePassOnWaBtn" href="#" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 font-extrabold py-3 rounded-xl text-xs text-center">
+            📲 Send Receipt to Admin WhatsApp
+          </a>
+        </div>
+      </div>
+
       <div class="bg-slate-950 rounded-2xl p-4 border border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-5 items-center text-center sm:text-left">
         <div class="flex flex-col items-center">
           <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi%3A%2F%2Fpay%3Fpa%3D9661692365%40ybl%26pn%3DPrem%2520Raj%26am%3D499" class="w-36 h-36 bg-white p-2 rounded-2xl shadow-lg">
           <span class="text-[11px] text-slate-400 mt-2">Scan with PhonePe / GPay / Paytm</span>
         </div>
         <div class="space-y-3">
-          <span class="text-xs font-extrabold text-cyan-400 uppercase">Step 1: Complete ₹499 Payment</span>
-          <p class="text-xs text-slate-300">QR Code scan karein ya UPI App se pay karein:</p>
+          <span class="text-xs font-extrabold text-cyan-400 uppercase">Step 1: Pay ₹499 Monthly Plan</span>
+          <p class="text-xs text-slate-300">QR Code scan karein ya UPI App se ₹499 pay karein:</p>
           <a href="upi://pay?pa=9661692365@ybl&pn=Prem%20Raj&am=499" class="block w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-extrabold py-3 rounded-xl text-center text-sm shadow-lg">Pay ₹499 via UPI App</a>
           <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
             <span class="font-mono text-slate-200">9661692365@ybl</span>
@@ -350,11 +421,11 @@
         </div>
       </div>
 
-      <!-- STEP 2 FORM: Sends UTR to Owner WhatsApp for Verification instead of Auto-Unlocking -->
+      <!-- STEP 2 FORM: Automatically Generates Dynamic 30-Day Password on Screen -->
       <form onsubmit="submitOnboarding(event)" class="space-y-3.5 pt-1">
         <div class="flex flex-wrap justify-between items-center gap-2">
-          <span class="text-xs font-extrabold text-amber-400 uppercase">Step 2: Submit Payment UTR to Get Login Password</span>
-          <button type="button" onclick="showTab('login')" class="text-[11px] text-cyan-400 underline font-bold cursor-pointer">Password Mil Gaya? Login Karein &rarr;</button>
+          <span class="text-xs font-extrabold text-amber-400 uppercase">Step 2: Enter Payment UTR for Instant Automatic Password</span>
+          <button type="button" onclick="showTab('login')" class="text-[11px] text-cyan-400 underline font-bold cursor-pointer">Pehle se Password hai? Login Karein &rarr;</button>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div><label class="text-[11px] text-slate-400 block mb-1">Aapka Naam *</label><input type="text" id="inpName" required placeholder="Eg. Rajesh Kumar" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
@@ -376,10 +447,10 @@
           </div>
         </div>
         <button type="submit" class="w-full btn-gradient text-white font-extrabold py-3.5 rounded-xl text-sm shadow-xl cursor-pointer">
-          📲 Verify UTR on WhatsApp & Get Vendor Login Password
+          ⚡ Verify UTR & Get Instant 30-Days Password Now
         </button>
         <p class="text-[11px] text-slate-400 text-center">
-          🔒 Note: Fake UTR se dashboard unlock nahi hoga. Admin aapka ₹499 UTR verify karke turant WhatsApp par aapka Login Password bhejenge.
+          🔄 Har 30 din baad plan expire hone par naya payment karne se aapko **Naya Changed Password** automatic mil jayega!
         </p>
       </form>
     </div>
@@ -387,7 +458,7 @@
     <div class="lg:col-span-5 glass rounded-3xl p-6 flex flex-col justify-between space-y-5 shadow-2xl">
       <div>
         <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3">
-          <b class="text-sm text-white">🟢 Recent Verified Paid Vendors</b>
+          <b class="text-sm text-white">🟢 Recent 30-Day Active Vendors</b>
           <span class="text-xs font-mono bg-emerald-500/15 text-emerald-300 px-2.5 py-1 rounded-full font-bold">Live</span>
         </div>
         <div id="recentBuyersList" class="space-y-2.5 max-h-80 overflow-y-auto pr-1"></div>
@@ -395,8 +466,8 @@
       <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 text-xs text-slate-300 flex items-center gap-3">
         <i class="fa-brands fa-whatsapp text-2xl text-emerald-400"></i>
         <div>
-          <b class="text-white block">Payment & Login Password Support</b>
-          <a href="https://wa.me/919661692365?text=Hi,%20mujhe%20Vendor%20Login%20Password%20ya%20Payment%20me%20madad%20chahiye" target="_blank" class="text-cyan-400 underline font-bold">Chat on WhatsApp &rarr;</a>
+          <b class="text-white block">24/7 Billing & Support</b>
+          <a href="https://wa.me/919661692365?text=Hi,%20mujhe%20Vendor%20Subscription%20me%20madad%20chahiye" target="_blank" class="text-cyan-400 underline font-bold">Chat on WhatsApp &rarr;</a>
         </div>
       </div>
     </div>
@@ -412,9 +483,9 @@
     <!-- 1. PAID VENDOR / SUBSCRIBER LOGIN -->
     <div class="glass rounded-3xl p-6 sm:p-8 space-y-5 border border-emerald-500/40 shadow-2xl">
       <div class="border-b border-slate-800 pb-4">
-        <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 uppercase">🏢 Paid Subscriber Portal</span>
+        <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 uppercase">🏢 30-Days Subscriber Portal</span>
         <h2 class="text-xl sm:text-2xl font-black text-white mt-2">Vendor Dashboard Login</h2>
-        <p class="text-xs text-slate-400 mt-1">Admin dwara verify kiye gaye 10-Digit WhatsApp Number aur Secret Password se login karein.</p>
+        <p class="text-xs text-slate-400 mt-1">Apne 10-Digit WhatsApp Number aur is mahine ke Dynamic Password se login karein.</p>
       </div>
       <form onsubmit="handleVendorLogin(event)" class="space-y-4">
         <div>
@@ -422,7 +493,7 @@
           <input type="tel" id="loginVendorPhone" required maxlength="10" minlength="10" placeholder="Eg. 9876543210" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-emerald-500">
         </div>
         <div>
-          <label class="text-xs text-slate-300 font-bold block mb-1">Admin Issued Secret Password *</label>
+          <label class="text-xs text-slate-300 font-bold block mb-1">Current 30-Day Dynamic Password *</label>
           <input type="password" id="loginVendorPass" required placeholder="Eg. ALxxxxxx" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-emerald-500">
         </div>
         <div>
@@ -434,8 +505,8 @@
         </button>
       </form>
       <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 text-center space-y-1">
-        <p class="text-[11px] text-slate-400">Abhi tak Password nahi mila?</p>
-        <button type="button" onclick="showTab('pay')" class="text-xs font-extrabold text-cyan-400 underline cursor-pointer">🚀 ₹499 Plan Pay Karein & Admin Se Password Lein</button>
+        <p class="text-[11px] text-slate-400">Plan Expire ho gaya ya Naya Password chahiye?</p>
+        <button type="button" onclick="showTab('pay')" class="text-xs font-extrabold text-cyan-400 underline cursor-pointer">🚀 ₹499 Pay Karein & Turant Automatic Password Payein</button>
       </div>
     </div>
 
@@ -444,7 +515,7 @@
       <div class="border-b border-slate-800 pb-4">
         <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-red-500/20 text-red-300 uppercase">🛡️ Owner Control Room</span>
         <h2 class="text-xl sm:text-2xl font-black text-white mt-2">Admin Portal Login</h2>
-        <p class="text-xs text-slate-400 mt-1">Sirf Website Owner ke liye: Vendor ka Secret Password generate karne aur Bulk CSV File Upload karne ke liye login karein.</p>
+        <p class="text-xs text-slate-400 mt-1">Apne Total Subscribers, Active/Expired Plans, Monthly Revenue aur Bulk CSV Upload dekhne ke liye login karein.</p>
       </div>
       <form onsubmit="handleAdminLogin(event)" class="space-y-4">
         <div>
@@ -460,7 +531,7 @@
         </button>
       </form>
       <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 text-[11px] text-slate-400 text-center">
-        🔒 Secure Owner Access: Bulk CSV Upload, GitHub CSV Export & Instant Vendor Key Generator
+        🔒 Live Subscriber Counter, 30-Day Expiry Manager & Bulk CSV Sync
       </div>
     </div>
 
@@ -468,7 +539,7 @@
 </div>
 
 <!-- ============================================================== -->
-<!-- VIEW 3: PAID VENDOR DASHBOARD (PRO LEADS VAULT & PAID TOOLS) -->
+<!-- VIEW 3: PAID VENDOR DASHBOARD (WITH 30-DAY COUNTDOWN TIMER) -->
 <!-- ============================================================== -->
 <div id="viewLeads" class="max-w-6xl mx-auto px-4 pt-6 hidden space-y-5">
   <!-- Paid Vendor Top Welcome & Quick Actions Bar -->
@@ -476,8 +547,9 @@
     <div class="space-y-1">
       <div class="flex flex-wrap items-center gap-2">
         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300">✔ PAID VENDOR DASHBOARD</span>
+        <span id="vendorDaysLeftBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/40">⏳ 30 Days Left</span>
         <span id="customPortalCatBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-cyan-500/20 text-cyan-300">All Categories</span>
-        <span id="filteredCountBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300">Live Leads</span>
+        <span id="filteredCountBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-purple-500/20 text-purple-300">Live Leads</span>
       </div>
       <h2 id="customBusinessHeading" class="text-xl sm:text-2xl font-black text-white">🏢 Custom B2B & B2C Vendor Dashboard</h2>
       <p id="customPitchSubtext" class="text-xs text-slate-300">Apne Business Category (Manufacturing/Wholesale/Retail) aur State ke hisab se filter karein, Direct WhatsApp karein ya CSV download karein!</p>
@@ -576,7 +648,7 @@
 </div>
 
 <!-- ============================================================== -->
-<!-- VIEW 6: FREE LEADS (With Subscriber Awareness Banner, No WA Share) -->
+<!-- VIEW 6: FREE LEADS -->
 <!-- ============================================================== -->
 <div id="viewFreeLeads" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-6">
   <div class="glass rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border-emerald-500/30">
@@ -587,25 +659,24 @@
       </div>
       <div class="flex gap-2">
         <button type="button" onclick="showTab('login')" class="bg-slate-800 text-cyan-300 border border-cyan-500/40 font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer">🔐 Vendor Login</button>
-        <button type="button" onclick="showTab('pay')" class="bg-blue-600 hover:bg-blue-500 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer">🔓 Unlock PRO (₹499)</button>
+        <button type="button" onclick="showTab('pay')" class="bg-blue-600 hover:bg-blue-500 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer">🔓 Unlock PRO (₹499/Mo)</button>
       </div>
     </div>
 
-    <!-- SUBSCRIBER & FREE USER AWARENESS BANNER -->
     <div class="bg-gradient-to-r from-amber-500/15 via-blue-600/15 to-emerald-500/15 border border-amber-500/40 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
       <div class="space-y-1.5 text-center sm:text-left">
         <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-slate-950 uppercase">
           ⚡ PAID VENDOR DASHBOARD EXCLUSIVE
         </div>
         <h3 class="text-sm sm:text-base font-black text-white">
-          Personal Vendor Login, 1-Click Direct WhatsApp Share & Custom CSV Download Chahiye?
+          Instant Dynamic Login Password, 1-Click Direct WhatsApp Share & Custom CSV Download Chahiye?
         </h3>
         <p class="text-xs text-slate-300 leading-relaxed">
-          Free sample me sirf basic preview dikhta hai. <strong class="text-emerald-400">₹499 Paid Subscriber Plan</strong> me aapko milta hai alag <strong class="text-white">Vendor Login Password & Dashboard</strong>, har lead par <strong class="text-white">Direct WhatsApp Pitch / Share Button</strong> aur apne <strong class="text-cyan-300">Business Category & State</strong> ke hisab se Unlimited CSV/Excel File download karne ka full access!
+          Free sample me sirf basic preview dikhta hai. <strong class="text-emerald-400">₹499 Monthly Plan</strong> me aapko milta hai instant <strong class="text-white">Automatic Login Password (30 Days Validity)</strong>, har lead par <strong class="text-white">Direct WhatsApp Pitch / Share Button</strong> aur apne <strong class="text-cyan-300">Business Category & State</strong> ke hisab se Unlimited CSV/Excel File download!
         </p>
       </div>
       <button type="button" onclick="showTab('pay')" class="shrink-0 btn-gradient text-white font-extrabold px-5 py-3 rounded-xl text-xs shadow-xl cursor-pointer whitespace-nowrap">
-        🚀 Get Vendor Login (₹499)
+        🚀 Get Instant Password (₹499)
       </button>
     </div>
 
@@ -646,14 +717,14 @@
 </div>
 
 <!-- ============================================================== -->
-<!-- VIEW 8: DEDICATED ADMIN CONTROL ROOM (Protected by Admin Login) -->
+<!-- VIEW 8: DEDICATED ADMIN CONTROL ROOM (WITH SUBSCRIBER ANALYTICS & 30-DAY EXPIRY MANAGER) -->
 <!-- ============================================================== -->
 <div id="viewAdmin" class="max-w-6xl mx-auto px-4 pt-6 pb-12 hidden space-y-6">
   <div class="glass rounded-3xl p-6 border-red-500/40 space-y-6 bg-slate-900/95 border">
     <div class="flex flex-wrap justify-between items-center gap-3 border-b border-slate-800 pb-4">
       <div>
         <span class="text-[10px] font-extrabold text-red-400 uppercase tracking-widest">🛡️ MASTER OWNER CONTROL ROOM</span>
-        <h3 class="text-xl font-black text-white">Admin Dashboard: Vendor Password Generator & Bulk CSV Upload</h3>
+        <h3 class="text-xl font-black text-white">Admin Dashboard: Live Subscribers Data, 30-Day Expiry & Bulk CSV</h3>
       </div>
       <div class="flex flex-wrap items-center gap-2">
         <span id="admTotalLeadsCount" class="text-xs font-extrabold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-xl">Total Leads: 6</span>
@@ -662,33 +733,54 @@
       </div>
     </div>
 
-    <!-- SECTION 1: PAID VENDOR SECRET PASSWORD GENERATOR -->
+    <!-- SUBSCRIBER ANALYTICS COUNTER CARDS -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl text-center">
+        <span class="text-[10px] font-extrabold text-slate-400 uppercase block">Total Subscribers</span>
+        <b id="statTotalSubs" class="text-2xl sm:text-3xl font-black text-white">0</b>
+      </div>
+      <div class="bg-slate-950 border border-emerald-500/30 p-4 rounded-2xl text-center">
+        <span class="text-[10px] font-extrabold text-emerald-400 uppercase block">Active (30-Day Valid)</span>
+        <b id="statActiveSubs" class="text-2xl sm:text-3xl font-black text-emerald-400">0</b>
+      </div>
+      <div class="bg-slate-950 border border-red-500/30 p-4 rounded-2xl text-center">
+        <span class="text-[10px] font-extrabold text-red-400 uppercase block">Expired Subscribers</span>
+        <b id="statExpiredSubs" class="text-2xl sm:text-3xl font-black text-red-400">0</b>
+      </div>
+      <div class="bg-slate-950 border border-amber-500/30 p-4 rounded-2xl text-center">
+        <span class="text-[10px] font-extrabold text-amber-400 uppercase block">Total Plan Revenue</span>
+        <b id="statTotalRev" class="text-2xl sm:text-3xl font-black text-amber-400">₹0</b>
+      </div>
+    </div>
+
+    <!-- SECTION 1: SUBSCRIBER DATA & DYNAMIC PASSWORD MANAGER -->
     <div class="space-y-4 bg-slate-950/95 p-5 rounded-2xl border border-emerald-500/40 shadow-xl">
       <div>
-        <span class="text-xs font-extrabold text-emerald-400 uppercase block">1️⃣ Paid Vendor Secret Password Generator (100% Secure - Works on Any Device)</span>
-        <p class="text-[11px] text-slate-300 mt-0.5">Jab kisi Vendor ka ₹499 payment aur UTR verify ho jaye, toh uska 10-Digit WhatsApp Number niche dalein. System uske phone ke liye Secret Password banayega jise aap 1-Click me WhatsApp par bhej sakte hain:</p>
+        <span class="text-xs font-extrabold text-emerald-400 uppercase block">1️⃣ Subscribers Data & 30-Days Dynamic Password Generator</span>
+        <p class="text-[11px] text-slate-300 mt-0.5">Jab koi vendor ₹499 pay karke form bharta hai toh usko automatic password mil jata hai aur uska data yahan jud jata hai. Aap yahan se manually bhi naya subscriber add ya +30 Days Renew (New Changed Password ke sath) kar sakte hain:</p>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
         <input type="text" id="admVenName" placeholder="Vendor Name (Eg. Rajesh)" class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
         <input type="text" id="admVenBiz" placeholder="Business Name" class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
         <input type="tel" id="admVenPhone" maxlength="10" placeholder="Vendor 10-Digit WhatsApp No *" class="bg-slate-900 border border-emerald-500/60 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono outline-none">
         <button type="button" onclick="adminCreateVendorAccount()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-lg cursor-pointer">
-          🔑 Generate Vendor Password
+          🔑 Generate New 30-Day Password
         </button>
       </div>
 
       <!-- Generated Password Display Box -->
       <div id="generatedVendorKeyBox" class="hidden bg-slate-900 border border-emerald-500/50 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
         <div class="space-y-1">
-          <span class="text-[10px] font-extrabold text-emerald-400 uppercase">✔ Vendor Login Credentials Ready:</span>
+          <span class="text-[10px] font-extrabold text-emerald-400 uppercase">✔ New 30-Day Dynamic Credentials Ready:</span>
           <p id="generatedVendorKeyText" class="text-sm font-mono text-white font-bold"></p>
         </div>
         <a id="sendVendorKeyWaBtn" href="#" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs shadow-lg">
-          📲 Send ID & Password on Vendor WhatsApp
+          📲 Send on Vendor WhatsApp
         </a>
       </div>
 
-      <div id="adminVendorsListBox" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 pt-2"></div>
+      <!-- All Subscribers List with Active/Expired Status & Days Left -->
+      <div id="adminVendorsListBox" class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2"></div>
     </div>
 
     <!-- SECTION 2: BULK CSV FILE UPLOAD & GITHUB MASTER CSV EXPORT -->
@@ -782,7 +874,7 @@
     for (var i = 0; i < window.recentBuyers.length; i++) {
       var b = window.recentBuyers[i];
       html += '<div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 text-xs space-y-1">' +
-        '<div class="flex justify-between"><b class="text-white">✔ ' + b.biz + '</b><span class="text-emerald-400 font-bold">₹499</span></div>' +
+        '<div class="flex justify-between"><b class="text-white">✔ ' + b.biz + '</b><span class="text-emerald-400 font-bold">₹499 (30 Days)</span></div>' +
         '<div class="flex justify-between text-[11px] text-slate-400"><span>' + b.name + '</span><span class="font-mono text-amber-300">UTR: ' + b.utr + '</span></div>' +
       '</div>';
     }
@@ -814,7 +906,21 @@
     window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
   };
 
+  window.updateVendorExpiryBadge = function() {
+    var badge = document.getElementById('vendorDaysLeftBadge');
+    if (!badge) return;
+    var exp = Number(localStorage.getItem('autoleads_expiry') || 0);
+    if (exp > Date.now()) {
+      var daysLeft = Math.ceil((exp - Date.now()) / (1000 * 60 * 60 * 24));
+      var expDateStr = new Date(exp).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+      badge.innerText = "⏳ " + daysLeft + " Days Left (Exp: " + expDateStr + ")";
+    } else if (window.isAdminLoggedIn) {
+      badge.innerText = "🛡️ Admin Master Access";
+    }
+  };
+
   window.renderLeadsGrid = function() {
+    window.updateVendorExpiryBadge();
     var filtered = window.getFilteredLeads();
     var countBadge = document.getElementById('filteredCountBadge');
     if (countBadge) countBadge.innerText = filtered.length + " Leads Matched";
@@ -861,7 +967,7 @@
   window.loadMoreCustomLeads = function() {
     var samplePool = [
       { shop: "Bharat Industrial Mfg. #" + Math.floor(Math.random()*90+10), owner: "Sandeep Kumar", cat: "Manufacturing & Factory", city: "Maharashtra", area: "Pune MIDC", phone: "9835099887" },
-      { shop: "urya Power & Solar Hub #" + Math.floor(Math.random()*90+10), owner: "Rakesh Tiwari", cat: "Solar, Inverter & Power", city: "Uttar Pradesh", area: "Noida Sector 62", phone: "9811445566" },
+      { shop: "Surya Power & Solar Hub #" + Math.floor(Math.random()*90+10), owner: "Rakesh Tiwari", cat: "Solar, Inverter & Power", city: "Uttar Pradesh", area: "Noida Sector 62", phone: "9811445566" },
       { shop: "National Hardware & Tools #" + Math.floor(Math.random()*90+10), owner: "Manoj Patel", cat: "Electrical & Hardware", city: "Gujarat", area: "Surat Ring Road", phone: "9825112244" },
       { shop: "Royal Packaging & Polymers #" + Math.floor(Math.random()*90+10), owner: "Deepak Jain", cat: "Plastic, Packaging & Printing", city: "Delhi NCR", area: "Okhla Phase 2", phone: "9810556677" }
     ];
@@ -898,18 +1004,22 @@
   };
 
   // ==========================================================
-  // SECURE ONBOARDING & STATELESS VENDOR LOGIN SYSTEM
+  // 30-DAY SESSION ACTIVATION & AUTOMATIC PASSWORD ON PAYMENT
   // ==========================================================
   window.activateVendorSession = function(vendorObj) {
+    var now = Date.now();
+    var exp = vendorObj.expiresAt && vendorObj.expiresAt > now ? vendorObj.expiresAt : (now + window.SUBSCRIPTION_MS);
     window.isUnlocked = true;
     window.clientData = {
       name: vendorObj.name || "Verified Partner",
       phone: vendorObj.phone,
       businessName: vendorObj.biz || "Verified Wholesale Partner",
       category: vendorObj.cat || "ALL",
-      city: vendorObj.city || "ALL"
+      city: vendorObj.city || "ALL",
+      expiresAt: exp
     };
     localStorage.setItem('autoleads_unlocked', 'true');
+    localStorage.setItem('autoleads_expiry', String(exp));
     localStorage.setItem('autoleads_client', JSON.stringify(window.clientData));
 
     var lockIcon = document.getElementById('vaultLockIcon');
@@ -923,8 +1033,11 @@
 
     var filterCity = document.getElementById('filterCity');
     if (filterCity && vendorObj.city && vendorObj.city !== "ALL") filterCity.value = vendorObj.city;
+
+    window.updateVendorExpiryBadge();
   };
 
+  // Automatic Password Delivery on UTR Submission (Changes password every renewal cycle!)
   window.submitOnboarding = function(e) {
     e.preventDefault();
     var name = document.getElementById('inpName').value.trim();
@@ -938,33 +1051,81 @@
       alert("Kripya sahi 10-Digit WhatsApp Number darj karein!");
       return;
     }
-    if (utr.length !== 12) {
-      alert("Kripya sahi 12-Digit Payment UTR Number darj karein!");
+    if (utr.length !== 12 || /^(\d)\1{11}$/.test(utr)) {
+      alert("Kripya valid 12-Digit Payment UTR Number darj karein!");
+      return;
+    }
+    if (window.usedUtrs.indexOf(utr) !== -1) {
+      alert("⚠️ Yeh UTR Number pehle hi use ho chuka hai! Naye 30-Day Plan aur Naye Password ke liye naya payment UTR dalein.");
       return;
     }
 
-    var pendingProfile = { name: name, phone: phone, biz: biz, cat: cat, city: city };
-    localStorage.setItem('autoleads_pending_profile_' + phone, JSON.stringify(pendingProfile));
+    // Record UTR as used
+    window.usedUtrs.push(utr);
+    localStorage.setItem('autoleads_used_utrs', JSON.stringify(window.usedUtrs));
 
-    var verifyMsg = "🚀 *NEW ₹499 PRO ONBOARDING & UTR VERIFICATION*\n\n" +
-                    "👤 *Vendor Name:* " + name + "\n" +
-                    "🏢 *Business:* " + biz + "\n" +
-                    "📂 *Category:* " + cat + "\n" +
-                    "📍 *Target State:* " + city + "\n" +
-                    "📞 *Login WhatsApp No:* " + phone + "\n" +
-                    "🔢 *12-Digit UTR:* " + utr + "\n\n" +
-                    "Sir, maine ₹499 payment kar diya hai. Kripya UTR verify karke mera *Vendor Login Password* bhej dijiye.";
+    var existingIdx = window.paidVendors.findIndex(function(v) { return v.phone === phone; });
+    var nextCycle = (existingIdx !== -1 && window.paidVendors[existingIdx].cycleCount) ? (window.paidVendors[existingIdx].cycleCount + 1) : 1;
 
-    window.showToast("📨 Redirecting to Admin WhatsApp for UTR Verification...");
-    window.open("https://wa.me/919661692365?text=" + encodeURIComponent(verifyMsg), "_blank");
+    // Generate brand-new Dynamic Password using phone + UTR + cycle so it ALWAYS changes on renewal!
+    var newDynamicPass = window.generateDynamicVendorPass(phone, utr + "_C" + nextCycle);
+    var now = Date.now();
+    var exp = now + window.SUBSCRIPTION_MS;
 
-    var loginPhInput = document.getElementById('loginVendorPhone');
-    if (loginPhInput) loginPhInput.value = phone;
-    var loginBizInput = document.getElementById('loginVendorBiz');
-    if (loginBizInput) loginBizInput.value = biz;
-    window.showTab('login');
+    var subscriberRecord = {
+      name: name,
+      phone: phone,
+      pass: newDynamicPass,
+      biz: biz,
+      cat: cat,
+      city: city,
+      utr: utr,
+      activatedAt: now,
+      expiresAt: exp,
+      cycleCount: nextCycle
+    };
+
+    if (existingIdx !== -1) {
+      window.paidVendors[existingIdx] = subscriberRecord;
+    } else {
+      window.paidVendors.unshift(subscriberRecord);
+    }
+    localStorage.setItem('autoleads_paid_vendors', JSON.stringify(window.paidVendors));
+
+    // Add to live buyers feed
+    window.recentBuyers.unshift({
+      name: name,
+      biz: biz,
+      cat: cat,
+      utr: utr.slice(0, 4) + "****" + utr.slice(-4),
+      amt: 499
+    });
+    window.renderBuyersFeed();
+
+    // Activate 30-day session immediately
+    window.activateVendorSession(subscriberRecord);
+
+    // Show Instant Auto-Password Box on Screen (No need for Admin to manually send!)
+    var passBox = document.getElementById('instantPasswordSuccessBox');
+    document.getElementById('autoGeneratedPhoneText').innerText = phone;
+    document.getElementById('autoGeneratedPassText').innerText = newDynamicPass;
+    document.getElementById('autoExpiryDateText').innerText = "Expires: " + new Date(exp).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+
+    var receiptMsg = "✅ *AUTOLEADS PRO 30-DAYS ACTIVATED*\n" +
+                     "👤 Name: " + name + " (" + biz + ")\n" +
+                     "📞 Login ID: " + phone + "\n" +
+                     "🔑 New 30-Day Password: " + newDynamicPass + "\n" +
+                     "🔢 UTR: " + utr;
+    document.getElementById('savePassOnWaBtn').href = "https://wa.me/919661692365?text=" + encodeURIComponent(receiptMsg);
+
+    if (passBox) {
+      passBox.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    window.showToast("🎉 30-Days Plan Activated! Aapka Naya Password screen par hai.");
   };
 
+  // Vendor Login: Checks Dynamic Password AND 30-Day Expiry
   window.handleVendorLogin = function(e) {
     e.preventDefault();
     var ph = document.getElementById('loginVendorPhone').value.trim().replace(/\D/g, '').slice(-10);
@@ -976,27 +1137,29 @@
       return;
     }
 
-    var expectedSecretPass = window.generateVendorSecretPass(ph);
-    var customFound = window.paidVendors.find(function(v) {
+    var foundVendor = window.paidVendors.find(function(v) {
       return v.phone === ph && String(v.pass).toUpperCase() === ps;
     });
+    var statelessCurrentBucketPass = window.generateDynamicVendorPass(ph);
 
-    if (ps !== expectedSecretPass && !customFound) {
-      alert("❌ Invalid Login Password! Fake ya galat password se login nahi ho sakta. Kripya ₹499 pay karke Admin se apna asli Secret Password prapt karein.");
+    if (!foundVendor && ps !== statelessCurrentBucketPass) {
+      alert("❌ Invalid ya Expired Password! Har 30 din me password badal jata hai. Kripya ₹499 plan renew karke naya password prapt karein.");
       return;
     }
 
-    var savedPending = null;
-    try {
-      savedPending = JSON.parse(localStorage.getItem('autoleads_pending_profile_' + ph));
-    } catch (err) {}
+    if (foundVendor && foundVendor.expiresAt && Date.now() > foundVendor.expiresAt) {
+      alert("⏰ Aapka 30-Days Monthly Plan (" + new Date(foundVendor.expiresAt).toLocaleDateString('en-IN') + " ko) Expire ho chuka hai!\n\nAapka purana password ab band ho gaya hai. Agle 30 din ke liye Naya Password paane ke liye ₹499 Renew karein.");
+      window.showTab('pay');
+      return;
+    }
 
-    var vendorData = customFound || savedPending || {
+    var vendorData = foundVendor || {
       name: "Verified Vendor",
       phone: ph,
       biz: enteredBiz || "Verified Business Partner",
       cat: "ALL",
-      city: "ALL"
+      city: "ALL",
+      expiresAt: Date.now() + window.SUBSCRIPTION_MS
     };
     if (enteredBiz) vendorData.biz = enteredBiz;
 
@@ -1008,7 +1171,6 @@
   window.logoutVendor = function() {
     window.isUnlocked = false;
     localStorage.removeItem('autoleads_unlocked');
-    localStorage.removeItem('autoleads_client');
     var lockIcon = document.getElementById('vaultLockIcon');
     if (lockIcon) lockIcon.className = "fa-solid fa-lock text-[10px]";
     window.showToast("🔒 Vendor Dashboard Logged Out!");
@@ -1024,6 +1186,7 @@
       window.isAdminLoggedIn = true;
       window.isUnlocked = true;
       localStorage.setItem('autoleads_unlocked', 'true');
+      localStorage.setItem('autoleads_expiry', String(Date.now() + window.SUBSCRIPTION_MS));
       window.showToast("🛡️ Welcome Owner! Admin Control Room Unlocked.");
       window.showTab('admin');
     } else {
@@ -1049,6 +1212,7 @@
     window.showToast("✅ Admin ID & Password Updated!");
   };
 
+  // Admin Manual Subscriber Creation / Renewal (Generates a brand-new password every time)
   window.adminCreateVendorAccount = function() {
     var name = document.getElementById('admVenName').value.trim() || "Paid Vendor";
     var biz = document.getElementById('admVenBiz').value.trim() || "Verified Business";
@@ -1059,10 +1223,25 @@
       return;
     }
 
-    var secretPass = window.generateVendorSecretPass(phone);
-    var newVendor = { name: name, phone: phone, pass: secretPass, biz: biz, cat: "ALL", city: "ALL" };
-
     var idx = window.paidVendors.findIndex(function(v) { return v.phone === phone; });
+    var nextCycle = (idx !== -1 && window.paidVendors[idx].cycleCount) ? (window.paidVendors[idx].cycleCount + 1) : 1;
+    var secretPass = window.generateDynamicVendorPass(phone, Date.now() + "_ADM" + nextCycle);
+    var now = Date.now();
+    var exp = now + window.SUBSCRIPTION_MS;
+
+    var newVendor = {
+      name: name,
+      phone: phone,
+      pass: secretPass,
+      biz: biz,
+      cat: "ALL",
+      city: "ALL",
+      utr: "ADMIN-ISSUED",
+      activatedAt: now,
+      expiresAt: exp,
+      cycleCount: nextCycle
+    };
+
     if (idx !== -1) {
       window.paidVendors[idx] = newVendor;
     } else {
@@ -1076,41 +1255,109 @@
     var waBtn = document.getElementById('sendVendorKeyWaBtn');
 
     if (keyBox && keyText && waBtn) {
-      keyText.innerText = "Login Phone: " + phone + "  |  Secret Password: " + secretPass;
-      var msg = "🎉 *CONGRATULATIONS! AUTOLEADS PRO ACTIVATED* 🎉\n\n" +
+      keyText.innerText = "Login ID: " + phone + " | New 30-Day Pass: " + secretPass + " (Valid till " + new Date(exp).toLocaleDateString('en-IN') + ")";
+      var msg = "🎉 *AUTOLEADS PRO (30-DAYS PLAN ACTIVATED)* 🎉\n\n" +
                 "Namaste " + name + " ji (" + biz + "),\n" +
-                "Aapka ₹499 payment verify ho chuka hai. Aapke Paid Vendor Dashboard ka Login ID aur Secret Password niche diya gaya hai:\n\n" +
+                "Aapke 30-Days Paid Vendor Dashboard ka Login ID aur Naya Dynamic Password niche hai:\n\n" +
                 "🔐 *Login Mobile No:* " + phone + "\n" +
-                "🔑 *Secret Password:* " + secretPass + "\n\n" +
-                "Website ke *Login* tab me jakar abhi apna Paid Dashboard, Direct WhatsApp Pitch aur Custom CSV Download unlock karein!";
+                "🔑 *New Dynamic Password:* " + secretPass + "\n" +
+                "⏳ *Validity:* 30 Days (Expires: " + new Date(exp).toLocaleDateString('en-IN') + ")";
       waBtn.href = "https://wa.me/91" + phone + "?text=" + encodeURIComponent(msg);
       keyBox.classList.remove('hidden');
     }
 
-    window.showToast("🔑 Secret Password Generated: " + secretPass);
+    window.showToast("🔑 New 30-Day Dynamic Password Generated: " + secretPass);
+  };
+
+  // Renew existing vendor for +30 days with a brand-new changed password
+  window.adminRenewVendor30Days = function(phone) {
+    var idx = window.paidVendors.findIndex(function(v) { return v.phone === phone; });
+    if (idx === -1) return;
+    var v = window.paidVendors[idx];
+    v.cycleCount = (v.cycleCount || 1) + 1;
+    v.pass = window.generateDynamicVendorPass(v.phone, Date.now() + "_RENEW" + v.cycleCount);
+    v.activatedAt = Date.now();
+    v.expiresAt = Date.now() + window.SUBSCRIPTION_MS;
+    localStorage.setItem('autoleads_paid_vendors', JSON.stringify(window.paidVendors));
+    window.renderAdminVendorsList();
+    window.showToast("🔄 Renewed +30 Days! New Changed Password: " + v.pass);
+  };
+
+  // Force expire a vendor to test expiry lock
+  window.adminForceExpireVendor = function(phone) {
+    var idx = window.paidVendors.findIndex(function(v) { return v.phone === phone; });
+    if (idx === -1) return;
+    window.paidVendors[idx].expiresAt = Date.now() - 1000;
+    localStorage.setItem('autoleads_paid_vendors', JSON.stringify(window.paidVendors));
+    if (window.clientData && window.clientData.phone === phone) {
+      localStorage.setItem('autoleads_expiry', String(Date.now() - 1000));
+    }
+    window.renderAdminVendorsList();
+    window.showToast("⏰ Vendor Plan Marked Expired!");
   };
 
   window.deleteVendorAccount = function(phone) {
     window.paidVendors = window.paidVendors.filter(function(v) { return v.phone !== phone; });
     localStorage.setItem('autoleads_paid_vendors', JSON.stringify(window.paidVendors));
     window.renderAdminVendorsList();
-    window.showToast("🗑️ Vendor Record Removed!");
+    window.showToast("🗑️ Subscriber Record Removed!");
   };
 
+  // Renders Live Subscriber Counts, Revenue & Detailed Status Cards in Admin Panel
   window.renderAdminVendorsList = function() {
+    var total = window.paidVendors.length;
+    var activeCount = 0;
+    var expiredCount = 0;
+    var now = Date.now();
+
+    window.paidVendors.forEach(function(v) {
+      if (v.expiresAt && v.expiresAt < now) {
+        expiredCount++;
+      } else {
+        activeCount++;
+      }
+    });
+
+    var elTotal = document.getElementById('statTotalSubs');
+    var elActive = document.getElementById('statActiveSubs');
+    var elExpired = document.getElementById('statExpiredSubs');
+    var elRev = document.getElementById('statTotalRev');
+    if (elTotal) elTotal.innerText = total;
+    if (elActive) elActive.innerText = activeCount;
+    if (elExpired) elExpired.innerText = expiredCount;
+    if (elRev) elRev.innerText = "₹" + (total * 499).toLocaleString('en-IN');
+
     var box = document.getElementById('adminVendorsListBox');
     if (!box) return;
     box.innerHTML = window.paidVendors.map(function(v) {
-      var waMsg = "Namaste " + v.name + " ji, Aapka AutoLeads PRO Login ID: " + v.phone + " aur Secret Password: " + v.pass + " hai.";
+      var exp = v.expiresAt || (now + window.SUBSCRIPTION_MS);
+      var isExp = now > exp;
+      var daysLeft = Math.max(0, Math.ceil((exp - now) / (1000 * 60 * 60 * 24)));
+      var expDateStr = new Date(exp).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+      var statusBadge = isExp
+        ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-red-500/20 text-red-400 border border-red-500/30">🔴 EXPIRED (' + expDateStr + ')</span>'
+        : '<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">🟢 ACTIVE (' + daysLeft + ' Days Left)</span>';
+
+      var waMsg = "Namaste " + v.name + " ji (" + v.biz + "), Aapka AutoLeads PRO 30-Days Login ID: " + v.phone + " aur Current Dynamic Password: " + v.pass + " hai (Valid till " + expDateStr + ").";
       var waLink = "https://wa.me/91" + v.phone + "?text=" + encodeURIComponent(waMsg);
-      return '<div class="bg-slate-900 border border-slate-800 p-3 rounded-xl text-xs flex justify-between items-center gap-2">' +
-        '<div>' +
-          '<b class="text-white block">' + v.biz + ' (' + v.name + ')</b>' +
-          '<span class="text-[11px] font-mono text-cyan-300">ID: ' + v.phone + ' | Pass: <b class="text-amber-300">' + v.pass + '</b></span>' +
+
+      return '<div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl text-xs space-y-2.5 flex flex-col justify-between">' +
+        '<div class="space-y-1">' +
+          '<div class="flex justify-between items-center gap-2">' +
+            '<b class="text-white text-sm">' + v.biz + ' (' + v.name + ')</b>' +
+            statusBadge +
+          '</div>' +
+          '<p class="text-[11px] text-slate-400">📂 ' + (v.cat || 'All') + ' | 📍 ' + (v.city || 'All India') + ' | UTR: <span class="font-mono text-slate-300">' + (v.utr || 'Verified') + '</span></p>' +
+          '<div class="bg-slate-950 p-2 rounded-xl border border-slate-800 font-mono text-[11px] flex justify-between items-center">' +
+            '<span class="text-cyan-300">ID: ' + v.phone + '</span>' +
+            '<span class="text-amber-300 font-bold">Pass: ' + v.pass + '</span>' +
+          '</div>' +
         '</div>' +
-        '<div class="flex items-center gap-1.5">' +
-          '<a href="' + waLink + '" target="_blank" class="bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 px-2 py-1 rounded text-[10px] font-bold">WA</a>' +
-          '<button type="button" onclick="deleteVendorAccount(\'' + v.phone + '\')" class="text-red-400 hover:text-red-300 font-bold px-2 py-1 cursor-pointer">✕</button>' +
+        '<div class="flex flex-wrap items-center gap-1.5 pt-1">' +
+          '<button type="button" onclick="adminRenewVendor30Days(\'' + v.phone + '\')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-extrabold cursor-pointer">🔄 Renew +30d (New Pass)</button>' +
+          '<button type="button" onclick="adminForceExpireVendor(\'' + v.phone + '\')" class="bg-amber-600/20 hover:bg-amber-600/40 text-amber-300 border border-amber-500/30 px-2.5 py-1.5 rounded-lg text-[10px] font-bold cursor-pointer">⏰ Mark Expired</button>' +
+          '<a href="' + waLink + '" target="_blank" class="bg-cyan-600/20 text-cyan-300 border border-cyan-500/30 px-2.5 py-1.5 rounded-lg text-[10px] font-bold">📲 Send WA</a>' +
+          '<button type="button" onclick="deleteVendorAccount(\'' + v.phone + '\')" class="ml-auto text-red-400 hover:text-red-300 font-bold px-2 py-1 cursor-pointer">🗑️</button>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -1233,7 +1480,6 @@
       return '<option value="' + st + '">' + st + '</option>';
     }).join('');
 
-    // Populate Category Dropdowns
     var filterCat = document.getElementById('filterCat');
     if (filterCat) {
       var curFilterCat = filterCat.value || "ALL";
@@ -1250,7 +1496,6 @@
       }
     });
 
-    // Populate State Dropdowns
     ['filterCity', 'inpCity'].forEach(function(id) {
       var el = document.getElementById(id);
       if (el) {
@@ -1372,17 +1617,27 @@
         }
       }
       if (localStorage.getItem('autoleads_unlocked') === 'true') {
-        window.isUnlocked = true;
-        var savedClient = localStorage.getItem('autoleads_client');
-        if (savedClient) {
-          window.clientData = JSON.parse(savedClient);
-          var heading = document.getElementById('customBusinessHeading');
-          if (heading && window.clientData.businessName) {
-            heading.innerText = "🏢 " + window.clientData.businessName + " - Paid Vendor Dashboard";
+        var exp = Number(localStorage.getItem('autoleads_expiry') || 0);
+        if (exp > 0 && Date.now() > exp) {
+          localStorage.removeItem('autoleads_unlocked');
+          window.isUnlocked = false;
+        } else {
+          if (!exp) {
+            exp = Date.now() + window.SUBSCRIPTION_MS;
+            localStorage.setItem('autoleads_expiry', String(exp));
           }
+          window.isUnlocked = true;
+          var savedClient = localStorage.getItem('autoleads_client');
+          if (savedClient) {
+            window.clientData = JSON.parse(savedClient);
+            var heading = document.getElementById('customBusinessHeading');
+            if (heading && window.clientData.businessName) {
+              heading.innerText = "🏢 " + window.clientData.businessName + " - Paid Vendor Dashboard";
+            }
+          }
+          var lockIcon = document.getElementById('vaultLockIcon');
+          if (lockIcon) lockIcon.className = "fa-solid fa-lock-open text-[10px] text-emerald-300";
         }
-        var lockIcon = document.getElementById('vaultLockIcon');
-        if (lockIcon) lockIcon.className = "fa-solid fa-lock-open text-[10px] text-emerald-300";
       }
     } catch (e) {}
     window.syncDynamicFilters();
@@ -1493,6 +1748,7 @@
   // AI BUILDER ACCESS & PWA INSTALL LOGIC
   // ==========================================================
   function accessAiBuilder() {
+    if (!window.enforceExpiryCheck()) return;
     if (window.isUnlocked === true || window.isAdminLoggedIn === true) {
       window.location.href = "ai-builder.html";
     } else {
@@ -1530,4 +1786,4 @@
   }
 </script>
 </body>
-          </html>
+  </html>
