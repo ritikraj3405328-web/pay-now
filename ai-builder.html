@@ -5,13 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Landing Page Builder & Auto-Leads SaaS</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Security Check: Block unauthorized direct access
+    if (localStorage.getItem('autoleads_unlocked') !== 'true') {
+      alert("🔒 Access Denied! Yeh VIP AI Builder sirf Paid Subscribers ke liye hai. Kripya pehle Login karein.");
+      window.location.href = "index.html";
+    }
+  </script>
   <style>
-    /* Premium Glassmorphism & Animations */
     .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
     .glass-panel { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
     .dynamic-bg { transition: all 0.5s ease-in-out; }
-    
-    /* Hide scrollbar for clean UI */
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: #0f172a; }
     ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
@@ -19,25 +23,23 @@
 </head>
 <body class="bg-slate-950 text-white min-h-screen font-sans">
 
-  <!-- ============================================== -->
-  <!-- MAIN DASHBOARD (Clients ke liye) -->
-  <!-- ============================================== -->
+  <!-- MAIN DASHBOARD -->
   <div id="dashboardView" class="max-w-6xl mx-auto p-4 sm:p-8">
-    
-    <header class="flex justify-between items-center pb-8 border-b border-slate-800 mb-8">
+    <header class="flex flex-wrap justify-between items-center gap-4 pb-8 border-b border-slate-800 mb-8">
       <div>
         <h1 class="text-3xl font-black bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">AutoLeads AI Builder</h1>
         <p class="text-sm text-slate-400">Create premium funnels & get instant leads via Telegram API</p>
       </div>
+      <a href="index.html" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 text-xs font-extrabold px-4 py-2.5 rounded-xl">
+        &larr; Back to Vendor Dashboard
+      </a>
     </header>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      
       <!-- 1. API Configuration Panel -->
       <div class="glass p-6 rounded-3xl col-span-1 space-y-4">
         <h2 class="text-lg font-bold flex items-center gap-2"><span class="text-2xl">⚙️</span> API Settings</h2>
         <p class="text-xs text-slate-400">Apna Telegram Bot Token aur Chat ID dalein taaki leads direct aapke phone par aayein.</p>
-        
         <div>
           <label class="text-[10px] uppercase text-slate-500 font-bold">Telegram Bot Token</label>
           <input type="text" id="tgToken" placeholder="783xxx:AAH..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 mt-1 text-sm outline-none focus:border-blue-500">
@@ -46,14 +48,12 @@
           <label class="text-[10px] uppercase text-slate-500 font-bold">Telegram Chat ID</label>
           <input type="text" id="tgChatId" placeholder="123456789" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 mt-1 text-sm outline-none focus:border-blue-500">
         </div>
-        
-        <button onclick="saveApiKeys()" class="w-full bg-blue-600 hover:bg-blue-500 font-bold py-2 rounded-xl text-sm transition-all shadow-lg shadow-blue-500/30">Save API Keys</button>
+        <button onclick="saveApiKeys()" class="w-full bg-blue-600 hover:bg-blue-500 font-bold py-2 rounded-xl text-sm transition-all shadow-lg shadow-blue-500/30 cursor-pointer">Save API Keys</button>
       </div>
 
       <!-- 2. AI Page Creator Form -->
       <div class="glass p-6 rounded-3xl col-span-1 md:col-span-2 space-y-4">
         <h2 class="text-lg font-bold flex items-center gap-2"><span class="text-2xl">✨</span> Generate New AI Page</h2>
-        
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="text-[10px] uppercase text-slate-500 font-bold">Business Name</label>
@@ -77,41 +77,29 @@
             <input type="text" id="bizOffer" placeholder="e.g. Get 20% Off on First Order" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 mt-1 text-sm outline-none">
           </div>
         </div>
-        
-        <button onclick="generateLandingPage()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:scale-[1.02] font-black py-3 rounded-xl text-sm transition-all shadow-lg shadow-emerald-500/30">🚀 GENERATE MAGIC PAGE</button>
+        <button onclick="generateLandingPage()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:scale-[1.02] font-black py-3 rounded-xl text-sm transition-all shadow-lg shadow-emerald-500/30 cursor-pointer">🚀 GENERATE MAGIC PAGE</button>
       </div>
-
     </div>
 
     <!-- 3. Saved Pages List -->
     <div class="mt-8">
       <h3 class="text-sm font-bold text-slate-300 mb-4 uppercase tracking-widest border-b border-slate-800 pb-2">Your Live Landing Pages</h3>
-      <div id="pagesList" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <!-- Generated pages will appear here -->
-      </div>
+      <div id="pagesList" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
     </div>
   </div>
 
-  <!-- ============================================== -->
-  <!-- DYNAMIC LIVE LANDING PAGE VIEW (Hide by default) -->
-  <!-- ============================================== -->
+  <!-- DYNAMIC LIVE LANDING PAGE VIEW -->
   <div id="livePageView" class="hidden min-h-screen flex-col dynamic-bg">
-    
-    <!-- Top control bar to go back -->
     <div class="bg-black/50 backdrop-blur p-3 flex justify-between items-center border-b border-white/10 relative z-50">
       <span class="text-xs font-bold px-3 py-1 bg-red-500/20 text-red-400 rounded-lg">Live Preview</span>
-      <button onclick="closeLivePage()" class="bg-white/10 hover:bg-white/20 text-white text-xs px-4 py-1.5 rounded-lg cursor-pointer">← Back to Dashboard</button>
+      <button onclick="closeLivePage()" class="bg-white/10 hover:bg-white/20 text-white text-xs px-4 py-1.5 rounded-lg cursor-pointer">&larr; Back to AI Builder</button>
     </div>
 
-    <!-- The actual dynamic content -->
     <div class="flex-1 flex items-center justify-center p-4 relative overflow-hidden" id="dynamicBackground">
-      <!-- AI decorative background elements -->
       <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full blur-[120px] opacity-30 pointer-events-none" id="blob1"></div>
       <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full blur-[120px] opacity-30 pointer-events-none" id="blob2"></div>
 
       <div class="glass-panel max-w-4xl w-full p-8 md:p-12 rounded-[2rem] shadow-2xl relative z-10 flex flex-col md:flex-row gap-8 items-center border-t border-l border-white/20">
-        
-        <!-- Left: Branding & Copy -->
         <div class="flex-1 space-y-6 text-center md:text-left">
           <span class="px-3 py-1 text-[10px] uppercase tracking-widest rounded-full font-bold border border-white/20" id="liveCategory">Category</span>
           <h1 class="text-4xl md:text-5xl font-black leading-tight text-white" id="liveName">Your Business Name</h1>
@@ -125,38 +113,29 @@
           </div>
         </div>
 
-        <!-- Right: Lead Capture Form -->
         <div class="w-full md:w-[350px] bg-black/40 p-6 rounded-3xl border border-white/10 shadow-2xl">
           <h3 class="text-lg font-bold text-white mb-1">Get in touch</h3>
           <p class="text-xs text-slate-400 mb-5">Fill details below and we will contact you instantly.</p>
-          
           <div class="space-y-3">
             <input type="text" id="leadName" placeholder="Your Name" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-white/50 transition-colors">
             <input type="tel" id="leadPhone" placeholder="Phone Number" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-white/50 transition-colors">
             <textarea id="leadQuery" rows="2" placeholder="What are you looking for?" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-white/50 transition-colors"></textarea>
-            
-            <button onclick="submitLead()" class="w-full py-3 rounded-xl text-sm font-black text-white shadow-xl transition-all hover:scale-105" id="liveSubmitBtn">
+            <button onclick="submitLead()" class="w-full py-3 rounded-xl text-sm font-black text-white shadow-xl transition-all hover:scale-105 cursor-pointer" id="liveSubmitBtn">
               Submit Inquiry
             </button>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 
-  <!-- ============================================== -->
-  <!-- JAVASCRIPT LOGIC (API & UI Handling) -->
-  <!-- ============================================== -->
   <script>
-    // 1. Load API keys on startup
     document.addEventListener("DOMContentLoaded", () => {
       document.getElementById('tgToken').value = localStorage.getItem('tgToken') || '';
       document.getElementById('tgChatId').value = localStorage.getItem('tgChatId') || '';
       renderPagesList();
     });
 
-    // 2. Save API Keys
     function saveApiKeys() {
       const token = document.getElementById('tgToken').value.trim();
       const chatId = document.getElementById('tgChatId').value.trim();
@@ -165,10 +144,8 @@
       alert("✅ API Keys Saved Successfully!");
     }
 
-    // 3. Database structure for pages
     let clientPages = JSON.parse(localStorage.getItem('clientPages')) || [];
 
-    // 4. Generate Landing Page
     function generateLandingPage() {
       const name = document.getElementById('bizName').value.trim();
       const cat = document.getElementById('bizCategory').value;
@@ -187,34 +164,28 @@
 
       clientPages.push(newPage);
       localStorage.setItem('clientPages', JSON.stringify(clientPages));
-      
-      // Clear inputs
       document.getElementById('bizName').value = '';
       document.getElementById('bizOffer').value = '';
-      
       renderPagesList();
       alert("🎉 Magic Page Created!");
     }
 
-    // 5. Render Pages List
     function renderPagesList() {
       const grid = document.getElementById('pagesList');
       grid.innerHTML = '';
-      
       if(clientPages.length === 0) {
         grid.innerHTML = '<p class="text-xs text-slate-500">No pages generated yet.</p>';
         return;
       }
-
       clientPages.forEach((page, index) => {
         grid.innerHTML += `
-          <div class="glass p-4 rounded-2xl border-t border-${page.color}">
+          <div class="glass p-4 rounded-2xl">
             <div class="w-10 h-10 rounded-xl mb-3" style="background-color: ${page.color}; opacity: 0.8"></div>
             <h4 class="font-bold text-white truncate">${page.name}</h4>
             <p class="text-[10px] text-slate-400 mb-3">${page.category}</p>
             <div class="flex gap-2">
-              <button onclick="openLivePage(${index})" class="flex-1 bg-white text-black text-xs font-bold py-1.5 rounded-lg">View Live</button>
-              <button onclick="deletePage(${index})" class="bg-red-500/20 text-red-400 text-xs px-3 rounded-lg border border-red-500/30">🗑️</button>
+              <button onclick="openLivePage(${index})" class="flex-1 bg-white text-black text-xs font-bold py-1.5 rounded-lg cursor-pointer">View Live</button>
+              <button onclick="deletePage(${index})" class="bg-red-500/20 text-red-400 text-xs px-3 rounded-lg border border-red-500/30 cursor-pointer">🗑️</button>
             </div>
           </div>
         `;
@@ -229,32 +200,27 @@
       }
     }
 
-    // 6. View Live Generated Page
     let currentViewingPage = null;
 
     function openLivePage(index) {
       const page = clientPages[index];
       currentViewingPage = page;
-
-      // Set Texts
       document.getElementById('liveName').innerText = page.name;
       document.getElementById('liveCategory').innerText = page.category;
       document.getElementById('liveOffer').innerText = page.offer;
-      
-      // Set Custom Brand Colors Dynamically
+
       const mainBg = document.getElementById('dynamicBackground');
       const submitBtn = document.getElementById('liveSubmitBtn');
       const blob1 = document.getElementById('blob1');
       const blob2 = document.getElementById('blob2');
 
-      mainBg.style.backgroundColor = '#020617'; // Keep dark base
+      mainBg.style.backgroundColor = '#020617';
       blob1.style.backgroundColor = page.color;
       blob2.style.backgroundColor = page.color;
       submitBtn.style.backgroundColor = page.color;
       document.getElementById('liveCategory').style.color = page.color;
       document.getElementById('liveCategory').style.borderColor = page.color;
 
-      // Switch Views
       document.getElementById('dashboardView').classList.add('hidden');
       document.getElementById('livePageView').classList.remove('hidden');
       document.getElementById('livePageView').classList.add('flex');
@@ -266,7 +232,6 @@
       document.getElementById('dashboardView').classList.remove('hidden');
     }
 
-    // 7. Auto-Lead Submission to Telegram API
     function submitLead() {
       const name = document.getElementById('leadName').value.trim();
       const phone = document.getElementById('leadPhone').value.trim();
@@ -276,12 +241,11 @@
         return alert("Please fill Name and Phone Number!");
       }
 
-      // Check API Keys
       const token = localStorage.getItem('tgToken');
       const chatId = localStorage.getItem('tgChatId');
 
       if(!token || !chatId) {
-        alert("⚠️ SYSTEM ERROR: The owner of this page has not configured Telegram API keys. Lead saved locally only.");
+        alert("⚠️ SYSTEM ERROR: The owner of this page has not configured Telegram API keys.");
         return;
       }
 
@@ -289,26 +253,12 @@
       submitBtn.innerText = "Sending...";
       submitBtn.disabled = true;
 
-      // Formatting Message for Telegram
-      const messageText = `
-🚨 *NEW LEAD ALERT* 🚨
-🏢 Source: ${currentViewingPage.name}
-        
-👤 Name: ${name}
-📞 Phone: ${phone}
-💬 Query: ${query}
-
-⚡ AutoLeads AI Generated
-      `;
-
-      // Telegram Bot API Endpoint
+      const messageText = `🚨 *NEW LEAD ALERT* 🚨\n🏢 Source: ${currentViewingPage.name}\n👤 Name: ${name}\n📞 Phone: ${phone}\n💬 Query: ${query}\n⚡ AutoLeads AI Generated`;
       const telegramUrl = `https://api.telegram.org/bot${token}/sendMessage`;
 
       fetch(telegramUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: chatId,
           text: messageText,
@@ -326,7 +276,7 @@
           alert("❌ API Error: " + data.description);
         }
       })
-      .catch(error => {
+      .catch(() => {
         alert("Network Error. Please try again.");
       })
       .finally(() => {
@@ -336,5 +286,4 @@
     }
   </script>
 </body>
-              </html>
-              
+</html>
