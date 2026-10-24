@@ -1437,25 +1437,18 @@
     showInstallBanner();
   });
 
-  function showInstallBanner() {
+    function showInstallBanner() {
     var banner = document.getElementById('installBanner');
-    if (banner) banner.classList.remove('hidden');
+    if (banner) {
+      banner.classList.remove('hidden');
+      
+      // 7 सेकंड के baad banner apne-aap gayab ho jayega taaki user ko pareshani na ho
+      setTimeout(function() {
+        banner.classList.add('hidden');
+      }, 7000);
+    }
   }
 
-  var installBtn = document.getElementById('installBtn');
-  if (installBtn) {
-    installBtn.addEventListener('click', async () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        await deferredPrompt.userChoice;
-        deferredPrompt = null;
-      } else {
-        alert("Aapke browser me app already installed hai, ya aap Chrome menu (3 dots) par click karke 'Install App' / 'Add to Home Screen' select kar sakte hain!");
-      }
-      var banner = document.getElementById('installBanner');
-      if (banner) banner.classList.add('hidden');
-    });
-  }
 
   window.addEventListener('DOMContentLoaded', function() {
     window.loadSavedLeadsFromStorage();
