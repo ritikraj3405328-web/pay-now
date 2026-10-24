@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,7 @@
     <!-- INSTALL BANNER (PWA) -->
 <div id="installBanner" class="hidden bg-gradient-to-r from-blue-900 to-indigo-900 border-b border-blue-500/30 p-3 px-4 flex items-center justify-between shadow-lg sticky top-0 z-50">
   <div class="flex items-center space-x-3">
-    <div class="bg-blue-600 p-2 rounded-xl text-white font-bold text-xs">âš¡</div>
+    <div class="bg-blue-600 p-2 rounded-xl text-white font-bold text-xs">⚡</div>
     <div>
       <h4 class="text-xs font-bold text-white">AutoLeads PRO App Install Karein</h4>
       <p class="text-[10px] text-blue-200">Fast access ke liye home screen par jodein!</p>
@@ -72,12 +72,12 @@
 
   window.copyUpiId = function() {
     if (navigator.clipboard) navigator.clipboard.writeText('9661692365@ybl');
-    window.showToast("âš¡ UPI ID (9661692365@ybl) Copied!");
+    window.showToast("⚡ UPI ID (9661692365@ybl) Copied!");
   };
 
   window.showTab = function(tabName) {
     if (tabName === 'leads' && !window.isUnlocked) {
-      window.showToast("ðŸ”’ Leads Vault Locked! Complete â‚¹499 Onboarding & UTR Verification first.");
+      window.showToast("🔒 Leads Vault Locked! Complete ₹499 Onboarding & UTR Verification first.");
       tabName = 'pay';
     }
     var viewMap = { home: 'viewHome', pay: 'viewPay', leads: 'viewLeads', catalog: 'viewCatalog', waGen: 'viewWaGen', freeLeads: 'viewFreeLeads', listShop: 'viewListShop' };
@@ -110,7 +110,7 @@
 <!-- PWA Install Banner -->
 <div id="installBanner" class="hidden bg-gradient-to-r from-blue-600 to-emerald-600 text-white px-4 py-3 flex items-center justify-between shadow-2xl sticky top-0 z-50">
   <div class="flex items-center gap-2.5">
-    <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center font-black">âš¡</div>
+    <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center font-black">⚡</div>
     <div>
       <b class="text-xs block">AutoLeads PRO App Install Karein</b>
       <span class="text-[10px] text-slate-100">Fast access ke liye home screen par jodein!</span>
@@ -118,7 +118,7 @@
   </div>
   <div class="flex items-center gap-2">
     <button type="button" id="installBtn" class="bg-white text-slate-950 font-extrabold text-xs px-3 py-1.5 rounded-lg shadow cursor-pointer">Install Now</button>
-    <button type="button" onclick="document.getElementById('installBanner').classList.add('hidden')" class="text-white text-xs px-2 py-1 font-bold">âœ•</button>
+    <button type="button" onclick="document.getElementById('installBanner').classList.add('hidden')" class="text-white text-xs px-2 py-1 font-bold">✕</button>
   </div>
 </div>
 
@@ -127,7 +127,7 @@
 <nav class="bg-slate-950/90 border-b border-slate-800 px-3 py-3 sticky top-0 z-40">
   <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
     <div class="flex items-center gap-2 cursor-pointer" onclick="showTab('home')">
-      <span class="text-white font-black text-sm">âš¡ AutoLeads <span class="bg-emerald-500 text-black px-1 rounded text-[10px]">PRO</span></span>
+      <span class="text-white font-black text-sm">⚡ AutoLeads <span class="bg-emerald-500 text-black px-1 rounded text-[10px]">PRO</span></span>
     </div>
     <div class="flex flex-wrap items-center gap-1">
       <button type="button" onclick="showTab('home')" id="navHome" class="text-xs font-bold px-3 py-2 rounded-xl bg-blue-600 text-white cursor-pointer">Home</button>
@@ -157,8 +157,8 @@
       Apna Business Name aur Target Category select karein. System automatic aapke business ke liye Custom Leads Portal aur 1-Click WhatsApp Pitch tayar kar dega!
     </p>
     <div class="flex flex-wrap justify-center gap-3.5 pt-2">
-      <button type="button" onclick="showTab('pay')" class="btn-gradient text-white font-extrabold px-8 py-4 rounded-2xl text-sm shadow-xl cursor-pointer">ðŸš€ Start Business Onboarding (â‚¹499)</button>
-      <button type="button" onclick="showTab('freeLeads')" class="bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 font-bold px-6 py-4 rounded-2xl text-sm cursor-pointer">ðŸŽ Claim Daily 3 Free Leads</button>
+      <button type="button" onclick="showTab('pay')" class="btn-gradient text-white font-extrabold px-8 py-4 rounded-2xl text-sm shadow-xl cursor-pointer">🚀 Start Business Onboarding (₹499)</button>
+      <button type="button" onclick="showTab('freeLeads')" class="bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 font-bold px-6 py-4 rounded-2xl text-sm cursor-pointer">🎁 Claim Daily 3 Free Leads</button>
     </div>
   </div>
   <div id="teaserContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
@@ -169,31 +169,31 @@
   <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-teal-500/10 blur-2xl rounded-full pointer-events-none"></div>
   
   <div class="flex items-center gap-2 mb-4 relative z-10">
-    <span class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-[10px] font-black px-2.5 py-1 rounded shadow-lg uppercase tracking-wider animate-pulse">ðŸŒŸ VIP Feature</span>
-    <span class="text-[10px] text-emerald-400 font-bold border border-emerald-500/30 px-2.5 py-1 rounded bg-emerald-500/10">Included in â‚¹499 Plan</span>
+    <span class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-[10px] font-black px-2.5 py-1 rounded shadow-lg uppercase tracking-wider animate-pulse">🌟 VIP Feature</span>
+    <span class="text-[10px] text-emerald-400 font-bold border border-emerald-500/30 px-2.5 py-1 rounded bg-emerald-500/10">Included in ₹499 Plan</span>
   </div>
   
   <div class="relative z-10">
-    <h3 class="text-xl md:text-2xl font-black text-white mb-2">ðŸš€ Auto-Generate AI Landing Pages</h3>
+    <h3 class="text-xl md:text-2xl font-black text-white mb-2">🚀 Auto-Generate AI Landing Pages</h3>
     <p class="text-xs md:text-sm text-slate-300 mb-5 leading-relaxed">Apne business ke liye 1-click me premium website banayein. <strong class="text-white">Telegram Bot API</strong> integration ke sath, har naye customer ki lead seedha apne phone par payein!</p>
     
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
       <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
-        <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">âœ”ï¸</span> Unlimited Premium Pages
+        <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> Unlimited Premium Pages
       </div>
       <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
-        <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">âœ”ï¸</span> Instant Telegram Alerts
+        <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> Instant Telegram Alerts
       </div>
       <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
-        <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">âœ”ï¸</span> Custom Brand Colors
+        <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> Custom Brand Colors
       </div>
       <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
-        <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">âœ”ï¸</span> High-Converting Lead Forms
+        <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> High-Converting Lead Forms
       </div>
     </div>
     
     <button onclick="accessAiBuilder()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 rounded-xl text-sm transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)] cursor-pointer hover:scale-[1.01]">
-      âš¡ Access AI Builder Now
+      ⚡ Access AI Builder Now
     </button>
   </div>
 </div>
@@ -208,8 +208,8 @@
           <h2 class="text-xl sm:text-2xl font-black text-white">Business Onboarding & Unlock</h2>
         </div>
         <div class="text-right bg-slate-900 px-4 py-2 rounded-2xl border border-slate-800">
-          <span class="text-[10px] text-slate-400 line-through block">â‚¹1,999</span>
-          <span class="text-2xl font-black text-emerald-400">â‚¹499</span>
+          <span class="text-[10px] text-slate-400 line-through block">₹1,999</span>
+          <span class="text-2xl font-black text-emerald-400">₹499</span>
         </div>
       </div>
       <div class="bg-slate-950 rounded-2xl p-4 border border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-5 items-center text-center sm:text-left">
@@ -218,9 +218,9 @@
           <span class="text-[11px] text-slate-400 mt-2">Scan with PhonePe / GPay / Paytm</span>
         </div>
         <div class="space-y-3">
-          <span class="text-xs font-extrabold text-cyan-400 uppercase">Step 1: Complete â‚¹499 Payment</span>
+          <span class="text-xs font-extrabold text-cyan-400 uppercase">Step 1: Complete ₹499 Payment</span>
           <p class="text-xs text-slate-300">QR Code scan karein ya UPI App se pay karein:</p>
-          <a href="upi://pay?pa=9661692365@ybl&pn=Prem%20Raj&am=499" class="block w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-extrabold py-3 rounded-xl text-center text-sm shadow-lg">Pay â‚¹499 via UPI App</a>
+          <a href="upi://pay?pa=9661692365@ybl&pn=Prem%20Raj&am=499" class="block w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-extrabold py-3 rounded-xl text-center text-sm shadow-lg">Pay ₹499 via UPI App</a>
           <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
             <span class="font-mono text-slate-200">9661692365@ybl</span>
             <button type="button" onclick="copyUpiId()" class="text-cyan-400 font-extrabold cursor-pointer">Copy UPI</button>
@@ -236,11 +236,11 @@
           <div>
             <label class="text-[11px] text-slate-400 block mb-1">Target Category *</label>
             <select id="inpCat" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
-              <option value="Mobile & Electronics">ðŸ”µ Mobile & Electronics</option>
-              <option value="Electrical & Hardware">ðŸŸ  Electrical & Hardware</option>
-              <option value="Clothing & Garments">ðŸŸ£ Clothing & Garments</option>
-              <option value="Grocery & Supermart">ðŸŸ¢ Grocery & Supermart</option>
-              <option value="Medical & Pharmacy">ðŸ”´ Medical & Pharmacy</option>
+              <option value="Mobile & Electronics">🔵 Mobile & Electronics</option>
+              <option value="Electrical & Hardware">🟠 Electrical & Hardware</option>
+              <option value="Clothing & Garments">🟣 Clothing & Garments</option>
+              <option value="Grocery & Supermart">🟢 Grocery & Supermart</option>
+              <option value="Medical & Pharmacy">🔴 Medical & Pharmacy</option>
             </select>
           </div>
         </div>
@@ -256,13 +256,13 @@
             <input type="text" id="inpUtr" required maxlength="12" minlength="12" placeholder="12-Digit UTR" class="w-full bg-slate-900 border border-amber-500/70 rounded-xl px-3.5 py-2.5 text-xs font-mono text-amber-300 outline-none">
           </div>
         </div>
-        <button type="submit" class="w-full btn-gradient text-white font-extrabold py-3.5 rounded-xl text-sm shadow-xl cursor-pointer">ðŸ”“ Verify UTR & Generate Custom Leads Vault</button>
+        <button type="submit" class="w-full btn-gradient text-white font-extrabold py-3.5 rounded-xl text-sm shadow-xl cursor-pointer">🔓 Verify UTR & Generate Custom Leads Vault</button>
       </form>
     </div>
     <div class="lg:col-span-5 glass rounded-3xl p-6 flex flex-col justify-between space-y-5 shadow-2xl">
       <div>
         <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3">
-          <b class="text-sm text-white">ðŸŸ¢ Recent Onboarded Businesses</b>
+          <b class="text-sm text-white">🟢 Recent Onboarded Businesses</b>
           <span class="text-xs font-mono bg-emerald-500/15 text-emerald-300 px-2.5 py-1 rounded-full font-bold">Live</span>
         </div>
         <div id="recentBuyersList" class="space-y-2.5 max-h-80 overflow-y-auto pr-1"></div>
@@ -282,21 +282,21 @@
   <div class="glass rounded-3xl p-5 sm:p-6 bg-gradient-to-r from-blue-950/60 via-slate-900 to-emerald-950/50 border border-cyan-500/40 shadow-2xl flex flex-wrap items-center justify-between gap-4">
     <div class="space-y-1">
       <div class="flex items-center gap-2">
-        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300">âœ” PRO VAULT ACTIVE</span>
+        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300">✔ PRO VAULT ACTIVE</span>
         <span id="customPortalCatBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-cyan-500/20 text-cyan-300">All Categories</span>
       </div>
-      <h2 id="customBusinessHeading" class="text-xl sm:text-2xl font-black text-white">ðŸ¢ Custom B2B Leads Portal</h2>
+      <h2 id="customBusinessHeading" class="text-xl sm:text-2xl font-black text-white">🏢 Custom B2B Leads Portal</h2>
       <p id="customPitchSubtext" class="text-xs text-slate-300">1-Click WhatsApp buttons are customized for your business!</p>
     </div>
     <div class="flex flex-wrap gap-2.5">
       <button type="button" onclick="loadMoreCustomLeads()" class="bg-purple-600 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer">+ Load Fresh Leads</button>
-      <button type="button" onclick="downloadLeadsCsv()" class="bg-emerald-600 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer">ðŸ“¥ Download Excel</button>
+      <button type="button" onclick="downloadLeadsCsv()" class="bg-emerald-600 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer">📥 Download Excel</button>
     </div>
   </div>
 
   <div class="glass rounded-3xl p-5 space-y-4">
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-      <input type="text" id="filterSearch" oninput="renderLeadsGrid()" placeholder="ðŸ” Search shop name, owner, city..." class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
+      <input type="text" id="filterSearch" oninput="renderLeadsGrid()" placeholder="🔍 Search shop name, owner, city..." class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
       <select id="filterCat" onchange="renderLeadsGrid()" class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
         <option value="ALL">All Categories</option><option value="Mobile & Electronics">Mobile & Electronics</option><option value="Electrical & Hardware">Electrical & Hardware</option><option value="Clothing & Garments">Clothing & Garments</option><option value="Grocery & Supermart">Grocery & Supermart</option><option value="Medical & Pharmacy">Medical & Pharmacy</option>
       </select>
@@ -313,25 +313,25 @@
   <div class="glass rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border-purple-500/30">
     <div class="border-b border-slate-800 pb-4">
       <span class="text-[10px] font-extrabold text-purple-400 uppercase tracking-widest">FREE SELLER TOOL #1</span>
-      <h2 class="text-xl sm:text-2xl font-black text-white">ðŸ›ï¸ Digital B2B Catalog & Rate-List Maker</h2>
+      <h2 class="text-xl sm:text-2xl font-black text-white">🛍️ Digital B2B Catalog & Rate-List Maker</h2>
       <p class="text-xs text-slate-300 mt-1">Apne products ka professional rate-list message banayein aur WhatsApp par share karein.</p>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <div><label class="text-xs text-slate-400 block mb-1">Shop Name *</label><input type="text" id="catShopName" placeholder="Eg. Agni Volt" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
       <div><label class="text-xs text-slate-400 block mb-1">Product Name *</label><input type="text" id="catProdName" placeholder="Eg. SMPS Module" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
       <div><label class="text-xs text-slate-400 block mb-1">WhatsApp No *</label><input type="tel" id="catPhone" maxlength="10" placeholder="9661692365" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
-      <div><label class="text-xs text-slate-400 block mb-1">Wholesale Price (â‚¹) *</label><input type="number" id="catPrice" placeholder="145" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
-      <div><label class="text-xs text-slate-400 block mb-1">MRP (â‚¹)</label><input type="number" id="catMrp" placeholder="299" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Wholesale Price (₹) *</label><input type="number" id="catPrice" placeholder="145" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">MRP (₹)</label><input type="number" id="catMrp" placeholder="299" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
       <div><label class="text-xs text-slate-400 block mb-1">MOQ</label><input type="text" id="catMoq" placeholder="Min 20 Pcs" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
       <div class="sm:col-span-3"><label class="text-xs text-slate-400 block mb-1">Features / Notes</label><textarea id="catDesc" rows="2" placeholder="1 Year Warranty..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></textarea></div>
     </div>
-    <button type="button" onclick="generateCatalogMessage()" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-extrabold py-3.5 rounded-xl text-xs shadow-lg cursor-pointer">âœ¨ Generate WhatsApp Rate-List</button>
+    <button type="button" onclick="generateCatalogMessage()" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-extrabold py-3.5 rounded-xl text-xs shadow-lg cursor-pointer">✨ Generate WhatsApp Rate-List</button>
     <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
-      <span class="text-[11px] font-bold text-amber-400 uppercase">ðŸ“± Preview:</span>
+      <span class="text-[11px] font-bold text-amber-400 uppercase">📱 Preview:</span>
       <div id="catalogOutputBox" class="bg-slate-900 p-4 rounded-xl text-xs font-mono text-slate-200 whitespace-pre-line border border-slate-800">Catalog yahan aayega...</div>
       <div class="flex gap-3">
-        <button type="button" onclick="copyCatalogMessage()" class="flex-1 bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs cursor-pointer">ðŸ“‹ Copy Text</button>
-        <button type="button" onclick="sendCatalogOnWhatsApp()" class="flex-1 bg-emerald-600 text-white font-extrabold py-2.5 rounded-xl text-xs shadow cursor-pointer">ðŸ’¬ Share on WhatsApp</button>
+        <button type="button" onclick="copyCatalogMessage()" class="flex-1 bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs cursor-pointer">📋 Copy Text</button>
+        <button type="button" onclick="sendCatalogOnWhatsApp()" class="flex-1 bg-emerald-600 text-white font-extrabold py-2.5 rounded-xl text-xs shadow cursor-pointer">💬 Share on WhatsApp</button>
       </div>
     </div>
   </div>
@@ -342,21 +342,21 @@
   <div class="glass rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border-cyan-500/30">
     <div class="border-b border-slate-800 pb-4">
       <span class="text-[10px] font-extrabold text-cyan-400 uppercase tracking-widest">FREE SELLER TOOL #2</span>
-      <h2 class="text-xl sm:text-2xl font-black text-white">ðŸ’¬ WhatsApp Link & QR Generator</h2>
+      <h2 class="text-xl sm:text-2xl font-black text-white">💬 WhatsApp Link & QR Generator</h2>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div><label class="text-xs text-slate-400 block mb-1">WhatsApp Number *</label><input type="tel" id="genWaPhone" maxlength="10" placeholder="9835012345" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
       <div><label class="text-xs text-slate-400 block mb-1">Pre-filled Message *</label><input type="text" id="genWaMsg" placeholder="Hi, mujhe catalog chahiye!" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
     </div>
-    <button type="button" onclick="generateWaLink()" class="w-full bg-cyan-600 text-white font-extrabold py-3.5 rounded-xl text-xs shadow-lg cursor-pointer">ðŸ”— Generate Link & QR Code</button>
+    <button type="button" onclick="generateWaLink()" class="w-full bg-cyan-600 text-white font-extrabold py-3.5 rounded-xl text-xs shadow-lg cursor-pointer">🔗 Generate Link & QR Code</button>
     <div id="waResultBox" class="hidden bg-slate-950 p-5 rounded-2xl border border-slate-800 grid grid-cols-1 sm:grid-cols-12 gap-5 items-center">
       <div class="sm:col-span-4 text-center"><img id="waQrImg" src="" class="w-36 h-36 bg-white p-2 rounded-2xl shadow mx-auto"></div>
       <div class="sm:col-span-8 space-y-3">
-        <span class="text-xs text-emerald-400 font-extrabold block">âœ” Link Tayar Hai:</span>
+        <span class="text-xs text-emerald-400 font-extrabold block">✔ Link Tayar Hai:</span>
         <input type="text" id="waResultUrl" readonly class="w-full bg-slate-900 p-3 text-xs font-mono text-cyan-300 rounded-xl border border-slate-800">
         <div class="flex gap-2.5">
-          <button type="button" onclick="copyWaLink()" class="flex-1 bg-slate-800 text-white py-2.5 rounded-xl text-xs font-bold cursor-pointer">ðŸ“‹ Copy Link</button>
-          <a id="waOpenBtn" href="#" target="_blank" class="flex-1 bg-emerald-600 text-white text-center py-2.5 rounded-xl text-xs font-extrabold">ðŸš€ Test Link</a>
+          <button type="button" onclick="copyWaLink()" class="flex-1 bg-slate-800 text-white py-2.5 rounded-xl text-xs font-bold cursor-pointer">📋 Copy Link</button>
+          <a id="waOpenBtn" href="#" target="_blank" class="flex-1 bg-emerald-600 text-white text-center py-2.5 rounded-xl text-xs font-extrabold">🚀 Test Link</a>
         </div>
       </div>
     </div>
@@ -368,9 +368,9 @@
     <div class="border-b border-slate-800 pb-4 flex flex-wrap justify-between items-center gap-3">
       <div>
         <span class="text-[10px] font-extrabold text-emerald-400 uppercase tracking-widest">DAILY TRAFFIC BOOSTER</span>
-        <h2 class="text-xl sm:text-2xl font-black text-white">ðŸŽ Rozana 3 Free Sample Verified Leads</h2>
+        <h2 class="text-xl sm:text-2xl font-black text-white">🎁 Rozana 3 Free Sample Verified Leads</h2>
       </div>
-      <button type="button" onclick="showTab('pay')" class="bg-blue-600 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer">ðŸ”“ Unlock All (â‚¹499)</button>
+      <button type="button" onclick="showTab('pay')" class="bg-blue-600 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer">🔓 Unlock All (₹499)</button>
     </div>
     <div id="freeLeadsStatus" class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs text-slate-300 text-center">Checking quota...</div>
     <div id="freeLeadsContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
@@ -382,7 +382,7 @@
   <div class="glass rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border-amber-500/30">
     <div class="border-b border-slate-800 pb-4">
       <span class="text-[10px] font-extrabold text-amber-400 uppercase tracking-widest">VIRAL DIRECTORY LOOP</span>
-      <h2 class="text-xl sm:text-2xl font-black text-white">âž• List Your Shop Free in Directory</h2>
+      <h2 class="text-xl sm:text-2xl font-black text-white">➕ List Your Shop Free in Directory</h2>
     </div>
     <form onsubmit="submitFreeShopListing(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div><label class="text-xs text-slate-400 block mb-1">Shop Name *</label><input type="text" id="freeShopName" required placeholder="Eg. Balaji Electricals" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
@@ -396,10 +396,10 @@
       <div><label class="text-xs text-slate-400 block mb-1">City *</label><input type="text" id="freeShopCity" required placeholder="Patna" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
       <div><label class="text-xs text-slate-400 block mb-1">Area *</label><input type="text" id="freeShopArea" required placeholder="Station Road" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
       <div><label class="text-xs text-slate-400 block mb-1">WhatsApp No *</label><input type="tel" id="freeShopPhone" required maxlength="10" placeholder="9835012345" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
-      <div class="sm:col-span-2"><button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-extrabold py-3.5 rounded-xl text-xs shadow-lg cursor-pointer">ðŸš€ Submit Shop Free</button></div>
+      <div class="sm:col-span-2"><button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-extrabold py-3.5 rounded-xl text-xs shadow-lg cursor-pointer">🚀 Submit Shop Free</button></div>
     </form>
     <div class="pt-4 border-t border-slate-800 space-y-2.5">
-      <span class="text-xs font-extrabold text-emerald-400 uppercase">ðŸŸ¢ Recently Listed Shops:</span>
+      <span class="text-xs font-extrabold text-emerald-400 uppercase">🟢 Recently Listed Shops:</span>
       <div id="recentlyListedShopsBox" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
     </div>
   </div>
@@ -415,10 +415,10 @@
       var l = sample[i];
       var bStyle = window.catBadgeStyles[l.cat] || window.catBadgeStyles["Mobile & Electronics"];
       html += '<div class="glass neon-hover rounded-2xl p-5 space-y-3">' +
-        '<div class="flex justify-between items-center"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ' + bStyle + '">' + l.cat + '</span><span class="text-[10px] text-emerald-400 font-bold">âœ” Verified</span></div>' +
+        '<div class="flex justify-between items-center"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ' + bStyle + '">' + l.cat + '</span><span class="text-[10px] text-emerald-400 font-bold">✔ Verified</span></div>' +
         '<b class="text-base text-white block">' + l.shop + '</b>' +
-        '<p class="text-xs text-slate-400">ðŸ“ ' + l.area + ', <b class="text-white">' + l.city + '</b></p>' +
-        '<button type="button" onclick="showTab(\'pay\')" class="w-full bg-slate-800 text-cyan-300 text-xs font-bold py-2.5 rounded-xl cursor-pointer">ðŸ”“ Unlock WhatsApp Number</button>' +
+        '<p class="text-xs text-slate-400">📍 ' + l.area + ', <b class="text-white">' + l.city + '</b></p>' +
+        '<button type="button" onclick="showTab(\'pay\')" class="w-full bg-slate-800 text-cyan-300 text-xs font-bold py-2.5 rounded-xl cursor-pointer">🔓 Unlock WhatsApp Number</button>' +
       '</div>';
     }
     box.innerHTML = html;
@@ -431,7 +431,7 @@
     for (var i = 0; i < window.recentBuyers.length; i++) {
       var b = window.recentBuyers[i];
       html += '<div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 text-xs space-y-1">' +
-        '<div class="flex justify-between"><b class="text-white">âœ” ' + b.biz + '</b><span class="text-emerald-400 font-bold">â‚¹499</span></div>' +
+        '<div class="flex justify-between"><b class="text-white">✔ ' + b.biz + '</b><span class="text-emerald-400 font-bold">₹499</span></div>' +
         '<div class="flex justify-between text-[11px] text-slate-400"><span>' + b.name + '</span><span class="font-mono text-amber-300">UTR: ' + b.utr + '</span></div>' +
       '</div>';
     }
@@ -450,14 +450,14 @@
     var senderBiz = window.clientData.businessName || "Wholesale Hub";
     grid.innerHTML = filtered.map(function(l) {
       var waUrl = "https://wa.me/91" + l.phone + "?text=" + encodeURIComponent("Namaste " + l.owner + " ji, hum " + senderBiz + " se hain. Rate list bhejein?");
-      return '<div class="glass p-4 rounded-xl space-y-2"><b class="text-white text-sm">' + l.shop + '</b><p class="text-xs text-slate-400">' + l.city + ' | ' + l.owner + '</p><a href="' + waUrl + '" target="_blank" class="block bg-emerald-600 text-white text-center py-2 rounded text-xs font-bold">ðŸ’¬ WhatsApp Pitch</a></div>';
+      return '<div class="glass p-4 rounded-xl space-y-2"><b class="text-white text-sm">' + l.shop + '</b><p class="text-xs text-slate-400">' + l.city + ' | ' + l.owner + '</p><a href="' + waUrl + '" target="_blank" class="block bg-emerald-600 text-white text-center py-2 rounded text-xs font-bold">💬 WhatsApp Pitch</a></div>';
     }).join('');
   };
 
   window.loadMoreCustomLeads = function() {
     window.masterLeads.unshift({ shop: "Bharat Hub #" + Math.floor(Math.random()*90+10), owner: "Sandeep Kumar", cat: "Grocery & Supermart", city: "Patna", area: "Market", phone: "9835099887" });
     window.renderLeadsGrid();
-    window.showToast("âš¡ Fresh Leads Added!");
+    window.showToast("⚡ Fresh Leads Added!");
   };
 
   window.downloadLeadsCsv = function() {
@@ -477,7 +477,7 @@
     var mrp = document.getElementById('catMrp').value.trim() || "0";
     var moq = document.getElementById('catMoq').value.trim() || "Min 10 Pcs";
     var desc = document.getElementById('catDesc').value.trim() || "Best Quality";
-    window.generatedCatalogText = "ðŸ›ï¸ *RATE-LIST*\nShop: " + shop + "\nProduct: " + prod + "\nPrice: â‚¹" + price + " (MRP: â‚¹" + mrp + ")\nMOQ: " + moq + "\nDetails: " + desc + "\nContact: +91" + ph;
+    window.generatedCatalogText = "🛍️ *RATE-LIST*\nShop: " + shop + "\nProduct: " + prod + "\nPrice: ₹" + price + " (MRP: ₹" + mrp + ")\nMOQ: " + moq + "\nDetails: " + desc + "\nContact: +91" + ph;
     document.getElementById('catalogOutputBox').innerText = window.generatedCatalogText;
     window.showToast("Catalog Generated!");
   };
@@ -510,16 +510,16 @@
     var todayStr = new Date().toDateString();
     var claimed = localStorage.getItem('autoleads_free_claimed');
     if (claimed === todayStr) {
-      statusBox.innerHTML = "âœ… Aaj ki 3 free leads unlock ho chuki hain!";
-      container.innerHTML = window.masterLeads.slice(0, 3).map(l => '<div class="glass p-3 rounded-xl"><b class="text-white text-xs">' + l.shop + '</b><p class="text-[10px] text-slate-400">ðŸ“ž +91 ' + l.phone + '</p></div>').join('');
+      statusBox.innerHTML = "✅ Aaj ki 3 free leads unlock ho chuki hain!";
+      container.innerHTML = window.masterLeads.slice(0, 3).map(l => '<div class="glass p-3 rounded-xl"><b class="text-white text-xs">' + l.shop + '</b><p class="text-[10px] text-slate-400">📞 +91 ' + l.phone + '</p></div>').join('');
     } else {
-      statusBox.innerHTML = "ðŸŽ Aaj ka free quota available hai!";
-      container.innerHTML = '<div class="col-span-full text-center"><button type="button" onclick="claimFreeLeadsToday()" class="bg-emerald-600 text-white font-bold px-6 py-3 rounded-xl text-xs cursor-pointer">ðŸ”“ Unlock 3 Free Leads</button></div>';
+      statusBox.innerHTML = "🎁 Aaj ka free quota available hai!";
+      container.innerHTML = '<div class="col-span-full text-center"><button type="button" onclick="claimFreeLeadsToday()" class="bg-emerald-600 text-white font-bold px-6 py-3 rounded-xl text-xs cursor-pointer">🔓 Unlock 3 Free Leads</button></div>';
     }
   };
   window.claimFreeLeadsToday = function() {
     localStorage.setItem('autoleads_free_claimed', new Date().toDateString());
-    window.showToast("ðŸŽ‰ Unlocked!");
+    window.showToast("🎉 Unlocked!");
     window.checkDailyFreeLeads();
   };
 
@@ -599,10 +599,10 @@
   <div class="glass rounded-3xl p-6 border-red-500/30 space-y-4 bg-slate-900/90 border border-red-500/20">
     <div class="flex justify-between items-center border-b border-slate-800 pb-3">
       <div>
-        <span class="text-[10px] font-extrabold text-red-400 uppercase tracking-widest">ðŸ”’ OWNER CONTROL ROOM</span>
+        <span class="text-[10px] font-extrabold text-red-400 uppercase tracking-widest">🔒 OWNER CONTROL ROOM</span>
         <h3 class="text-lg font-black text-white">Secret Admin Lead Adder</h3>
       </div>
-      <button type="button" onclick="lockAdminPanel()" class="bg-slate-800 text-slate-300 text-xs px-3 py-1.5 rounded-xl font-bold cursor-pointer">Lock Panel ðŸ”’</button>
+      <button type="button" onclick="lockAdminPanel()" class="bg-slate-800 text-slate-300 text-xs px-3 py-1.5 rounded-xl font-bold cursor-pointer">Lock Panel 🔒</button>
     </div>
 
     <!-- 1-Click Lead Add Form -->
@@ -622,14 +622,14 @@
         <input type="text" id="admArea" placeholder="Area (Eg. Boring Road)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
         <input type="tel" id="admPhone" maxlength="10" placeholder="10 Digit WhatsApp No" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
       </div>
-      <button type="button" onclick="adminAddNewLead()" class="w-full bg-gradient-to-r from-red-600 to-amber-600 text-white font-extrabold py-3 rounded-xl text-xs shadow-lg cursor-pointer">âš¡ 1-Click Instant Add Lead</button>
+      <button type="button" onclick="adminAddNewLead()" class="w-full bg-gradient-to-r from-red-600 to-amber-600 text-white font-extrabold py-3 rounded-xl text-xs shadow-lg cursor-pointer">⚡ 1-Click Instant Add Lead</button>
     </div>
   </div>
 </div>
 
 <!-- CATCHY SECRET OPEN TRIGGER (Footer ke andar chhota sa link) -->
 <div class="text-center py-6">
-  <button type="button" onclick="requestAdminAccess()" class="text-[10px] text-slate-600 hover:text-slate-400 font-mono cursor-pointer">âš™ï¸ Owner Portal Login</button>
+  <button type="button" onclick="requestAdminAccess()" class="text-[10px] text-slate-600 hover:text-slate-400 font-mono cursor-pointer">⚙️ Owner Portal Login</button>
 </div>
   <script>
   window.addEventListener('DOMContentLoaded', function() {
@@ -647,7 +647,7 @@
     var pin = prompt("Enter Owner Secret PIN:");
     if (pin === "7808") { 
       document.getElementById('secretAdminWrapper').style.display = 'block';
-      if(typeof window.showToast === 'function') window.showToast("ðŸ”“ Admin Panel Unlocked!");
+      if(typeof window.showToast === 'function') window.showToast("🔓 Admin Panel Unlocked!");
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     } else if(pin !== null) {
       alert("Galat PIN hai!");
@@ -656,7 +656,7 @@
 
   function lockAdminPanel() {
     document.getElementById('secretAdminWrapper').style.display = 'none';
-    if(typeof window.showToast === 'function') window.showToast("ðŸ”’ Admin Panel Locked!");
+    if(typeof window.showToast === 'function') window.showToast("🔒 Admin Panel Locked!");
   }
 
   function adminAddNewLead() {
@@ -680,7 +680,7 @@
 
     localStorage.setItem('autoleads_extra_leads', JSON.stringify(window.masterLeads));
     if(typeof window.showToast === 'function') {
-      window.showToast("ðŸŽ‰ Lead Safalpurvak Add Ho Gayi!");
+      window.showToast("🎉 Lead Safalpurvak Add Ho Gayi!");
     } else {
       alert("Lead Safalpurvak Add Ho Gayi!");
     }
@@ -697,18 +697,18 @@
 function accessAiBuilder() {
   // Aapke purane code me window.isUnlocked = false/true pehle se set hai
   if (window.isUnlocked === true) {
-    // Agar user ne â‚¹499 de diya hai, toh usko direct nayi file par bhej do
+    // Agar user ne ₹499 de diya hai, toh usko direct nayi file par bhej do
     window.location.href = "ai-builder.html";
   } else {
     // Agar user free wala hai, toh usko alert do aur payment wale hisse par bhej do
     if(typeof window.showToast === 'function') {
-      window.showToast("ðŸ”’ VIP Feature: Ise unlock karne ke liye â‚¹499 ka plan lein!");
+      window.showToast("🔒 VIP Feature: Ise unlock karne ke liye ₹499 ka plan lein!");
     } else {
-      alert("ðŸ”’ VIP Feature: Ise unlock karne ke liye â‚¹499 ka plan lein!");
+      alert("🔒 VIP Feature: Ise unlock karne ke liye ₹499 ka plan lein!");
     }
     
     // User ko automatically us jagah scroll karwa do jahan payment ki baat hai
-    alert("Kripya niche jakar pehle â‚¹499 ka Business Onboarding Start karein taaki aap yeh AI Page Builder use kar sakein.");
+    alert("Kripya niche jakar pehle ₹499 ka Business Onboarding Start karein taaki aap yeh AI Page Builder use kar sakein.");
     
     // Agar aapka koi 'Start Business Onboarding' wala button hai, toh use scroll karke focus me layein
     window.scrollTo({ top: document.body.scrollHeight / 2, behavior: 'smooth' });
@@ -716,18 +716,18 @@ function accessAiBuilder() {
 }
   // AI Builder Access Logic
 function accessAiBuilder() {
-  // Agar user ne â‚¹499 pay kar diya hai
+  // Agar user ne ₹499 pay kar diya hai
   if (window.isUnlocked === true) {
     window.location.href = "ai-builder.html";
   } else {
     // Agar free user hai toh alert dega aur payment ki taraf bhejega
     if(typeof window.showToast === 'function') {
-      window.showToast("ðŸ”’ VIP Feature: Ise unlock karne ke liye â‚¹499 ka plan lein!");
+      window.showToast("🔒 VIP Feature: Ise unlock karne ke liye ₹499 ka plan lein!");
     } else {
-      alert("ðŸ”’ VIP Feature: Ise unlock karne ke liye â‚¹499 ka plan lein!");
+      alert("🔒 VIP Feature: Ise unlock karne ke liye ₹499 ka plan lein!");
     }
 
-    alert("Kripya niche jakar pehle â‚¹499 ka Business Onboarding Start karein taaki aap yeh AI Page Builder use kar sakein.");
+    alert("Kripya niche jakar pehle ₹499 ka Business Onboarding Start karein taaki aap yeh AI Page Builder use kar sakein.");
     window.scrollTo({ top: document.body.scrollHeight / 2, behavior: 'smooth' });
   }
 }
