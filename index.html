@@ -34,6 +34,72 @@
   window.generatedCatalogText = "";
   window.clientData = { name: "", phone: "", businessName: "Your Wholesale Business", category: "ALL", city: "ALL" };
 
+  // Master List of 25+ Business Categories (Including Manufacturing)
+  window.allMasterCategories = [
+    "Manufacturing & Factory",
+    "Mobile & Electronics",
+    "Electrical & Hardware",
+    "Solar, Inverter & Power",
+    "Industrial Machinery & Tools",
+    "Clothing & Garments",
+    "Grocery & Supermart",
+    "Medical & Pharmacy",
+    "Construction & Building Material",
+    "Furniture & Home Decor",
+    "Plastic, Packaging & Printing",
+    "Automobile Parts & EV",
+    "Agriculture, Seeds & Fertilizers",
+    "Footwear & Leather Goods",
+    "Cosmetics, Beauty & Jewellery",
+    "Computer, Laptop & IT Hardware",
+    "Hotel, Restaurant & Kitchen Equip.",
+    "Chemical & Raw Materials",
+    "Stationery & Office Supplies",
+    "Sports, Fitness & Toys",
+    "Real Estate & Property",
+    "Transport, Courier & Logistics",
+    "Digital Marketing & Software",
+    "Consultancy & B2B Services"
+  ];
+
+  // Master List of All Indian States & Union Territories
+  window.allIndianStates = [
+    "Bihar",
+    "Delhi NCR",
+    "Uttar Pradesh",
+    "Maharashtra",
+    "Gujarat",
+    "Rajasthan",
+    "West Bengal",
+    "Madhya Pradesh",
+    "Karnataka",
+    "Tamil Nadu",
+    "Telangana",
+    "Punjab",
+    "Haryana",
+    "Jharkhand",
+    "Odisha",
+    "Chhattisgarh",
+    "Assam",
+    "Kerala",
+    "Andhra Pradesh",
+    "Uttarakhand",
+    "Himachal Pradesh",
+    "Jammu & Kashmir",
+    "Goa",
+    "Chandigarh",
+    "Puducherry",
+    "Tripura",
+    "Meghalaya",
+    "Manipur",
+    "Nagaland",
+    "Arunachal Pradesh",
+    "Mizoram",
+    "Sikkim",
+    "Ladakh",
+    "Andaman & Nicobar"
+  ];
+
   // Default Admin Login (ID: admin | PIN/Pass: 7808)
   window.adminCredentials = JSON.parse(localStorage.getItem('autoleads_admin_creds')) || {
     id: "admin",
@@ -41,7 +107,6 @@
   };
 
   // Secret Algorithmic Key Generator for Paid Vendors (Works across all devices on GitHub without a database!)
-  // Har 10-digit mobile number ka ek unique Secret Password banta hai jo sirf Admin Panel se nikal sakta hai
   window.generateVendorSecretPass = function(phoneStr) {
     var clean = String(phoneStr || "").replace(/\D/g, "").slice(-10);
     if (clean.length !== 10) return null;
@@ -59,20 +124,22 @@
   window.paidVendors = JSON.parse(localStorage.getItem('autoleads_paid_vendors')) || [];
 
   window.recentBuyers = [
-    { name: "Vikram Gupta", biz: "Vikram Switchgear Co.", cat: "Electrical & Hardware", utr: "4128****9012", amt: 499 },
+    { name: "Vikram Gupta", biz: "Vikram Switchgear Mfg.", cat: "Manufacturing & Factory", utr: "4128****9012", amt: 499 },
     { name: "Aman Verma", biz: "Aman MobiWorld", cat: "Mobile & Electronics", utr: "6295****4418", amt: 499 },
     { name: "Sandeep Jain", biz: "Royal Kurti House", cat: "Clothing & Garments", utr: "3310****7821", amt: 499 }
   ];
 
   window.masterLeads = [
-    { shop: "Agni Telecom & Mobile Hub", owner: "Rajesh Verma", cat: "Mobile & Electronics", city: "Patna", area: "Boring Road", phone: "9835012345" },
-    { shop: "Shree Krishna Switchgear", owner: "Mukesh Gupta", cat: "Electrical & Hardware", city: "Patna", area: "Station Road", phone: "9431056789" },
-    { shop: "Royal Ethnic Garments", owner: "Ankit Sharma", cat: "Clothing & Garments", city: "Delhi", area: "Karol Bagh", phone: "9811223344" },
-    { shop: "SuperMart Kirana Wholesale", owner: "Vikas Agrawal", cat: "Grocery & Supermart", city: "Jaipur", area: "Malviya Nagar", phone: "9829011223" },
-    { shop: "LifeCare Medico & Pharma", owner: "S. K. Sinha", cat: "Medical & Pharmacy", city: "Patna", area: "Govind Mitra Road", phone: "9934011223" }
+    { shop: "Agni Telecom & Mobile Hub", owner: "Rajesh Verma", cat: "Mobile & Electronics", city: "Bihar", area: "Patna - Boring Road", phone: "9835012345" },
+    { shop: "Apex Industrial & LED Mfg.", owner: "Prashant Mehta", cat: "Manufacturing & Factory", city: "Gujarat", area: "Ahmedabad GIDC", phone: "9825098765" },
+    { shop: "Shree Krishna Switchgear", owner: "Mukesh Gupta", cat: "Electrical & Hardware", city: "Bihar", area: "Patna - Station Road", phone: "9431056789" },
+    { shop: "Royal Ethnic Garments", owner: "Ankit Sharma", cat: "Clothing & Garments", city: "Delhi NCR", area: "Karol Bagh", phone: "9811223344" },
+    { shop: "SuperMart Kirana Wholesale", owner: "Vikas Agrawal", cat: "Grocery & Supermart", city: "Rajasthan", area: "Jaipur - Malviya Nagar", phone: "9829011223" },
+    { shop: "LifeCare Medico & Pharma", owner: "S. K. Sinha", cat: "Medical & Pharmacy", city: "Uttar Pradesh", area: "Lucknow - Gomti Nagar", phone: "9934011223" }
   ];
 
   window.catBadgeStyles = {
+    "Manufacturing & Factory": "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
     "Mobile & Electronics": "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
     "Electrical & Hardware": "bg-amber-500/15 text-amber-300 border-amber-500/30",
     "Clothing & Garments": "bg-purple-500/15 text-purple-300 border-purple-500/30",
@@ -194,7 +261,7 @@
 <div id="viewHome" class="max-w-6xl mx-auto px-4 pt-8 space-y-10">
   <div class="glass rounded-3xl p-6 sm:p-12 text-center space-y-6 border-blue-500/30 shadow-2xl">
     <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
-      <i class="fa-solid fa-circle-check text-emerald-400"></i> INDIA'S #1 AUTOMATED B2B & B2C LEAD PORTAL
+      <i class="fa-solid fa-circle-check text-emerald-400"></i> INDIA'S #1 AUTOMATED B2B, MANUFACTURING & B2C LEAD PORTAL
     </div>
     <h1 class="text-3xl sm:text-5xl font-black text-white leading-tight max-w-3xl mx-auto">
       Apne Business Requirement Ke Hisab Se Payein <br>
@@ -203,7 +270,7 @@
       </span>
     </h1>
     <p class="text-xs sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
-      Apna Business Name aur Target Category select karein. Paid Subscribers ko milta hai Verified Login Password, Custom Leads Dashboard, 1-Click WhatsApp Pitch aur Unlimited CSV Download!
+      Apna Business Name, 25+ Category (Manufacturing, Wholesale, Retail) aur Target State select karein. Paid Subscribers ko milta hai Verified Login Password, Custom Leads Dashboard, 1-Click WhatsApp Pitch aur Unlimited CSV Download!
     </p>
     <div class="flex flex-wrap justify-center gap-3.5 pt-2">
       <button type="button" onclick="showTab('pay')" class="btn-gradient text-white font-extrabold px-8 py-4 rounded-2xl text-sm shadow-xl cursor-pointer">🚀 Start Business Onboarding (₹499)</button>
@@ -226,18 +293,18 @@
     </div>
     
     <div class="relative z-10">
-      <h3 class="text-xl md:text-2xl font-black text-white mb-2">🚀 Auto-Generate AI Landing Pages</h3>
-      <p class="text-xs md:text-sm text-slate-300 mb-5 leading-relaxed">Apne business ke liye 1-click me premium website banayein. <strong class="text-white">Telegram Bot API</strong> integration ke sath, har naye customer ki lead seedha apne phone par payein!</p>
+      <h3 class="text-xl md:text-2xl font-black text-white mb-2">🚀 Auto-Generate ₹15,000 Value AI Landing Pages</h3>
+      <p class="text-xs md:text-sm text-slate-300 mb-5 leading-relaxed">Apne business ke liye 1-click me agency-level premium website banayein aur WhatsApp par share karein. <strong class="text-white">Telegram Bot API</strong> integration ke sath, har naye customer ki lead seedha apne phone par payein!</p>
       
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
         <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
-          <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> Unlimited Premium Pages
+          <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> Unlimited Premium Pages + Share Link
         </div>
         <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
           <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> Instant Telegram Alerts
         </div>
         <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
-          <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> Custom Brand Colors
+          <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> 25+ Categories & Manufacturing
         </div>
         <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
           <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> High-Converting Lead Forms
@@ -294,22 +361,14 @@
           <div><label class="text-[11px] text-slate-400 block mb-1">Login WhatsApp Number (10 Digit) *</label><input type="tel" id="inpPhone" required maxlength="10" minlength="10" placeholder="Eg. 9876543210" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
           <div><label class="text-[11px] text-slate-400 block mb-1">Business Name *</label><input type="text" id="inpBiz" required placeholder="Eg. Agni Volt Electronic" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
           <div>
-            <label class="text-[11px] text-slate-400 block mb-1">Target Category *</label>
-            <select id="inpCat" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
-              <option value="Mobile & Electronics">🔵 Mobile & Electronics</option>
-              <option value="Electrical & Hardware">🟠 Electrical & Hardware</option>
-              <option value="Clothing & Garments">🟣 Clothing & Garments</option>
-              <option value="Grocery & Supermart">🟢 Grocery & Supermart</option>
-              <option value="Medical & Pharmacy">🔴 Medical & Pharmacy</option>
-            </select>
+            <label class="text-[11px] text-slate-400 block mb-1">Target Business Category *</label>
+            <select id="inpCat" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></select>
           </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="text-[11px] text-slate-400 block mb-1">Target City / Location</label>
-            <select id="inpCity" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
-              <option value="ALL">All Cities</option><option value="Patna">Patna</option><option value="Delhi">Delhi</option><option value="Mumbai">Mumbai</option><option value="Jaipur">Jaipur</option><option value="Lucknow">Lucknow</option><option value="Kolkata">Kolkata</option>
-            </select>
+            <label class="text-[11px] text-slate-400 block mb-1">Target State / Location (All India) *</label>
+            <select id="inpCity" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></select>
           </div>
           <div>
             <label class="text-[11px] text-amber-300 font-bold block mb-1">12-Digit Payment UTR No. *</label>
@@ -421,7 +480,7 @@
         <span id="filteredCountBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300">Live Leads</span>
       </div>
       <h2 id="customBusinessHeading" class="text-xl sm:text-2xl font-black text-white">🏢 Custom B2B & B2C Vendor Dashboard</h2>
-      <p id="customPitchSubtext" class="text-xs text-slate-300">Apne Business, Requirement aur Location ke hisab se filter karein, Direct WhatsApp karein ya CSV download karein!</p>
+      <p id="customPitchSubtext" class="text-xs text-slate-300">Apne Business Category (Manufacturing/Wholesale/Retail) aur State ke hisab se filter karein, Direct WhatsApp karein ya CSV download karein!</p>
     </div>
     <div class="flex flex-wrap gap-2">
       <button type="button" onclick="accessAiBuilder()" class="bg-gradient-to-r from-amber-500 to-emerald-600 text-white font-extrabold px-3.5 py-2.5 rounded-xl text-xs shadow-lg cursor-pointer">🚀 AI Page Builder</button>
@@ -434,25 +493,21 @@
   <!-- Paid Vendor Self-Service Filter Panel -->
   <div class="glass rounded-3xl p-5 space-y-4">
     <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
-      <span class="text-xs font-extrabold text-cyan-400 uppercase">🎯 Vendor Self-Service Filter (Apni Zaroorat, Business Category aur Location Chunein)</span>
+      <span class="text-xs font-extrabold text-cyan-400 uppercase">🎯 Vendor Self-Service Filter (Apni Zaroorat, Business Category aur State Chunein)</span>
       <span class="text-[11px] text-slate-400">Jo filter select karenge, wahi Custom CSV me download hoga!</span>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
       <div>
         <label class="text-[10px] text-slate-400 font-bold uppercase block mb-1">1. Zaroorat / Keyword Search</label>
-        <input type="text" id="filterSearch" oninput="renderLeadsGrid()" placeholder="🔍 Search shop, customer, area, city..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
+        <input type="text" id="filterSearch" oninput="renderLeadsGrid()" placeholder="🔍 Search shop, customer, area, state..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
       </div>
       <div>
-        <label class="text-[10px] text-slate-400 font-bold uppercase block mb-1">2. Business Category</label>
-        <select id="filterCat" onchange="renderLeadsGrid()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
-          <option value="ALL">All Categories</option><option value="Mobile & Electronics">Mobile & Electronics</option><option value="Electrical & Hardware">Electrical & Hardware</option><option value="Clothing & Garments">Clothing & Garments</option><option value="Grocery & Supermart">Grocery & Supermart</option><option value="Medical & Pharmacy">Medical & Pharmacy</option>
-        </select>
+        <label class="text-[10px] text-slate-400 font-bold uppercase block mb-1">2. Business Category (25+ Categories)</label>
+        <select id="filterCat" onchange="renderLeadsGrid()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></select>
       </div>
       <div>
-        <label class="text-[10px] text-slate-400 font-bold uppercase block mb-1">3. Location / City</label>
-        <select id="filterCity" onchange="renderLeadsGrid()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
-          <option value="ALL">All Cities</option><option value="Patna">Patna</option><option value="Delhi">Delhi</option><option value="Mumbai">Mumbai</option><option value="Jaipur">Jaipur</option><option value="Lucknow">Lucknow</option><option value="Kolkata">Kolkata</option>
-        </select>
+        <label class="text-[10px] text-slate-400 font-bold uppercase block mb-1">3. State / Location (All India States)</label>
+        <select id="filterCity" onchange="renderLeadsGrid()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></select>
       </div>
     </div>
   </div>
@@ -546,7 +601,7 @@
           Personal Vendor Login, 1-Click Direct WhatsApp Share & Custom CSV Download Chahiye?
         </h3>
         <p class="text-xs text-slate-300 leading-relaxed">
-          Free sample me sirf basic preview dikhta hai. <strong class="text-emerald-400">₹499 Paid Subscriber Plan</strong> me aapko milta hai alag <strong class="text-white">Vendor Login Password & Dashboard</strong>, har lead par <strong class="text-white">Direct WhatsApp Pitch / Share Button</strong> aur apne <strong class="text-cyan-300">Business Category & Location (City/Area)</strong> ke hisab se Unlimited CSV/Excel File download karne ka full access!
+          Free sample me sirf basic preview dikhta hai. <strong class="text-emerald-400">₹499 Paid Subscriber Plan</strong> me aapko milta hai alag <strong class="text-white">Vendor Login Password & Dashboard</strong>, har lead par <strong class="text-white">Direct WhatsApp Pitch / Share Button</strong> aur apne <strong class="text-cyan-300">Business Category & State</strong> ke hisab se Unlimited CSV/Excel File download karne ka full access!
         </p>
       </div>
       <button type="button" onclick="showTab('pay')" class="shrink-0 btn-gradient text-white font-extrabold px-5 py-3 rounded-xl text-xs shadow-xl cursor-pointer whitespace-nowrap">
@@ -566,24 +621,25 @@
   <div class="glass rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border-amber-500/30">
     <div class="border-b border-slate-800 pb-4">
       <span class="text-[10px] font-extrabold text-amber-400 uppercase tracking-widest">VIRAL DIRECTORY LOOP</span>
-      <h2 class="text-xl sm:text-2xl font-black text-white">➕ List Your Shop Free in Directory</h2>
+      <h2 class="text-xl sm:text-2xl font-black text-white">➕ List Your Shop / Factory Free in Directory</h2>
     </div>
     <form onsubmit="submitFreeShopListing(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div><label class="text-xs text-slate-400 block mb-1">Shop Name *</label><input type="text" id="freeShopName" required placeholder="Eg. Balaji Electricals" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Shop / Factory Name *</label><input type="text" id="freeShopName" required placeholder="Eg. Balaji Electricals" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
       <div><label class="text-xs text-slate-400 block mb-1">Owner Name *</label><input type="text" id="freeShopOwner" required placeholder="Eg. Ramesh" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
       <div>
-        <label class="text-xs text-slate-400 block mb-1">Category *</label>
-        <select id="freeShopCat" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
-          <option value="Mobile & Electronics">Mobile & Electronics</option><option value="Electrical & Hardware">Electrical & Hardware</option><option value="Clothing & Garments">Clothing & Garments</option><option value="Grocery & Supermart">Grocery & Supermart</option><option value="Medical & Pharmacy">Medical & Pharmacy</option>
-        </select>
+        <label class="text-xs text-slate-400 block mb-1">Business Category *</label>
+        <select id="freeShopCat" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></select>
       </div>
-      <div><label class="text-xs text-slate-400 block mb-1">City *</label><input type="text" id="freeShopCity" required placeholder="Patna" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
-      <div><label class="text-xs text-slate-400 block mb-1">Area *</label><input type="text" id="freeShopArea" required placeholder="Station Road" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+      <div>
+        <label class="text-xs text-slate-400 block mb-1">State *</label>
+        <select id="freeShopCity" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></select>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">City & Area *</label><input type="text" id="freeShopArea" required placeholder="Eg. Patna - Station Road" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
       <div><label class="text-xs text-slate-400 block mb-1">WhatsApp No *</label><input type="tel" id="freeShopPhone" required maxlength="10" placeholder="9835012345" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
       <div class="sm:col-span-2"><button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-extrabold py-3.5 rounded-xl text-xs shadow-lg cursor-pointer">🚀 Submit Shop Free</button></div>
     </form>
     <div class="pt-4 border-t border-slate-800 space-y-2.5">
-      <span class="text-xs font-extrabold text-emerald-400 uppercase">🟢 Recently Listed Shops:</span>
+      <span class="text-xs font-extrabold text-emerald-400 uppercase">🟢 Recently Listed Businesses:</span>
       <div id="recentlyListedShopsBox" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
     </div>
   </div>
@@ -600,13 +656,13 @@
         <h3 class="text-xl font-black text-white">Admin Dashboard: Vendor Password Generator & Bulk CSV Upload</h3>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <span id="admTotalLeadsCount" class="text-xs font-extrabold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-xl">Total Leads: 5</span>
+        <span id="admTotalLeadsCount" class="text-xs font-extrabold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-xl">Total Leads: 6</span>
         <button type="button" onclick="showTab('leads')" class="bg-blue-600 text-white text-xs px-3.5 py-2 rounded-xl font-extrabold cursor-pointer">👁️ Preview Vendor Vault</button>
         <button type="button" onclick="logoutAdmin()" class="bg-slate-800 hover:bg-red-600 text-slate-200 text-xs px-3.5 py-2 rounded-xl font-bold cursor-pointer">Lock & Logout 🔒</button>
       </div>
     </div>
 
-    <!-- SECTION 1: PAID VENDOR SECRET PASSWORD GENERATOR (WORKS ON ALL PHONES WITHOUT SERVER) -->
+    <!-- SECTION 1: PAID VENDOR SECRET PASSWORD GENERATOR -->
     <div class="space-y-4 bg-slate-950/95 p-5 rounded-2xl border border-emerald-500/40 shadow-xl">
       <div>
         <span class="text-xs font-extrabold text-emerald-400 uppercase block">1️⃣ Paid Vendor Secret Password Generator (100% Secure - Works on Any Device)</span>
@@ -640,7 +696,7 @@
       <div class="flex flex-wrap justify-between items-center gap-2">
         <div>
           <span class="text-xs font-extrabold text-cyan-400 uppercase block">2️⃣ Bulk CSV File Upload (For Subscriber Filter & Download)</span>
-          <p class="text-[11px] text-slate-300 mt-0.5">CSV file upload karein (Columns: <code class="text-amber-300">Shop,Owner,Category,City,Area,Phone</code>). Subscribers apne Business aur Location ke hisab se ise khud filter aur download kar sakenge!</p>
+          <p class="text-[11px] text-slate-300 mt-0.5">CSV file upload karein (Columns: <code class="text-amber-300">Shop,Owner,Category,State,Area,Phone</code>). Subscribers apne Business Category aur State ke hisab se ise khud filter aur download kar sakenge!</p>
         </div>
         <div class="flex flex-wrap gap-2">
           <button type="button" onclick="downloadSampleCsvTemplate()" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 text-[11px] font-bold px-3 py-2 rounded-xl cursor-pointer">
@@ -669,17 +725,11 @@
     <div class="space-y-3 bg-slate-950/70 p-5 rounded-2xl border border-slate-800">
       <span class="text-xs font-extrabold text-amber-400 uppercase block">3️⃣ Single Lead Instant Adder</span>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <input type="text" id="admShop" placeholder="Shop / Customer Name (Eg. Balaji Store)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+        <input type="text" id="admShop" placeholder="Shop / Factory Name (Eg. Balaji Store)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
         <input type="text" id="admOwner" placeholder="Owner / Contact Name" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-        <select id="admCat" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-          <option value="Mobile & Electronics">Mobile & Electronics</option>
-          <option value="Electrical & Hardware">Electrical & Hardware</option>
-          <option value="Clothing & Garments">Clothing & Garments</option>
-          <option value="Grocery & Supermart">Grocery & Supermart</option>
-          <option value="Medical & Pharmacy">Medical & Pharmacy</option>
-        </select>
-        <input type="text" id="admCity" placeholder="City (Eg. Patna)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-        <input type="text" id="admArea" placeholder="Area (Eg. Boring Road)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+        <select id="admCat" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"></select>
+        <select id="admCity" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"></select>
+        <input type="text" id="admArea" placeholder="City & Area (Eg. Patna - Boring Road)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
         <input type="tel" id="admPhone" maxlength="10" placeholder="10 Digit WhatsApp No" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
       </div>
       <button type="button" onclick="adminAddNewLead()" class="w-full bg-gradient-to-r from-red-600 to-amber-600 text-white font-extrabold py-3 rounded-xl text-xs shadow-lg cursor-pointer">⚡ 1-Click Instant Add Lead</button>
@@ -756,10 +806,10 @@
 
   window.shareLeadOnWhatsApp = function(shop, owner, cat, city, area, phone) {
     var msg = "🔥 *VERIFIED LEAD DETAILS*\n" +
-              "🏢 Shop/Customer: " + shop + "\n" +
+              "🏢 Business/Customer: " + shop + "\n" +
               "👤 Name: " + owner + "\n" +
               "📂 Category: " + cat + "\n" +
-              "📍 Location: " + (area ? area + ", " : "") + city + "\n" +
+              "📍 State/Location: " + (area ? area + ", " : "") + city + "\n" +
               "📞 WhatsApp/Phone: +91" + phone;
     window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
   };
@@ -775,7 +825,7 @@
     var grid = document.getElementById('leadsCardsGrid');
     if (!grid) return;
     if (filtered.length === 0) {
-      grid.innerHTML = '<div class="col-span-full glass p-6 rounded-2xl text-center text-xs text-slate-400">Is filter me abhi koi lead nahi hai. Category ya City filter change karke dekhein.</div>';
+      grid.innerHTML = '<div class="col-span-full glass p-6 rounded-2xl text-center text-xs text-slate-400">Is filter me abhi koi lead nahi hai. Category ya State filter change karke dekhein ya "+ Load Fresh Leads" dabayein.</div>';
       return;
     }
     var senderBiz = window.clientData.businessName || "Wholesale Hub";
@@ -809,11 +859,18 @@
   };
 
   window.loadMoreCustomLeads = function() {
-    window.masterLeads.unshift({ shop: "Bharat Hub #" + Math.floor(Math.random()*90+10), owner: "Sandeep Kumar", cat: "Grocery & Supermart", city: "Patna", area: "Market", phone: "9835099887" });
+    var samplePool = [
+      { shop: "Bharat Industrial Mfg. #" + Math.floor(Math.random()*90+10), owner: "Sandeep Kumar", cat: "Manufacturing & Factory", city: "Maharashtra", area: "Pune MIDC", phone: "9835099887" },
+      { shop: "urya Power & Solar Hub #" + Math.floor(Math.random()*90+10), owner: "Rakesh Tiwari", cat: "Solar, Inverter & Power", city: "Uttar Pradesh", area: "Noida Sector 62", phone: "9811445566" },
+      { shop: "National Hardware & Tools #" + Math.floor(Math.random()*90+10), owner: "Manoj Patel", cat: "Electrical & Hardware", city: "Gujarat", area: "Surat Ring Road", phone: "9825112244" },
+      { shop: "Royal Packaging & Polymers #" + Math.floor(Math.random()*90+10), owner: "Deepak Jain", cat: "Plastic, Packaging & Printing", city: "Delhi NCR", area: "Okhla Phase 2", phone: "9810556677" }
+    ];
+    var pick = samplePool[Math.floor(Math.random() * samplePool.length)];
+    window.masterLeads.unshift(pick);
     localStorage.setItem('autoleads_extra_leads', JSON.stringify(window.masterLeads));
     window.syncDynamicFilters();
     window.renderLeadsGrid();
-    window.showToast("⚡ Fresh Leads Added!");
+    window.showToast("⚡ Fresh Verified Lead Added!");
   };
 
   window.downloadLeadsCsv = function() {
@@ -822,7 +879,7 @@
       window.showToast("⚠️ Selected filter me koi lead nahi mili!");
       return;
     }
-    var csv = "Shop,Owner,Category,City,Area,Phone\n" + filtered.map(function(l) {
+    var csv = "Shop,Owner,Category,State,Area,Phone\n" + filtered.map(function(l) {
       var s = (l.shop || "").replace(/"/g, '""');
       var o = (l.owner || "").replace(/"/g, '""');
       var c = (l.cat || "").replace(/"/g, '""');
@@ -832,7 +889,7 @@
       return '"' + s + '","' + o + '","' + c + '","' + ci + '","' + ar + '","91' + ph + '"';
     }).join("\n");
     var catVal = (document.getElementById('filterCat') && document.getElementById('filterCat').value !== "ALL") ? document.getElementById('filterCat').value.replace(/[^a-zA-Z0-9]/g, '_') : "AllCategories";
-    var cityVal = (document.getElementById('filterCity') && document.getElementById('filterCity').value !== "ALL") ? document.getElementById('filterCity').value.replace(/[^a-zA-Z0-9]/g, '_') : "AllCities";
+    var cityVal = (document.getElementById('filterCity') && document.getElementById('filterCity').value !== "ALL") ? document.getElementById('filterCity').value.replace(/[^a-zA-Z0-9]/g, '_') : "AllStates";
     var a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
     a.download = "Leads_" + catVal + "_" + cityVal + ".csv";
@@ -868,7 +925,6 @@
     if (filterCity && vendorObj.city && vendorObj.city !== "ALL") filterCity.value = vendorObj.city;
   };
 
-  // Fixed: Does NOT auto-unlock with fake UTR! Sends UTR to Owner WhatsApp for verification
   window.submitOnboarding = function(e) {
     e.preventDefault();
     var name = document.getElementById('inpName').value.trim();
@@ -887,7 +943,6 @@
       return;
     }
 
-    // Save pending vendor preferences locally so when Admin sends password, their category & business name are remembered
     var pendingProfile = { name: name, phone: phone, biz: biz, cat: cat, city: city };
     localStorage.setItem('autoleads_pending_profile_' + phone, JSON.stringify(pendingProfile));
 
@@ -895,7 +950,7 @@
                     "👤 *Vendor Name:* " + name + "\n" +
                     "🏢 *Business:* " + biz + "\n" +
                     "📂 *Category:* " + cat + "\n" +
-                    "📍 *City:* " + city + "\n" +
+                    "📍 *Target State:* " + city + "\n" +
                     "📞 *Login WhatsApp No:* " + phone + "\n" +
                     "🔢 *12-Digit UTR:* " + utr + "\n\n" +
                     "Sir, maine ₹499 payment kar diya hai. Kripya UTR verify karke mera *Vendor Login Password* bhej dijiye.";
@@ -910,7 +965,6 @@
     window.showTab('login');
   };
 
-  // Vendor Login: Verifies mathematical secret password OR admin custom list
   window.handleVendorLogin = function(e) {
     e.preventDefault();
     var ph = document.getElementById('loginVendorPhone').value.trim().replace(/\D/g, '').slice(-10);
@@ -1137,7 +1191,7 @@
     var box = document.getElementById('recentlyListedShopsBox');
     if (!box) return;
     box.innerHTML = window.masterLeads.slice(0, 4).map(function(s) {
-      return '<div class="bg-slate-900 p-2.5 rounded-xl text-xs"><b class="text-white">' + s.shop + '</b><span class="block text-[10px] text-slate-400">' + s.city + '</span></div>';
+      return '<div class="bg-slate-900 p-2.5 rounded-xl text-xs"><b class="text-white">' + s.shop + '</b><span class="block text-[10px] text-slate-400">' + s.area + ', ' + s.city + '</span></div>';
     }).join('');
   };
 
@@ -1147,7 +1201,7 @@
       shop: document.getElementById('freeShopName').value.trim(),
       owner: document.getElementById('freeShopOwner').value.trim(),
       cat: document.getElementById('freeShopCat').value,
-      city: document.getElementById('freeShopCity').value.trim(),
+      city: document.getElementById('freeShopCity').value,
       area: document.getElementById('freeShopArea').value.trim(),
       phone: document.getElementById('freeShopPhone').value.trim()
     });
@@ -1160,42 +1214,60 @@
   };
 
   // ==========================================================
-  // DYNAMIC FILTERS, GITHUB CSV AUTO-FETCH & ADMIN CSV UPLOAD
+  // DYNAMIC FILTERS: PRESERVES ALL 25+ CATEGORIES & ALL INDIAN STATES
   // ==========================================================
   window.syncDynamicFilters = function() {
-    var cats = [];
-    var cities = [];
+    var cats = window.allMasterCategories.slice();
+    var states = window.allIndianStates.slice();
+
     (window.masterLeads || []).forEach(function(l) {
       if (l.cat && cats.indexOf(l.cat) === -1) cats.push(l.cat);
-      if (l.city && cities.indexOf(l.city) === -1) cities.push(l.city);
+      if (l.city && states.indexOf(l.city) === -1) states.push(l.city);
     });
 
+    var catOptionsHtml = cats.map(function(c) {
+      return '<option value="' + c + '">' + c + '</option>';
+    }).join('');
+
+    var stateOptionsHtml = states.map(function(st) {
+      return '<option value="' + st + '">' + st + '</option>';
+    }).join('');
+
+    // Populate Category Dropdowns
     var filterCat = document.getElementById('filterCat');
     if (filterCat) {
-      var currentCat = filterCat.value || "ALL";
-      filterCat.innerHTML = '<option value="ALL">All Categories</option>' + cats.map(function(c) {
-        return '<option value="' + c + '">' + c + '</option>';
-      }).join('');
-      if (cats.indexOf(currentCat) !== -1 || currentCat === "ALL") filterCat.value = currentCat;
+      var curFilterCat = filterCat.value || "ALL";
+      filterCat.innerHTML = '<option value="ALL">All Categories (25+ Industries)</option>' + catOptionsHtml;
+      if (cats.indexOf(curFilterCat) !== -1 || curFilterCat === "ALL") filterCat.value = curFilterCat;
     }
 
-    var filterCity = document.getElementById('filterCity');
-    if (filterCity) {
-      var currentCity = filterCity.value || "ALL";
-      filterCity.innerHTML = '<option value="ALL">All Cities</option>' + cities.map(function(ci) {
-        return '<option value="' + ci + '">' + ci + '</option>';
-      }).join('');
-      if (cities.indexOf(currentCity) !== -1 || currentCity === "ALL") filterCity.value = currentCity;
-    }
+    ['inpCat', 'freeShopCat', 'admCat'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) {
+        var cur = el.value;
+        el.innerHTML = catOptionsHtml;
+        if (cur && cats.indexOf(cur) !== -1) el.value = cur;
+      }
+    });
 
-    var inpCity = document.getElementById('inpCity');
-    if (inpCity) {
-      var curInpCity = inpCity.value || "ALL";
-      inpCity.innerHTML = '<option value="ALL">All Cities</option>' + cities.map(function(ci) {
-        return '<option value="' + ci + '">' + ci + '</option>';
-      }).join('');
-      if (cities.indexOf(curInpCity) !== -1 || curInpCity === "ALL") inpCity.value = curInpCity;
-    }
+    // Populate State Dropdowns
+    ['filterCity', 'inpCity'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) {
+        var cur = el.value || "ALL";
+        el.innerHTML = '<option value="ALL">All India States & UTs</option>' + stateOptionsHtml;
+        if (states.indexOf(cur) !== -1 || cur === "ALL") el.value = cur;
+      }
+    });
+
+    ['freeShopCity', 'admCity'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) {
+        var cur = el.value;
+        el.innerHTML = stateOptionsHtml;
+        if (cur && states.indexOf(cur) !== -1) el.value = cur;
+      }
+    });
 
     var totalBadge = document.getElementById('admTotalLeadsCount');
     if (totalBadge && window.masterLeads) {
@@ -1241,8 +1313,8 @@
       if (cols.length < 2) continue;
       var shop = cols[0] || "Verified Lead";
       var owner = cols.length >= 2 ? (cols[1] || "Customer") : "Customer";
-      var cat = cols.length >= 3 ? (cols[2] || "Mobile & Electronics") : "Mobile & Electronics";
-      var city = cols.length >= 4 ? (cols[3] || "Patna") : "Patna";
+      var cat = cols.length >= 3 ? (cols[2] || "Manufacturing & Factory") : "Manufacturing & Factory";
+      var city = cols.length >= 4 ? (cols[3] || "Bihar") : "Bihar";
       var area = "Main Market";
       var rawPhone = "";
       if (cols.length >= 6) {
@@ -1268,7 +1340,6 @@
     return parsedLeads;
   };
 
-  // Auto-loads ./leads.csv from your GitHub repo if you upload one there!
   window.fetchGithubRepoCsv = async function() {
     try {
       var res = await fetch('./leads.csv?t=' + Date.now());
@@ -1326,7 +1397,7 @@
     var shop = document.getElementById('admShop').value.trim();
     var owner = document.getElementById('admOwner').value.trim();
     var cat = document.getElementById('admCat').value;
-    var city = document.getElementById('admCity').value.trim() || "Patna";
+    var city = document.getElementById('admCity').value || "Bihar";
     var area = document.getElementById('admArea').value.trim() || "Main Market";
     var phone = document.getElementById('admPhone').value.trim();
 
@@ -1352,10 +1423,10 @@
   }
 
   function downloadSampleCsvTemplate() {
-    var sampleCsv = 'Shop,Owner,Category,City,Area,Phone\n' +
-      '"Ritik Electronics Hub","Rakesh Kumar","Mobile & Electronics","Patna","Kankarbagh","9835011122"\n' +
-      '"Anjali Garments B2C Inquiry","Anjali Kumari","Clothing & Garments","Delhi","Lajpat Nagar","9811022233"\n' +
-      '"Maa Tara Hardware Store","Manoj Singh","Electrical & Hardware","Patna","Danapur","9431033344"';
+    var sampleCsv = 'Shop,Owner,Category,State,Area,Phone\n' +
+      '"Ritik Electronics Hub","Rakesh Kumar","Mobile & Electronics","Bihar","Patna - Kankarbagh","9835011122"\n' +
+      '"Apex Power Mfg.","Suresh Patel","Manufacturing & Factory","Gujarat","Ahmedabad GIDC","9825022233"\n' +
+      '"Maa Tara Hardware Store","Manoj Singh","Electrical & Hardware","Uttar Pradesh","Varanasi","9431033344"';
     var a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([sampleCsv], { type: 'text/csv;charset=utf-8;' }));
     a.download = "AutoLeads_Sample_Upload.csv";
@@ -1364,7 +1435,7 @@
   }
 
   function exportMasterCsvForGithub() {
-    var csv = "Shop,Owner,Category,City,Area,Phone\n" + window.masterLeads.map(function(l) {
+    var csv = "Shop,Owner,Category,State,Area,Phone\n" + window.masterLeads.map(function(l) {
       var s = (l.shop || "").replace(/"/g, '""');
       var o = (l.owner || "").replace(/"/g, '""');
       var c = (l.cat || "").replace(/"/g, '""');
@@ -1437,18 +1508,15 @@
     showInstallBanner();
   });
 
-    function showInstallBanner() {
+  function showInstallBanner() {
     var banner = document.getElementById('installBanner');
     if (banner) {
       banner.classList.remove('hidden');
-      
-      // 7 सेकंड के baad banner apne-aap gayab ho jayega taaki user ko pareshani na ho
       setTimeout(function() {
         banner.classList.add('hidden');
       }, 7000);
     }
   }
-
 
   window.addEventListener('DOMContentLoaded', function() {
     window.loadSavedLeadsFromStorage();
@@ -1462,4 +1530,4 @@
   }
 </script>
 </body>
-</html>
+          </html>
