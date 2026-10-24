@@ -7,13 +7,18 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script>
-    // Allow direct customer view if shared link parameters exist, otherwise enforce VIP Security Check
+    // Allow direct customer view if shared link parameters exist, otherwise enforce VIP + 30-Day Expiry Check
     (function() {
       const params = new URLSearchParams(window.location.search);
       const isSharedLiveView = params.get('view') === 'live' && params.get('n');
-      if (!isSharedLiveView && localStorage.getItem('autoleads_unlocked') !== 'true') {
-        alert("🔒 Access Denied! Yeh VIP AI Builder sirf Paid Subscribers ke liye hai. Kripya pehle Login karein.");
-        window.location.href = "index.html";
+      if (!isSharedLiveView) {
+        const unlocked = localStorage.getItem('autoleads_unlocked') === 'true';
+        const expiry = Number(localStorage.getItem('autoleads_expiry') || 0);
+        if (!unlocked || (expiry > 0 && Date.now() > expiry)) {
+          localStorage.removeItem('autoleads_unlocked');
+          alert("🔒 Access Denied ya Aapka 30-Days Plan Expire ho chuka hai! Kripya Vendor Dashboard me ₹499 Plan Renew/Login karein.");
+          window.location.href = "index.html";
+        }
       }
     })();
   </script>
@@ -38,76 +43,116 @@
     <header class="flex flex-wrap justify-between items-center gap-4 pb-8 border-b border-slate-800 mb-8">
       <div>
         <h1 class="text-3xl font-black bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">AutoLeads AI Builder</h1>
-        <p class="text-sm text-slate-400">Create ₹15,000+ value agency funnels & get instant leads via Telegram API</p>
+        <p class="text-sm text-slate-400">Create ₹15,000+ value agency funnels & get instant leads on Email, WhatsApp & Telegram</p>
       </div>
-      <a href="index.html" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 text-xs font-extrabold px-4 py-2.5 rounded-xl">
-        &larr; Back to Vendor Dashboard
-      </a>
+      <div class="flex items-center gap-3">
+        <span id="builderExpiryBadge" class="text-xs font-extrabold px-3 py-2 rounded-xl bg-amber-500/15 text-amber-300 border border-amber-500/30">⏳ Checking Plan...</span>
+        <a href="index.html" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 text-xs font-extrabold px-4 py-2.5 rounded-xl">
+          &larr; Back to Vendor Dashboard
+        </a>
+      </div>
     </header>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- 1. API Configuration Panel -->
-      <div class="glass p-6 rounded-3xl col-span-1 space-y-4">
-        <h2 class="text-lg font-bold flex items-center gap-2"><span class="text-2xl">⚙️</span> API Settings</h2>
-        <p class="text-xs text-slate-400">Apna Telegram Bot Token aur Chat ID dalein taaki leads direct aapke phone par aayein.</p>
-        <div>
-          <label class="text-[10px] uppercase text-slate-500 font-bold">Telegram Bot Token</label>
-          <input type="text" id="tgToken" placeholder="783xxx:AAH..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 mt-1 text-sm outline-none focus:border-blue-500">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+      <!-- 1. Multi-Channel API Configuration Panel (Email + WhatsApp + Telegram) -->
+      <div class="glass p-6 rounded-3xl md:col-span-5 space-y-4 border border-cyan-500/30">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <h2 class="text-lg font-bold flex items-center gap-2"><span class="text-2xl">⚙️</span> Multi-API Lead Settings</h2>
+          <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded-full font-extrabold">3-in-1 Auto Lead</span>
         </div>
-        <div>
-          <label class="text-[10px] uppercase text-slate-500 font-bold">Telegram Chat ID</label>
-          <input type="text" id="tgChatId" placeholder="123456789" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 mt-1 text-sm outline-none focus:border-blue-500">
+        <p class="text-xs text-slate-400">Apna Email, WhatsApp aur Telegram setup karein. Customer form bharte hi teeno jagah Token aur WhatsApp button ke sath lead aayegi!</p>
+
+        <!-- Email API Option -->
+        <div class="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 space-y-2">
+          <label class="text-[10px] uppercase text-emerald-400 font-extrabold flex items-center gap-1.5">
+            <i class="fa-solid fa-envelope"></i> 1. Instant Email Alert API (With Token & WA Button)
+          </label>
+          <input type="email" id="vendorEmail" placeholder="e.g. yourbusiness@gmail.com" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-emerald-500">
+          <p class="text-[10px] text-slate-400">Note: Pehli lead aane par aapko FormSubmit se ek activation mail aayega, usme 'Activate' par click kar dein.</p>
         </div>
-        <button onclick="saveApiKeys()" class="w-full bg-blue-600 hover:bg-blue-500 font-bold py-2 rounded-xl text-sm transition-all shadow-lg shadow-blue-500/30 cursor-pointer">Save API Keys</button>
+
+        <!-- WhatsApp API Option -->
+        <div class="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 space-y-2">
+          <label class="text-[10px] uppercase text-green-400 font-extrabold flex items-center gap-1.5">
+            <i class="fa-brands fa-whatsapp"></i> 2. WhatsApp Lead Number & Optional Webhook API
+          </label>
+          <input type="tel" id="vendorWaNumber" maxlength="10" placeholder="10-Digit WhatsApp Number (e.g. 9876543210)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-green-500">
+          <input type="url" id="vendorWaApiUrl" placeholder="Optional: WhatsApp Cloud/Webhook API URL" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-300 outline-none focus:border-green-500">
+        </div>
+
+        <!-- Telegram API Option -->
+        <div class="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 space-y-2">
+          <label class="text-[10px] uppercase text-blue-400 font-extrabold flex items-center gap-1.5">
+            <i class="fa-brands fa-telegram"></i> 3. Telegram Bot API Settings
+          </label>
+          <input type="text" id="tgToken" placeholder="Bot Token (e.g. 783xxx:AAH...)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-blue-500">
+          <input type="text" id="tgChatId" placeholder="Telegram Chat ID (e.g. 123456789)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-blue-500">
+        </div>
+
+        <button onclick="saveApiKeys()" class="w-full bg-blue-600 hover:bg-blue-500 font-extrabold py-3 rounded-xl text-xs transition-all shadow-lg shadow-blue-500/30 cursor-pointer">
+          💾 Save Email, WhatsApp & Telegram APIs
+        </button>
       </div>
 
       <!-- 2. AI Page Creator Form -->
-      <div class="glass p-6 rounded-3xl col-span-1 md:col-span-2 space-y-4">
-        <h2 class="text-lg font-bold flex items-center gap-2"><span class="text-2xl">✨</span> Generate New AI Page</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="text-[10px] uppercase text-slate-500 font-bold">Business Name</label>
-            <input type="text" id="bizName" placeholder="e.g. AGNI VOLT ELECTRONIC" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 mt-1 text-sm outline-none">
+      <div class="glass p-6 rounded-3xl md:col-span-7 space-y-5 flex flex-col justify-between">
+        <div class="space-y-4">
+          <h2 class="text-lg font-bold flex items-center gap-2 border-b border-slate-800 pb-3"><span class="text-2xl">✨</span> Generate New ₹15,000 Value AI Page</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="text-[10px] uppercase text-slate-400 font-bold">Business Name *</label>
+              <input type="text" id="bizName" placeholder="e.g. AGNI VOLT ELECTRONIC" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 mt-1 text-sm outline-none focus:border-emerald-500">
+            </div>
+            <div>
+              <label class="text-[10px] uppercase text-slate-400 font-bold">Category / Industry (25+ Options)</label>
+              <select id="bizCategory" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 mt-1 text-sm outline-none">
+                <option value="Manufacturing & Factory">🏭 Manufacturing & Factory (All Items)</option>
+                <option value="Electronics & Mobile">📱 Electronics & Mobile</option>
+                <option value="Electrical & Hardware">⚡ Electrical & Hardware</option>
+                <option value="Solar, Inverter & Power">☀️ Solar, Inverter & Power Equipment</option>
+                <option value="Industrial Machinery & Tools">⚙️ Industrial Machinery & Tools</option>
+                <option value="Clothing, Garments & Textiles">👕 Clothing, Garments & Textiles</option>
+                <option value="Grocery, FMCG & Supermart">🛒 Grocery, FMCG & Supermart</option>
+                <option value="Medical, Pharma & Surgical">💊 Medical, Pharma & Surgical</option>
+                <option value="Construction & Building Material">🏗️ Construction & Building Material</option>
+                <option value="Furniture & Home Decor">🛋️ Furniture & Home Decor</option>
+                <option value="Plastic, Packaging & Printing">📦 Plastic, Packaging & Printing</option>
+                <option value="Automobile Parts & EV">🚗 Automobile Parts & EV</option>
+                <option value="Agriculture, Seeds & Fertilizers">🌾 Agriculture, Seeds & Fertilizers</option>
+                <option value="Footwear & Leather Goods">👟 Footwear & Leather Goods</option>
+                <option value="Cosmetics, Beauty & Jewellery">💄 Cosmetics, Beauty & Jewellery</option>
+                <option value="Computer, Laptop & IT Hardware">💻 Computer, Laptop & IT Hardware</option>
+                <option value="Hotel, Restaurant & Kitchen Equip.">🍽️ Hotel, Restaurant & Kitchen Equip.</option>
+                <option value="Chemical & Raw Materials">🧪 Chemical & Raw Materials</option>
+                <option value="Stationery & Office Supplies">📚 Stationery & Office Supplies</option>
+                <option value="Sports, Fitness & Toys">🏀 Sports, Fitness & Toys</option>
+                <option value="Real Estate & Property">🏢 Real Estate & Property</option>
+                <option value="Transport, Courier & Logistics">🚚 Transport, Courier & Logistics</option>
+                <option value="Digital Marketing & Software">🌐 Digital Marketing & Software</option>
+                <option value="Consultancy & B2B Services">💼 Consultancy & B2B Services</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] uppercase text-slate-400 font-bold">Brand Color Theme</label>
+              <input type="color" id="bizColor" value="#2563eb" class="w-full h-11 bg-slate-900 border border-slate-700 rounded-xl mt-1 cursor-pointer">
+            </div>
+            <div>
+              <label class="text-[10px] uppercase text-slate-400 font-bold">Special Offer / Tagline</label>
+              <input type="text" id="bizOffer" placeholder="e.g. Get 20% Off on Your First Order" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 mt-1 text-sm outline-none focus:border-emerald-500">
+            </div>
           </div>
-          <div>
-            <label class="text-[10px] uppercase text-slate-500 font-bold">Category / Industry</label>
-            <select id="bizCategory" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 mt-1 text-sm outline-none">
-              <option value="Manufacturing & Factory">🏭 Manufacturing & Factory (All Items)</option>
-              <option value="Electronics & Mobile">📱 Electronics & Mobile</option>
-              <option value="Electrical & Hardware">⚡ Electrical & Hardware</option>
-              <option value="Solar, Inverter & Power">☀️ Solar, Inverter & Power Equipment</option>
-              <option value="Industrial Machinery & Tools">⚙️ Industrial Machinery & Tools</option>
-              <option value="Clothing, Garments & Textiles">👕 Clothing, Garments & Textiles</option>
-              <option value="Grocery, FMCG & Supermart">🛒 Grocery, FMCG & Supermart</option>
-              <option value="Medical, Pharma & Surgical">💊 Medical, Pharma & Surgical</option>
-              <option value="Construction & Building Material">🏗️ Construction & Building Material</option>
-              <option value="Furniture & Home Decor">🛋️ Furniture & Home Decor</option>
-              <option value="Plastic, Packaging & Printing">📦 Plastic, Packaging & Printing</option>
-              <option value="Automobile Parts & EV">🚗 Automobile Parts & EV</option>
-              <option value="Agriculture, Seeds & Fertilizers">🌾 Agriculture, Seeds & Fertilizers</option>
-              <option value="Footwear & Leather Goods">👟 Footwear & Leather Goods</option>
-              <option value="Cosmetics, Beauty & Jewellery">💄 Cosmetics, Beauty & Jewellery</option>
-              <option value="Computer, Laptop & IT Hardware">💻 Computer, Laptop & IT Hardware</option>
-              <option value="Hotel, Restaurant & Kitchen Equip.">🍽️ Hotel, Restaurant & Kitchen Equip.</option>
-              <option value="Chemical & Raw Materials">🧪 Chemical & Raw Materials</option>
-              <option value="Stationery & Office Supplies">📚 Stationery & Office Supplies</option>
-              <option value="Sports, Fitness & Toys">🏀 Sports, Fitness & Toys</option>
-              <option value="Real Estate & Property">🏢 Real Estate & Property</option>
-              <option value="Transport, Courier & Logistics">🚚 Transport, Courier & Logistics</option>
-              <option value="Digital Marketing & Software">🌐 Digital Marketing & Software</option>
-              <option value="Consultancy & B2B Services">💼 Consultancy & B2B Services</option>
-            </select>
-          </div>
-          <div>
-            <label class="text-[10px] uppercase text-slate-500 font-bold">Brand Color Theme</label>
-            <input type="color" id="bizColor" value="#2563eb" class="w-full h-10 bg-slate-900 border border-slate-700 rounded-xl mt-1 cursor-pointer">
-          </div>
-          <div>
-            <label class="text-[10px] uppercase text-slate-500 font-bold">Special Offer / Tagline</label>
-            <input type="text" id="bizOffer" placeholder="e.g. Get 20% Off on Your First Order" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 mt-1 text-sm outline-none">
+
+          <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 space-y-2">
+            <span class="text-xs font-extrabold text-emerald-400 block">📧 Email & WhatsApp Lead Format Preview:</span>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Jab koi customer aapke page par form bharega, toh use ek <strong class="text-white">Unique Token (e.g. [TK-98929])</strong> milega. Aapke Email par customer ka Naam, Phone, Date/Time aur green <strong class="text-emerald-400">"💬 Customer ko WhatsApp karein"</strong> button aayega!
+            </p>
           </div>
         </div>
-        <button onclick="generateLandingPage()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:scale-[1.01] font-black py-3 rounded-xl text-sm transition-all shadow-lg shadow-emerald-500/30 cursor-pointer">🚀 GENERATE MAGIC PAGE</button>
+
+        <button onclick="generateLandingPage()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:scale-[1.01] font-black py-4 rounded-xl text-sm transition-all shadow-lg shadow-emerald-500/30 cursor-pointer">
+          🚀 GENERATE MAGIC LANDING PAGE
+        </button>
       </div>
     </div>
 
@@ -248,7 +293,7 @@
               <span>🚀 Submit Inquiry & Claim Offer</span>
             </button>
             <p class="text-[11px] text-slate-400 text-center flex items-center justify-center gap-1.5">
-              <i class="fa-solid fa-lock text-emerald-400"></i> 100% Safe & Direct Inquiry to Business Owner
+              <i class="fa-solid fa-lock text-emerald-400"></i> Instant Token Generation on Email, WhatsApp & Telegram
             </p>
           </div>
         </div>
@@ -308,31 +353,6 @@
       </div>
     </section>
 
-    <!-- CUSTOMER REVIEWS / SOCIAL PROOF -->
-    <section class="relative z-10 max-w-6xl w-full mx-auto px-4 sm:px-8 pb-16">
-      <div class="text-center max-w-2xl mx-auto mb-8">
-        <span class="text-xs font-extrabold uppercase tracking-widest text-emerald-400">💬 CLIENT TESTIMONIALS</span>
-        <h2 class="text-2xl sm:text-3xl font-black text-white mt-1">Trusted by Customers Across India</h2>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div class="glass-card p-6 rounded-3xl space-y-3">
-          <div class="text-amber-400 text-xs">⭐⭐⭐⭐⭐</div>
-          <p class="text-xs text-slate-300 leading-relaxed">"Bahut hi shandar quality aur market se sabse best rate mila. Time par delivery ho gayi aur support team kaafi helpful hai."</p>
-          <div class="pt-2 border-t border-white/10 text-xs font-bold text-white">Amitabh Verma <span class="text-slate-400 font-normal block text-[10px]">Verified Buyer</span></div>
-        </div>
-        <div class="glass-card p-6 rounded-3xl space-y-3">
-          <div class="text-amber-400 text-xs">⭐⭐⭐⭐⭐</div>
-          <p class="text-xs text-slate-300 leading-relaxed">"Maine online form bhara aur 10 minute ke andar mujhe poora catalog aur special discount offer mil gaya. Highly recommended!"</p>
-          <div class="pt-2 border-t border-white/10 text-xs font-bold text-white">Sandeep Agrawal <span class="text-slate-400 font-normal block text-[10px]">Wholesale Partner</span></div>
-        </div>
-        <div class="glass-card p-6 rounded-3xl space-y-3">
-          <div class="text-amber-400 text-xs">⭐⭐⭐⭐⭐</div>
-          <p class="text-xs text-slate-300 leading-relaxed">"100% genuine products aur transparent dealing. Hum pichle 6 mahine se lagatar inke sath bulk me kam kar rahe hain."</p>
-          <div class="pt-2 border-t border-white/10 text-xs font-bold text-white">Rakesh Kumar <span class="text-slate-400 font-normal block text-[10px]">Regular Client</span></div>
-        </div>
-      </div>
-    </section>
-
     <!-- FOOTER -->
     <footer class="relative z-10 border-t border-white/10 bg-slate-950/90 py-8 px-4 text-center">
       <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -363,6 +383,22 @@
     document.addEventListener("DOMContentLoaded", () => {
       document.getElementById('tgToken').value = localStorage.getItem('tgToken') || '';
       document.getElementById('tgChatId').value = localStorage.getItem('tgChatId') || '';
+      document.getElementById('vendorEmail').value = localStorage.getItem('vendorEmail') || '';
+      document.getElementById('vendorWaNumber').value = localStorage.getItem('vendorWaNumber') || '';
+      document.getElementById('vendorWaApiUrl').value = localStorage.getItem('vendorWaApiUrl') || '';
+
+      // Show remaining days badge
+      const exp = Number(localStorage.getItem('autoleads_expiry') || 0);
+      const badge = document.getElementById('builderExpiryBadge');
+      if (badge) {
+        if (exp > Date.now()) {
+          const dLeft = Math.ceil((exp - Date.now()) / (1000 * 60 * 60 * 24));
+          badge.innerText = `⏳ Plan Active: ${dLeft} Days Left`;
+        } else {
+          badge.innerText = `🛡️ Admin / Active Session`;
+        }
+      }
+
       renderPagesList();
 
       // Check if opened via shared link (?view=live&n=...)
@@ -374,7 +410,10 @@
           color: params.get('clr') || '#2563eb',
           offer: params.get('o') || 'Get 20% Off on Your First Order',
           sharedToken: params.get('t') || '',
-          sharedChatId: params.get('cid') || ''
+          sharedChatId: params.get('cid') || '',
+          sharedEmail: params.get('em') || '',
+          sharedWa: params.get('wa') || '',
+          sharedWaApi: params.get('wapi') || ''
         };
         const backBtn = document.getElementById('backToBuilderBtn');
         if (backBtn && localStorage.getItem('autoleads_unlocked') !== 'true') {
@@ -385,11 +424,12 @@
     });
 
     function saveApiKeys() {
-      const token = document.getElementById('tgToken').value.trim();
-      const chatId = document.getElementById('tgChatId').value.trim();
-      localStorage.setItem('tgToken', token);
-      localStorage.setItem('tgChatId', chatId);
-      showBuilderToast("✅ API Keys Saved Successfully!");
+      localStorage.setItem('tgToken', document.getElementById('tgToken').value.trim());
+      localStorage.setItem('tgChatId', document.getElementById('tgChatId').value.trim());
+      localStorage.setItem('vendorEmail', document.getElementById('vendorEmail').value.trim());
+      localStorage.setItem('vendorWaNumber', document.getElementById('vendorWaNumber').value.trim().replace(/\D/g, '').slice(-10));
+      localStorage.setItem('vendorWaApiUrl', document.getElementById('vendorWaApiUrl').value.trim());
+      showBuilderToast("✅ Email, WhatsApp & Telegram API Settings Saved!");
     }
 
     function generateLandingPage() {
@@ -420,6 +460,9 @@
       const baseUrl = window.location.origin + window.location.pathname;
       const token = localStorage.getItem('tgToken') || '';
       const chatId = localStorage.getItem('tgChatId') || '';
+      const email = localStorage.getItem('vendorEmail') || '';
+      const wa = localStorage.getItem('vendorWaNumber') || '';
+      const wapi = localStorage.getItem('vendorWaApiUrl') || '';
       const qs = new URLSearchParams({
         view: 'live',
         n: page.name,
@@ -427,7 +470,10 @@
         clr: page.color,
         o: page.offer,
         t: token,
-        cid: chatId
+        cid: chatId,
+        em: email,
+        wa: wa,
+        wapi: wapi
       });
       return `${baseUrl}?${qs.toString()}`;
     }
@@ -539,7 +585,6 @@
       navCta.style.backgroundColor = page.color;
       offerBox.style.borderColor = page.color;
 
-      // High-contrast solid badge so dark blue (#0000ff) or any color stays 100% readable
       catBadge.style.backgroundColor = page.color;
       catBadge.style.color = '#ffffff';
 
@@ -555,57 +600,109 @@
       document.getElementById('dashboardView').classList.remove('hidden');
     }
 
-    function submitLead() {
+    // MULTI-CHANNEL LEAD SUBMISSION: EMAIL (With Token & WA Link) + TELEGRAM + WHATSAPP
+    async function submitLead() {
       const name = document.getElementById('leadName').value.trim();
-      const phone = document.getElementById('leadPhone').value.trim();
-      const query = document.getElementById('leadQuery').value.trim();
+      const phone = document.getElementById('leadPhone').value.trim().replace(/\D/g, '').slice(-10);
+      const query = document.getElementById('leadQuery').value.trim() || "Interested in Special Offer";
 
-      if(!name || !phone) {
-        return alert("Please fill Name and Phone Number!");
+      if(!name || phone.length < 10) {
+        return alert("Kripya apna Naam aur sahi 10-Digit Phone Number bharein!");
       }
 
-      const token = (currentViewingPage && currentViewingPage.sharedToken) || localStorage.getItem('tgToken');
-      const chatId = (currentViewingPage && currentViewingPage.sharedChatId) || localStorage.getItem('tgChatId');
+      const token = (currentViewingPage && currentViewingPage.sharedToken) || localStorage.getItem('tgToken') || '';
+      const chatId = (currentViewingPage && currentViewingPage.sharedChatId) || localStorage.getItem('tgChatId') || '';
+      const vendorEmail = (currentViewingPage && currentViewingPage.sharedEmail) || localStorage.getItem('vendorEmail') || '';
+      const vendorWa = (currentViewingPage && currentViewingPage.sharedWa) || localStorage.getItem('vendorWaNumber') || '';
+      const vendorWaApi = (currentViewingPage && currentViewingPage.sharedWaApi) || localStorage.getItem('vendorWaApiUrl') || '';
 
-      if(!token || !chatId) {
-        alert("⚠️ SYSTEM ERROR: The owner of this page has not configured Telegram API keys.");
+      if(!token && !vendorEmail && !vendorWa && !vendorWaApi) {
+        alert("⚠️ SYSTEM NOTICE: Is page ke owner ne abhi Email, WhatsApp ya Telegram API set nahi kiya hai.");
         return;
       }
 
       const submitBtn = document.getElementById('liveSubmitBtn');
-      submitBtn.innerText = "Sending...";
+      submitBtn.innerText = "⏳ Generating Token & Sending...";
       submitBtn.disabled = true;
 
-      const messageText = `🚨 *NEW LEAD ALERT* 🚨\n🏢 Source: ${currentViewingPage.name}\n📂 Category: ${currentViewingPage.category}\n👤 Name: ${name}\n📞 Phone: ${phone}\n💬 Query: ${query || 'Interested in Offer'}\n⚡ AutoLeads AI Generated`;
-      const telegramUrl = `https://api.telegram.org/bot${token}/sendMessage`;
+      const tokenId = "TK-" + Math.floor(10000 + Math.random() * 90000);
+      const nowStr = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+      const customerWaReplyLink = `https://wa.me/91${phone}?text=${encodeURIComponent(`Namaste ${name} ji, hum ${currentViewingPage.name} se baat kar rahe hain. Aapki Inquiry [Token: ${tokenId}] humein mil gayi hai.`)}`;
 
-      fetch(telegramUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: messageText,
-          parse_mode: "Markdown"
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if(data.ok) {
-          alert("🎉 Thanks! Inquiry sent successfully.");
-          document.getElementById('leadName').value = '';
-          document.getElementById('leadPhone').value = '';
-          document.getElementById('leadQuery').value = '';
-        } else {
-          alert("❌ API Error: " + data.description);
-        }
-      })
-      .catch(() => {
-        alert("Network Error. Please try again.");
-      })
-      .finally(() => {
-        submitBtn.innerText = "🚀 Submit Inquiry & Claim Offer";
-        submitBtn.disabled = false;
-      });
+      const requests = [];
+
+      // 1. Send Formatted Email Alert (Like Screenshot 1 with Token & WhatsApp Action Link)
+      if (vendorEmail) {
+        const emailPayload = {
+          _subject: `⚡ New Inquiry [${tokenId}]: ${name} - ${currentViewingPage.name}`,
+          _template: "box",
+          _captcha: "false",
+          "Token": tokenId,
+          "Business_Source": `${currentViewingPage.name} (${currentViewingPage.category})`,
+          "Customer_Name": name,
+          "Phone": phone,
+          "Date_And_Time": nowStr,
+          "Requirement_Problem": query,
+          "Customer_Ko_WhatsApp_Karein": customerWaReplyLink
+        };
+        requests.push(
+          fetch(`https://formsubmit.co/ajax/${encodeURIComponent(vendorEmail)}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify(emailPayload)
+          }).catch(() => {})
+        );
+      }
+
+      // 2. Send Telegram Bot API Alert
+      if (token && chatId) {
+        const messageText = `🟢 *Token: ${tokenId}*\n🚨 *NEW LEAD BOOKING* 🚨\n\n🏢 *Business:* ${currentViewingPage.name}\n👤 *Customer Name:* ${name}\n📞 *Phone:* ${phone}\n📅 *Date & Time:* ${nowStr}\n💬 *Requirement:* ${query}\n\n📲 [💬 Customer ko WhatsApp karein](${customerWaReplyLink})`;
+        requests.push(
+          fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: chatId,
+              text: messageText,
+              parse_mode: "Markdown"
+            })
+          }).catch(() => {})
+        );
+      }
+
+      // 3. Send Optional WhatsApp Webhook API
+      if (vendorWaApi) {
+        requests.push(
+          fetch(vendorWaApi, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              token: tokenId,
+              business: currentViewingPage.name,
+              customer_name: name,
+              phone: "91" + phone,
+              date_time: nowStr,
+              requirement: query,
+              whatsapp_reply_url: customerWaReplyLink
+            })
+          }).catch(() => {})
+        );
+      }
+
+      await Promise.allSettled(requests);
+
+      // 4. If Vendor WhatsApp Number is configured, also open direct WhatsApp confirmation
+      if (vendorWa && vendorWa.length === 10) {
+        const waMsg = `🟢 *Token: ${tokenId}*\n*New Inquiry for ${currentViewingPage.name}*\n\n👤 *Name:* ${name}\n📞 *Phone:* ${phone}\n📅 *Date & Time:* ${nowStr}\n💬 *Requirement:* ${query}`;
+        window.open(`https://wa.me/91${vendorWa}?text=${encodeURIComponent(waMsg)}`, '_blank');
+      }
+
+      alert(`🎉 Booking Confirmed! Aapka Token [${tokenId}] generate ho gaya hai. Humari team turant aapse sampark karegi.`);
+      document.getElementById('leadName').value = '';
+      document.getElementById('leadPhone').value = '';
+      document.getElementById('leadQuery').value = '';
+      submitBtn.innerText = "🚀 Submit Inquiry & Claim Offer";
+      submitBtn.disabled = false;
     }
   </script>
 </body>
