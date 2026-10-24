@@ -62,7 +62,6 @@
   };
 
   window.showToast = function(msgText) {
-    document.getElementById('aiVipBanner').style.display = (tabName === 'home') ? 'block' : 'none';
     var t = document.getElementById('toastBox');
     if (!t) return;
     t.innerText = msgText;
@@ -163,8 +162,9 @@
   </div>
   <div id="teaserContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
 </div>
-<!-- VIP AI BUILDER TEASER (Sirf Home Page par dikhega) -->
-<div id="aiVipBanner" class="glass p-6 rounded-3xl my-8 border border-emerald-500/40 relative overflow-hidden shadow-2xl bg-gradient-to-br from-slate-900 to-emerald-900/10">
+  <!-- VIP AI BUILDER TEASER (Marketing Banner) -->
+<div class="glass p-6 rounded-3xl my-8 border border-emerald-500/40 relative overflow-hidden shadow-2xl bg-gradient-to-br from-slate-900 to-emerald-900/10">
+  <!-- Premium Glowing Background Effect -->
   <div class="absolute -right-10 -top-10 w-40 h-40 bg-emerald-500/20 blur-3xl rounded-full pointer-events-none"></div>
   <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-teal-500/10 blur-2xl rounded-full pointer-events-none"></div>
   
@@ -197,7 +197,7 @@
     </button>
   </div>
 </div>
-  
+
 <!-- VIEW 2: CHECKOUT -->
 <div id="viewPay" class="max-w-6xl mx-auto px-4 pt-6 hidden">
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -711,23 +711,6 @@ function accessAiBuilder() {
     alert("Kripya niche jakar pehle ₹499 ka Business Onboarding Start karein taaki aap yeh AI Page Builder use kar sakein.");
     
     // Agar aapka koi 'Start Business Onboarding' wala button hai, toh use scroll karke focus me layein
-    window.scrollTo({ top: document.body.scrollHeight / 2, behavior: 'smooth' });
-  }
-}
-  // AI Builder Access Logic
-function accessAiBuilder() {
-  // Agar user ne ₹499 pay kar diya hai
-  if (window.isUnlocked === true) {
-    window.location.href = "ai-builder.html";
-  } else {
-    // Agar free user hai toh alert dega aur payment ki taraf bhejega
-    if(typeof window.showToast === 'function') {
-      window.showToast("🔒 VIP Feature: Ise unlock karne ke liye ₹499 ka plan lein!");
-    } else {
-      alert("🔒 VIP Feature: Ise unlock karne ke liye ₹499 ka plan lein!");
-    }
-
-    alert("Kripya niche jakar pehle ₹499 ka Business Onboarding Start karein taaki aap yeh AI Page Builder use kar sakein.");
     window.scrollTo({ top: document.body.scrollHeight / 2, behavior: 'smooth' });
   }
 }
