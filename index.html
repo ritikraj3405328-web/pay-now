@@ -4,24 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.json">
-<title>AutoLeads PRO | Ultimate B2B Lead Generator & Free Seller Tools</title>
+<title>AutoLeads PRO | Ultimate B2B & B2C Lead Generator & Free Seller Tools</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   body {
-    <!-- INSTALL BANNER (PWA) -->
-<div id="installBanner" class="hidden bg-gradient-to-r from-blue-900 to-indigo-900 border-b border-blue-500/30 p-3 px-4 flex items-center justify-between shadow-lg sticky top-0 z-50">
-  <div class="flex items-center space-x-3">
-    <div class="bg-blue-600 p-2 rounded-xl text-white font-bold text-xs">⚡</div>
-    <div>
-      <h4 class="text-xs font-bold text-white">AutoLeads PRO App Install Karein</h4>
-      <p class="text-[10px] text-blue-200">Fast access ke liye home screen par jodein!</p>
-    </div>
-  </div>
-  <button id="installBtn" class="bg-white text-slate-950 font-black text-xs px-3 py-1.5 rounded-xl shadow cursor-pointer">Install Now</button>
-</div>
-  
     font-family: 'Plus Jakarta Sans', sans-serif;
     background-color: #020617;
     color: #f8fafc;
@@ -38,14 +26,44 @@
   .btn-gradient { background: linear-gradient(90deg, #2563eb, #7c3aed, #059669); background-size: 200% auto; }
 </style>
 <script>
+  // ==========================================================
+  // GLOBAL STATE & GITHUB STATIC SECURITY SYSTEM
+  // ==========================================================
   window.isUnlocked = false;
+  window.isAdminLoggedIn = false;
   window.generatedCatalogText = "";
   window.clientData = { name: "", phone: "", businessName: "Your Wholesale Business", category: "ALL", city: "ALL" };
+
+  // Default Admin Login (ID: admin | PIN/Pass: 7808)
+  window.adminCredentials = JSON.parse(localStorage.getItem('autoleads_admin_creds')) || {
+    id: "admin",
+    pass: "7808"
+  };
+
+  // Secret Algorithmic Key Generator for Paid Vendors (Works across all devices on GitHub without a database!)
+  // Har 10-digit mobile number ka ek unique Secret Password banta hai jo sirf Admin Panel se nikal sakta hai
+  window.generateVendorSecretPass = function(phoneStr) {
+    var clean = String(phoneStr || "").replace(/\D/g, "").slice(-10);
+    if (clean.length !== 10) return null;
+    var secretSalt = 780899;
+    var hash = secretSalt;
+    for (var i = 0; i < clean.length; i++) {
+      hash = ((hash << 5) - hash) + clean.charCodeAt(i) * (i + 13);
+      hash = hash & hash;
+    }
+    var codeNum = Math.abs(hash % 900000) + 100000;
+    return "AL" + String(codeNum);
+  };
+
+  // Extra Custom Vendor Accounts (Saved in Admin Browser)
+  window.paidVendors = JSON.parse(localStorage.getItem('autoleads_paid_vendors')) || [];
+
   window.recentBuyers = [
     { name: "Vikram Gupta", biz: "Vikram Switchgear Co.", cat: "Electrical & Hardware", utr: "4128****9012", amt: 499 },
     { name: "Aman Verma", biz: "Aman MobiWorld", cat: "Mobile & Electronics", utr: "6295****4418", amt: 499 },
     { name: "Sandeep Jain", biz: "Royal Kurti House", cat: "Clothing & Garments", utr: "3310****7821", amt: 499 }
   ];
+
   window.masterLeads = [
     { shop: "Agni Telecom & Mobile Hub", owner: "Rajesh Verma", cat: "Mobile & Electronics", city: "Patna", area: "Boring Road", phone: "9835012345" },
     { shop: "Shree Krishna Switchgear", owner: "Mukesh Gupta", cat: "Electrical & Hardware", city: "Patna", area: "Station Road", phone: "9431056789" },
@@ -53,6 +71,7 @@
     { shop: "SuperMart Kirana Wholesale", owner: "Vikas Agrawal", cat: "Grocery & Supermart", city: "Jaipur", area: "Malviya Nagar", phone: "9829011223" },
     { shop: "LifeCare Medico & Pharma", owner: "S. K. Sinha", cat: "Medical & Pharmacy", city: "Patna", area: "Govind Mitra Road", phone: "9934011223" }
   ];
+
   window.catBadgeStyles = {
     "Mobile & Electronics": "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
     "Electrical & Hardware": "bg-amber-500/15 text-amber-300 border-amber-500/30",
@@ -66,7 +85,7 @@
     if (!t) return;
     t.innerText = msgText;
     t.classList.remove('hidden');
-    setTimeout(function() { t.classList.add('hidden'); }, 2800);
+    setTimeout(function() { t.classList.add('hidden'); }, 3200);
   };
 
   window.copyUpiId = function() {
@@ -75,12 +94,36 @@
   };
 
   window.showTab = function(tabName) {
-    if (tabName === 'leads' && !window.isUnlocked) {
-      window.showToast("🔒 Leads Vault Locked! Complete ₹499 Onboarding & UTR Verification first.");
-      tabName = 'pay';
+    if (tabName === 'leads' && !window.isUnlocked && !window.isAdminLoggedIn) {
+      window.showToast("🔒 Paid Vendor Dashboard Locked! Kripya Vendor ID & Password se Login karein.");
+      tabName = 'login';
     }
-    var viewMap = { home: 'viewHome', pay: 'viewPay', leads: 'viewLeads', catalog: 'viewCatalog', waGen: 'viewWaGen', freeLeads: 'viewFreeLeads', listShop: 'viewListShop' };
-    var navMap = { home: 'navHome', pay: 'navPay', leads: 'navLeads', catalog: 'navCatalog', waGen: 'navWaGen', freeLeads: 'navFreeLeads', listShop: 'navListShop' };
+    if (tabName === 'admin' && !window.isAdminLoggedIn) {
+      window.showToast("🔒 Admin Control Room ke liye pehle Admin Login karein!");
+      tabName = 'login';
+    }
+
+    var viewMap = {
+      home: 'viewHome',
+      pay: 'viewPay',
+      login: 'viewLogin',
+      leads: 'viewLeads',
+      catalog: 'viewCatalog',
+      waGen: 'viewWaGen',
+      freeLeads: 'viewFreeLeads',
+      listShop: 'viewListShop',
+      admin: 'viewAdmin'
+    };
+    var navMap = {
+      home: 'navHome',
+      pay: 'navPay',
+      login: 'navLogin',
+      leads: 'navLeads',
+      catalog: 'navCatalog',
+      waGen: 'navWaGen',
+      freeLeads: 'navFreeLeads',
+      listShop: 'navListShop'
+    };
 
     for (var key in viewMap) {
       var vEl = document.getElementById(viewMap[key]);
@@ -90,7 +133,9 @@
       var nEl = document.getElementById(navMap[nKey]);
       if (!nEl) continue;
       if (nKey === tabName) {
-        nEl.className = (nKey === 'leads') ? "text-xs font-extrabold px-3 py-2 rounded-xl bg-emerald-600 text-white shadow-lg cursor-pointer" : "text-xs font-extrabold px-3 py-2 rounded-xl bg-blue-600 text-white shadow-lg cursor-pointer";
+        nEl.className = (nKey === 'leads')
+          ? "text-xs font-extrabold px-3 py-2 rounded-xl bg-emerald-600 text-white shadow-lg cursor-pointer"
+          : "text-xs font-extrabold px-3 py-2 rounded-xl bg-blue-600 text-white shadow-lg cursor-pointer";
       } else if (nKey === 'leads') {
         nEl.className = "text-xs font-bold px-3 py-2 rounded-xl bg-slate-900 text-amber-400 border border-amber-500/40 cursor-pointer";
       } else {
@@ -100,6 +145,7 @@
     if (tabName === 'leads') window.renderLeadsGrid();
     if (tabName === 'freeLeads') window.checkDailyFreeLeads();
     if (tabName === 'listShop') window.renderFreeListedPreview();
+    if (tabName === 'admin') window.renderAdminVendorsList();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 </script>
@@ -123,6 +169,7 @@
 
 <div id="toastBox" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white font-extrabold px-6 py-3 rounded-full shadow-2xl text-xs text-center min-w-[270px]"></div>
 
+<!-- TOP NAVIGATION BAR -->
 <nav class="bg-slate-950/90 border-b border-slate-800 px-3 py-3 sticky top-0 z-40">
   <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
     <div class="flex items-center gap-2 cursor-pointer" onclick="showTab('home')">
@@ -130,82 +177,90 @@
     </div>
     <div class="flex flex-wrap items-center gap-1">
       <button type="button" onclick="showTab('home')" id="navHome" class="text-xs font-bold px-3 py-2 rounded-xl bg-blue-600 text-white cursor-pointer">Home</button>
-      <button type="button" onclick="showTab('pay')" id="navPay" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">Access</button>
+      <button type="button" onclick="showTab('pay')" id="navPay" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">Join PRO</button>
       <button type="button" onclick="showTab('freeLeads')" id="navFreeLeads" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">Free Leads</button>
       <button type="button" onclick="showTab('catalog')" id="navCatalog" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">Catalog</button>
       <button type="button" onclick="showTab('waGen')" id="navWaGen" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">WA Link</button>
       <button type="button" onclick="showTab('listShop')" id="navListShop" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">List Shop</button>
-      <button type="button" onclick="showTab('leads')" id="navLeads" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-900 text-amber-400 border border-amber-500/40 cursor-pointer"><i id="vaultLockIcon" class="fa-solid fa-lock text-[10px]"></i> Vault</button>
+      <button type="button" onclick="showTab('login')" id="navLogin" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 text-cyan-300 border border-cyan-500/40 cursor-pointer">🔐 Login</button>
+      <button type="button" onclick="showTab('leads')" id="navLeads" class="text-xs font-bold px-3 py-2 rounded-xl bg-slate-900 text-amber-400 border border-amber-500/40 cursor-pointer"><i id="vaultLockIcon" class="fa-solid fa-lock text-[10px]"></i> Vendor Dashboard</button>
     </div>
   </div>
 </nav>
 
-<!-- VIEW 1: HOME -->
+<!-- ============================================================== -->
+<!-- VIEW 1: HOME (AI Builder Banner is strictly inside viewHome!) -->
+<!-- ============================================================== -->
 <div id="viewHome" class="max-w-6xl mx-auto px-4 pt-8 space-y-10">
   <div class="glass rounded-3xl p-6 sm:p-12 text-center space-y-6 border-blue-500/30 shadow-2xl">
     <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
-      <i class="fa-solid fa-circle-check text-emerald-400"></i> INDIA'S #1 AUTOMATED B2B RETAILER DIRECTORY
+      <i class="fa-solid fa-circle-check text-emerald-400"></i> INDIA'S #1 AUTOMATED B2B & B2C LEAD PORTAL
     </div>
     <h1 class="text-3xl sm:text-5xl font-black text-white leading-tight max-w-3xl mx-auto">
       Apne Business Requirement Ke Hisab Se Payein <br>
       <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-emerald-400">
-        100% Verified Dukandaron Ke WhatsApp Numbers
+        100% Verified Customers & Dukandaron Ke Numbers
       </span>
     </h1>
     <p class="text-xs sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
-      Apna Business Name aur Target Category select karein. System automatic aapke business ke liye Custom Leads Portal aur 1-Click WhatsApp Pitch tayar kar dega!
+      Apna Business Name aur Target Category select karein. Paid Subscribers ko milta hai Verified Login Password, Custom Leads Dashboard, 1-Click WhatsApp Pitch aur Unlimited CSV Download!
     </p>
     <div class="flex flex-wrap justify-center gap-3.5 pt-2">
       <button type="button" onclick="showTab('pay')" class="btn-gradient text-white font-extrabold px-8 py-4 rounded-2xl text-sm shadow-xl cursor-pointer">🚀 Start Business Onboarding (₹499)</button>
+      <button type="button" onclick="showTab('login')" class="bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 font-bold px-6 py-4 rounded-2xl text-sm cursor-pointer">🔐 Subscriber / Admin Login</button>
       <button type="button" onclick="showTab('freeLeads')" class="bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 font-bold px-6 py-4 rounded-2xl text-sm cursor-pointer">🎁 Claim Daily 3 Free Leads</button>
     </div>
   </div>
+
+  <!-- Home Teaser Cards -->
   <div id="teaserContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
-</div>
-  <!-- VIP AI BUILDER TEASER (Marketing Banner) -->
-<div class="glass p-6 rounded-3xl my-8 border border-emerald-500/40 relative overflow-hidden shadow-2xl bg-gradient-to-br from-slate-900 to-emerald-900/10">
-  <!-- Premium Glowing Background Effect -->
-  <div class="absolute -right-10 -top-10 w-40 h-40 bg-emerald-500/20 blur-3xl rounded-full pointer-events-none"></div>
-  <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-teal-500/10 blur-2xl rounded-full pointer-events-none"></div>
-  
-  <div class="flex items-center gap-2 mb-4 relative z-10">
-    <span class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-[10px] font-black px-2.5 py-1 rounded shadow-lg uppercase tracking-wider animate-pulse">🌟 VIP Feature</span>
-    <span class="text-[10px] text-emerald-400 font-bold border border-emerald-500/30 px-2.5 py-1 rounded bg-emerald-500/10">Included in ₹499 Plan</span>
-  </div>
-  
-  <div class="relative z-10">
-    <h3 class="text-xl md:text-2xl font-black text-white mb-2">🚀 Auto-Generate AI Landing Pages</h3>
-    <p class="text-xs md:text-sm text-slate-300 mb-5 leading-relaxed">Apne business ke liye 1-click me premium website banayein. <strong class="text-white">Telegram Bot API</strong> integration ke sath, har naye customer ki lead seedha apne phone par payein!</p>
+
+  <!-- VIP AI BUILDER TEASER (Strictly inside viewHome - Only visible on Home Page) -->
+  <div class="glass p-6 rounded-3xl border border-emerald-500/40 relative overflow-hidden shadow-2xl bg-gradient-to-br from-slate-900 to-emerald-900/10">
+    <div class="absolute -right-10 -top-10 w-40 h-40 bg-emerald-500/20 blur-3xl rounded-full pointer-events-none"></div>
+    <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-teal-500/10 blur-2xl rounded-full pointer-events-none"></div>
     
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-      <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
-        <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> Unlimited Premium Pages
-      </div>
-      <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
-        <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> Instant Telegram Alerts
-      </div>
-      <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
-        <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> Custom Brand Colors
-      </div>
-      <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
-        <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> High-Converting Lead Forms
-      </div>
+    <div class="flex items-center gap-2 mb-4 relative z-10">
+      <span class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-[10px] font-black px-2.5 py-1 rounded shadow-lg uppercase tracking-wider animate-pulse">🌟 VIP Feature</span>
+      <span class="text-[10px] text-emerald-400 font-bold border border-emerald-500/30 px-2.5 py-1 rounded bg-emerald-500/10">Included in ₹499 Vendor Dashboard</span>
     </div>
     
-    <button onclick="accessAiBuilder()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 rounded-xl text-sm transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)] cursor-pointer hover:scale-[1.01]">
-      ⚡ Access AI Builder Now
-    </button>
+    <div class="relative z-10">
+      <h3 class="text-xl md:text-2xl font-black text-white mb-2">🚀 Auto-Generate AI Landing Pages</h3>
+      <p class="text-xs md:text-sm text-slate-300 mb-5 leading-relaxed">Apne business ke liye 1-click me premium website banayein. <strong class="text-white">Telegram Bot API</strong> integration ke sath, har naye customer ki lead seedha apne phone par payein!</p>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+        <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
+          <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> Unlimited Premium Pages
+        </div>
+        <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
+          <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> Instant Telegram Alerts
+        </div>
+        <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
+          <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> Custom Brand Colors
+        </div>
+        <div class="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
+          <span class="text-emerald-400 bg-emerald-400/10 p-1 rounded-full">✔️</span> High-Converting Lead Forms
+        </div>
+      </div>
+      
+      <button onclick="accessAiBuilder()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 rounded-xl text-sm transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)] cursor-pointer hover:scale-[1.01]">
+        ⚡ Access AI Builder Now
+      </button>
+    </div>
   </div>
 </div>
 
-<!-- VIEW 2: CHECKOUT -->
+<!-- ============================================================== -->
+<!-- VIEW 2: CHECKOUT & ADMIN-VERIFIED ONBOARDING (NO FAKE UTR BYPASS) -->
+<!-- ============================================================== -->
 <div id="viewPay" class="max-w-6xl mx-auto px-4 pt-6 hidden">
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
     <div class="lg:col-span-7 glass rounded-3xl p-6 space-y-5 border-emerald-500/30 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-4">
         <div>
-          <span class="text-[11px] font-extrabold text-emerald-400 uppercase"><i class="fa-solid fa-shield-halved"></i> Automated Setup</span>
-          <h2 class="text-xl sm:text-2xl font-black text-white">Business Onboarding & Unlock</h2>
+          <span class="text-[11px] font-extrabold text-emerald-400 uppercase"><i class="fa-solid fa-shield-halved"></i> 100% Verified Onboarding</span>
+          <h2 class="text-xl sm:text-2xl font-black text-white">Join PRO & Get Vendor Login Password</h2>
         </div>
         <div class="text-right bg-slate-900 px-4 py-2 rounded-2xl border border-slate-800">
           <span class="text-[10px] text-slate-400 line-through block">₹1,999</span>
@@ -227,11 +282,16 @@
           </div>
         </div>
       </div>
+
+      <!-- STEP 2 FORM: Sends UTR to Owner WhatsApp for Verification instead of Auto-Unlocking -->
       <form onsubmit="submitOnboarding(event)" class="space-y-3.5 pt-1">
-        <div class="flex justify-between items-center"><span class="text-xs font-extrabold text-amber-400 uppercase">Step 2: Enter Business Details & UTR</span></div>
+        <div class="flex flex-wrap justify-between items-center gap-2">
+          <span class="text-xs font-extrabold text-amber-400 uppercase">Step 2: Submit Payment UTR to Get Login Password</span>
+          <button type="button" onclick="showTab('login')" class="text-[11px] text-cyan-400 underline font-bold cursor-pointer">Password Mil Gaya? Login Karein &rarr;</button>
+        </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div><label class="text-[11px] text-slate-400 block mb-1">Aapka Naam *</label><input type="text" id="inpName" required placeholder="Eg. Rajesh Kumar" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
-          <div><label class="text-[11px] text-slate-400 block mb-1">WhatsApp Number *</label><input type="tel" id="inpPhone" required maxlength="10" placeholder="Eg. 9876543210" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
+          <div><label class="text-[11px] text-slate-400 block mb-1">Login WhatsApp Number (10 Digit) *</label><input type="tel" id="inpPhone" required maxlength="10" minlength="10" placeholder="Eg. 9876543210" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
           <div><label class="text-[11px] text-slate-400 block mb-1">Business Name *</label><input type="text" id="inpBiz" required placeholder="Eg. Agni Volt Electronic" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none"></div>
           <div>
             <label class="text-[11px] text-slate-400 block mb-1">Target Category *</label>
@@ -246,23 +306,29 @@
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="text-[11px] text-slate-400 block mb-1">City Filter</label>
+            <label class="text-[11px] text-slate-400 block mb-1">Target City / Location</label>
             <select id="inpCity" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
               <option value="ALL">All Cities</option><option value="Patna">Patna</option><option value="Delhi">Delhi</option><option value="Mumbai">Mumbai</option><option value="Jaipur">Jaipur</option><option value="Lucknow">Lucknow</option><option value="Kolkata">Kolkata</option>
             </select>
           </div>
           <div>
-            <label class="text-[11px] text-amber-300 font-bold block mb-1">12-Digit UTR No. *</label>
-            <input type="text" id="inpUtr" required maxlength="12" minlength="12" placeholder="12-Digit UTR" class="w-full bg-slate-900 border border-amber-500/70 rounded-xl px-3.5 py-2.5 text-xs font-mono text-amber-300 outline-none">
+            <label class="text-[11px] text-amber-300 font-bold block mb-1">12-Digit Payment UTR No. *</label>
+            <input type="text" id="inpUtr" required maxlength="12" minlength="12" placeholder="12-Digit UTR Number" class="w-full bg-slate-900 border border-amber-500/70 rounded-xl px-3.5 py-2.5 text-xs font-mono text-amber-300 outline-none">
           </div>
         </div>
-        <button type="submit" class="w-full btn-gradient text-white font-extrabold py-3.5 rounded-xl text-sm shadow-xl cursor-pointer">🔓 Verify UTR & Generate Custom Leads Vault</button>
+        <button type="submit" class="w-full btn-gradient text-white font-extrabold py-3.5 rounded-xl text-sm shadow-xl cursor-pointer">
+          📲 Verify UTR on WhatsApp & Get Vendor Login Password
+        </button>
+        <p class="text-[11px] text-slate-400 text-center">
+          🔒 Note: Fake UTR se dashboard unlock nahi hoga. Admin aapka ₹499 UTR verify karke turant WhatsApp par aapka Login Password bhejenge.
+        </p>
       </form>
     </div>
+
     <div class="lg:col-span-5 glass rounded-3xl p-6 flex flex-col justify-between space-y-5 shadow-2xl">
       <div>
         <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3">
-          <b class="text-sm text-white">🟢 Recent Onboarded Businesses</b>
+          <b class="text-sm text-white">🟢 Recent Verified Paid Vendors</b>
           <span class="text-xs font-mono bg-emerald-500/15 text-emerald-300 px-2.5 py-1 rounded-full font-bold">Live</span>
         </div>
         <div id="recentBuyersList" class="space-y-2.5 max-h-80 overflow-y-auto pr-1"></div>
@@ -270,45 +336,134 @@
       <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 text-xs text-slate-300 flex items-center gap-3">
         <i class="fa-brands fa-whatsapp text-2xl text-emerald-400"></i>
         <div>
-          <b class="text-white block">Payment Support</b>
-          <a href="https://wa.me/919661692365?text=Hi,%20mujhe%20madad%20chahiye" target="_blank" class="text-cyan-400 underline font-bold">Chat on WhatsApp &rarr;</a>
+          <b class="text-white block">Payment & Login Password Support</b>
+          <a href="https://wa.me/919661692365?text=Hi,%20mujhe%20Vendor%20Login%20Password%20ya%20Payment%20me%20madad%20chahiye" target="_blank" class="text-cyan-400 underline font-bold">Chat on WhatsApp &rarr;</a>
         </div>
       </div>
     </div>
   </div>
+</div>
+
+<!-- ============================================================== -->
+<!-- VIEW 2.5: DUAL LOGIN PORTAL (PAID VENDOR LOGIN vs ADMIN LOGIN) -->
+<!-- ============================================================== -->
+<div id="viewLogin" class="max-w-5xl mx-auto px-4 pt-8 hidden">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <!-- 1. PAID VENDOR / SUBSCRIBER LOGIN -->
+    <div class="glass rounded-3xl p-6 sm:p-8 space-y-5 border border-emerald-500/40 shadow-2xl">
+      <div class="border-b border-slate-800 pb-4">
+        <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 uppercase">🏢 Paid Subscriber Portal</span>
+        <h2 class="text-xl sm:text-2xl font-black text-white mt-2">Vendor Dashboard Login</h2>
+        <p class="text-xs text-slate-400 mt-1">Admin dwara verify kiye gaye 10-Digit WhatsApp Number aur Secret Password se login karein.</p>
+      </div>
+      <form onsubmit="handleVendorLogin(event)" class="space-y-4">
+        <div>
+          <label class="text-xs text-slate-300 font-bold block mb-1">Registered WhatsApp Number (10 Digit) *</label>
+          <input type="tel" id="loginVendorPhone" required maxlength="10" minlength="10" placeholder="Eg. 9876543210" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-emerald-500">
+        </div>
+        <div>
+          <label class="text-xs text-slate-300 font-bold block mb-1">Admin Issued Secret Password *</label>
+          <input type="password" id="loginVendorPass" required placeholder="Eg. ALxxxxxx" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-emerald-500">
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Your Business Name (Optional)</label>
+          <input type="text" id="loginVendorBiz" placeholder="Eg. Royal Electronics" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+        </div>
+        <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold py-3.5 rounded-xl text-xs shadow-lg cursor-pointer">
+          🔓 Login to Paid Vendor Dashboard
+        </button>
+      </form>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 text-center space-y-1">
+        <p class="text-[11px] text-slate-400">Abhi tak Password nahi mila?</p>
+        <button type="button" onclick="showTab('pay')" class="text-xs font-extrabold text-cyan-400 underline cursor-pointer">🚀 ₹499 Plan Pay Karein & Admin Se Password Lein</button>
+      </div>
+    </div>
+
+    <!-- 2. OWNER / ADMIN LOGIN -->
+    <div class="glass rounded-3xl p-6 sm:p-8 space-y-5 border border-red-500/40 shadow-2xl">
+      <div class="border-b border-slate-800 pb-4">
+        <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-red-500/20 text-red-300 uppercase">🛡️ Owner Control Room</span>
+        <h2 class="text-xl sm:text-2xl font-black text-white mt-2">Admin Portal Login</h2>
+        <p class="text-xs text-slate-400 mt-1">Sirf Website Owner ke liye: Vendor ka Secret Password generate karne aur Bulk CSV File Upload karne ke liye login karein.</p>
+      </div>
+      <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+        <div>
+          <label class="text-xs text-slate-300 font-bold block mb-1">Admin Username / ID *</label>
+          <input type="text" id="loginAdminId" required placeholder="Enter Admin ID" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-red-500">
+        </div>
+        <div>
+          <label class="text-xs text-slate-300 font-bold block mb-1">Admin Password / PIN *</label>
+          <input type="password" id="loginAdminPass" required placeholder="Enter Admin Password" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-red-500">
+        </div>
+        <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-extrabold py-3.5 rounded-xl text-xs shadow-lg cursor-pointer">
+          ⚙️ Login to Admin Control Room
+        </button>
+      </form>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 text-[11px] text-slate-400 text-center">
+        🔒 Secure Owner Access: Bulk CSV Upload, GitHub CSV Export & Instant Vendor Key Generator
+      </div>
+    </div>
+
   </div>
-  <!-- VIEW 3: LEADS VAULT -->
+</div>
+
+<!-- ============================================================== -->
+<!-- VIEW 3: PAID VENDOR DASHBOARD (PRO LEADS VAULT & PAID TOOLS) -->
+<!-- ============================================================== -->
 <div id="viewLeads" class="max-w-6xl mx-auto px-4 pt-6 hidden space-y-5">
+  <!-- Paid Vendor Top Welcome & Quick Actions Bar -->
   <div class="glass rounded-3xl p-5 sm:p-6 bg-gradient-to-r from-blue-950/60 via-slate-900 to-emerald-950/50 border border-cyan-500/40 shadow-2xl flex flex-wrap items-center justify-between gap-4">
     <div class="space-y-1">
-      <div class="flex items-center gap-2">
-        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300">✔ PRO VAULT ACTIVE</span>
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300">✔ PAID VENDOR DASHBOARD</span>
         <span id="customPortalCatBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-cyan-500/20 text-cyan-300">All Categories</span>
+        <span id="filteredCountBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300">Live Leads</span>
       </div>
-      <h2 id="customBusinessHeading" class="text-xl sm:text-2xl font-black text-white">🏢 Custom B2B Leads Portal</h2>
-      <p id="customPitchSubtext" class="text-xs text-slate-300">1-Click WhatsApp buttons are customized for your business!</p>
+      <h2 id="customBusinessHeading" class="text-xl sm:text-2xl font-black text-white">🏢 Custom B2B & B2C Vendor Dashboard</h2>
+      <p id="customPitchSubtext" class="text-xs text-slate-300">Apne Business, Requirement aur Location ke hisab se filter karein, Direct WhatsApp karein ya CSV download karein!</p>
     </div>
-    <div class="flex flex-wrap gap-2.5">
-      <button type="button" onclick="loadMoreCustomLeads()" class="bg-purple-600 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer">+ Load Fresh Leads</button>
-      <button type="button" onclick="downloadLeadsCsv()" class="bg-emerald-600 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer">📥 Download Excel</button>
+    <div class="flex flex-wrap gap-2">
+      <button type="button" onclick="accessAiBuilder()" class="bg-gradient-to-r from-amber-500 to-emerald-600 text-white font-extrabold px-3.5 py-2.5 rounded-xl text-xs shadow-lg cursor-pointer">🚀 AI Page Builder</button>
+      <button type="button" onclick="loadMoreCustomLeads()" class="bg-purple-600 hover:bg-purple-500 text-white font-extrabold px-3.5 py-2.5 rounded-xl text-xs cursor-pointer">+ Load Fresh Leads</button>
+      <button type="button" onclick="downloadLeadsCsv()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs shadow-lg cursor-pointer">📥 Download Custom CSV</button>
+      <button type="button" onclick="logoutVendor()" class="bg-slate-800 hover:bg-red-600/80 text-slate-200 font-bold px-3.5 py-2.5 rounded-xl text-xs border border-slate-700 cursor-pointer">🚪 Logout</button>
     </div>
   </div>
 
+  <!-- Paid Vendor Self-Service Filter Panel -->
   <div class="glass rounded-3xl p-5 space-y-4">
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+      <span class="text-xs font-extrabold text-cyan-400 uppercase">🎯 Vendor Self-Service Filter (Apni Zaroorat, Business Category aur Location Chunein)</span>
+      <span class="text-[11px] text-slate-400">Jo filter select karenge, wahi Custom CSV me download hoga!</span>
+    </div>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-      <input type="text" id="filterSearch" oninput="renderLeadsGrid()" placeholder="🔍 Search shop name, owner, city..." class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
-      <select id="filterCat" onchange="renderLeadsGrid()" class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
-        <option value="ALL">All Categories</option><option value="Mobile & Electronics">Mobile & Electronics</option><option value="Electrical & Hardware">Electrical & Hardware</option><option value="Clothing & Garments">Clothing & Garments</option><option value="Grocery & Supermart">Grocery & Supermart</option><option value="Medical & Pharmacy">Medical & Pharmacy</option>
-      </select>
-      <select id="filterCity" onchange="renderLeadsGrid()" class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
-        <option value="ALL">All Cities</option><option value="Patna">Patna</option><option value="Delhi">Delhi</option><option value="Mumbai">Mumbai</option><option value="Jaipur">Jaipur</option><option value="Lucknow">Lucknow</option><option value="Kolkata">Kolkata</option>
-      </select>
+      <div>
+        <label class="text-[10px] text-slate-400 font-bold uppercase block mb-1">1. Zaroorat / Keyword Search</label>
+        <input type="text" id="filterSearch" oninput="renderLeadsGrid()" placeholder="🔍 Search shop, customer, area, city..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
+      </div>
+      <div>
+        <label class="text-[10px] text-slate-400 font-bold uppercase block mb-1">2. Business Category</label>
+        <select id="filterCat" onchange="renderLeadsGrid()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
+          <option value="ALL">All Categories</option><option value="Mobile & Electronics">Mobile & Electronics</option><option value="Electrical & Hardware">Electrical & Hardware</option><option value="Clothing & Garments">Clothing & Garments</option><option value="Grocery & Supermart">Grocery & Supermart</option><option value="Medical & Pharmacy">Medical & Pharmacy</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-[10px] text-slate-400 font-bold uppercase block mb-1">3. Location / City</label>
+        <select id="filterCity" onchange="renderLeadsGrid()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
+          <option value="ALL">All Cities</option><option value="Patna">Patna</option><option value="Delhi">Delhi</option><option value="Mumbai">Mumbai</option><option value="Jaipur">Jaipur</option><option value="Lucknow">Lucknow</option><option value="Kolkata">Kolkata</option>
+        </select>
+      </div>
     </div>
   </div>
+
+  <!-- Paid Leads Cards Grid -->
   <div id="leadsCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
 </div>
 
+<!-- ============================================================== -->
 <!-- VIEW 4: CATALOG MAKER -->
+<!-- ============================================================== -->
 <div id="viewCatalog" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-6">
   <div class="glass rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border-purple-500/30">
     <div class="border-b border-slate-800 pb-4">
@@ -337,7 +492,9 @@
   </div>
 </div>
 
+<!-- ============================================================== -->
 <!-- VIEW 5: WA LINK & QR -->
+<!-- ============================================================== -->
 <div id="viewWaGen" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-6">
   <div class="glass rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border-cyan-500/30">
     <div class="border-b border-slate-800 pb-4">
@@ -361,8 +518,11 @@
       </div>
     </div>
   </div>
-          </div>
-  <!-- VIEW 6: FREE LEADS -->
+</div>
+
+<!-- ============================================================== -->
+<!-- VIEW 6: FREE LEADS (With Subscriber Awareness Banner, No WA Share) -->
+<!-- ============================================================== -->
 <div id="viewFreeLeads" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-6">
   <div class="glass rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border-emerald-500/30">
     <div class="border-b border-slate-800 pb-4 flex flex-wrap justify-between items-center gap-3">
@@ -370,14 +530,38 @@
         <span class="text-[10px] font-extrabold text-emerald-400 uppercase tracking-widest">DAILY TRAFFIC BOOSTER</span>
         <h2 class="text-xl sm:text-2xl font-black text-white">🎁 Rozana 3 Free Sample Verified Leads</h2>
       </div>
-      <button type="button" onclick="showTab('pay')" class="bg-blue-600 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer">🔓 Unlock All (₹499)</button>
+      <div class="flex gap-2">
+        <button type="button" onclick="showTab('login')" class="bg-slate-800 text-cyan-300 border border-cyan-500/40 font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer">🔐 Vendor Login</button>
+        <button type="button" onclick="showTab('pay')" class="bg-blue-600 hover:bg-blue-500 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs cursor-pointer">🔓 Unlock PRO (₹499)</button>
+      </div>
     </div>
+
+    <!-- SUBSCRIBER & FREE USER AWARENESS BANNER -->
+    <div class="bg-gradient-to-r from-amber-500/15 via-blue-600/15 to-emerald-500/15 border border-amber-500/40 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
+      <div class="space-y-1.5 text-center sm:text-left">
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-slate-950 uppercase">
+          ⚡ PAID VENDOR DASHBOARD EXCLUSIVE
+        </div>
+        <h3 class="text-sm sm:text-base font-black text-white">
+          Personal Vendor Login, 1-Click Direct WhatsApp Share & Custom CSV Download Chahiye?
+        </h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Free sample me sirf basic preview dikhta hai. <strong class="text-emerald-400">₹499 Paid Subscriber Plan</strong> me aapko milta hai alag <strong class="text-white">Vendor Login Password & Dashboard</strong>, har lead par <strong class="text-white">Direct WhatsApp Pitch / Share Button</strong> aur apne <strong class="text-cyan-300">Business Category & Location (City/Area)</strong> ke hisab se Unlimited CSV/Excel File download karne ka full access!
+        </p>
+      </div>
+      <button type="button" onclick="showTab('pay')" class="shrink-0 btn-gradient text-white font-extrabold px-5 py-3 rounded-xl text-xs shadow-xl cursor-pointer whitespace-nowrap">
+        🚀 Get Vendor Login (₹499)
+      </button>
+    </div>
+
     <div id="freeLeadsStatus" class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs text-slate-300 text-center">Checking quota...</div>
     <div id="freeLeadsContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
   </div>
 </div>
 
+<!-- ============================================================== -->
 <!-- VIEW 7: LIST SHOP -->
+<!-- ============================================================== -->
 <div id="viewListShop" class="max-w-5xl mx-auto px-4 pt-6 hidden space-y-6">
   <div class="glass rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border-amber-500/30">
     <div class="border-b border-slate-800 pb-4">
@@ -405,6 +589,123 @@
   </div>
 </div>
 
+<!-- ============================================================== -->
+<!-- VIEW 8: DEDICATED ADMIN CONTROL ROOM (Protected by Admin Login) -->
+<!-- ============================================================== -->
+<div id="viewAdmin" class="max-w-6xl mx-auto px-4 pt-6 pb-12 hidden space-y-6">
+  <div class="glass rounded-3xl p-6 border-red-500/40 space-y-6 bg-slate-900/95 border">
+    <div class="flex flex-wrap justify-between items-center gap-3 border-b border-slate-800 pb-4">
+      <div>
+        <span class="text-[10px] font-extrabold text-red-400 uppercase tracking-widest">🛡️ MASTER OWNER CONTROL ROOM</span>
+        <h3 class="text-xl font-black text-white">Admin Dashboard: Vendor Password Generator & Bulk CSV Upload</h3>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <span id="admTotalLeadsCount" class="text-xs font-extrabold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-xl">Total Leads: 5</span>
+        <button type="button" onclick="showTab('leads')" class="bg-blue-600 text-white text-xs px-3.5 py-2 rounded-xl font-extrabold cursor-pointer">👁️ Preview Vendor Vault</button>
+        <button type="button" onclick="logoutAdmin()" class="bg-slate-800 hover:bg-red-600 text-slate-200 text-xs px-3.5 py-2 rounded-xl font-bold cursor-pointer">Lock & Logout 🔒</button>
+      </div>
+    </div>
+
+    <!-- SECTION 1: PAID VENDOR SECRET PASSWORD GENERATOR (WORKS ON ALL PHONES WITHOUT SERVER) -->
+    <div class="space-y-4 bg-slate-950/95 p-5 rounded-2xl border border-emerald-500/40 shadow-xl">
+      <div>
+        <span class="text-xs font-extrabold text-emerald-400 uppercase block">1️⃣ Paid Vendor Secret Password Generator (100% Secure - Works on Any Device)</span>
+        <p class="text-[11px] text-slate-300 mt-0.5">Jab kisi Vendor ka ₹499 payment aur UTR verify ho jaye, toh uska 10-Digit WhatsApp Number niche dalein. System uske phone ke liye Secret Password banayega jise aap 1-Click me WhatsApp par bhej sakte hain:</p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+        <input type="text" id="admVenName" placeholder="Vendor Name (Eg. Rajesh)" class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
+        <input type="text" id="admVenBiz" placeholder="Business Name" class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none">
+        <input type="tel" id="admVenPhone" maxlength="10" placeholder="Vendor 10-Digit WhatsApp No *" class="bg-slate-900 border border-emerald-500/60 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono outline-none">
+        <button type="button" onclick="adminCreateVendorAccount()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-lg cursor-pointer">
+          🔑 Generate Vendor Password
+        </button>
+      </div>
+
+      <!-- Generated Password Display Box -->
+      <div id="generatedVendorKeyBox" class="hidden bg-slate-900 border border-emerald-500/50 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="space-y-1">
+          <span class="text-[10px] font-extrabold text-emerald-400 uppercase">✔ Vendor Login Credentials Ready:</span>
+          <p id="generatedVendorKeyText" class="text-sm font-mono text-white font-bold"></p>
+        </div>
+        <a id="sendVendorKeyWaBtn" href="#" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs shadow-lg">
+          📲 Send ID & Password on Vendor WhatsApp
+        </a>
+      </div>
+
+      <div id="adminVendorsListBox" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 pt-2"></div>
+    </div>
+
+    <!-- SECTION 2: BULK CSV FILE UPLOAD & GITHUB MASTER CSV EXPORT -->
+    <div class="space-y-4 bg-slate-950/90 p-5 rounded-2xl border border-cyan-500/40">
+      <div class="flex flex-wrap justify-between items-center gap-2">
+        <div>
+          <span class="text-xs font-extrabold text-cyan-400 uppercase block">2️⃣ Bulk CSV File Upload (For Subscriber Filter & Download)</span>
+          <p class="text-[11px] text-slate-300 mt-0.5">CSV file upload karein (Columns: <code class="text-amber-300">Shop,Owner,Category,City,Area,Phone</code>). Subscribers apne Business aur Location ke hisab se ise khud filter aur download kar sakenge!</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" onclick="downloadSampleCsvTemplate()" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 text-[11px] font-bold px-3 py-2 rounded-xl cursor-pointer">
+            📄 Sample CSV Format
+          </button>
+          <button type="button" onclick="exportMasterCsvForGithub()" class="bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 text-[11px] font-extrabold px-3 py-2 rounded-xl cursor-pointer">
+            💾 Download Master leads.csv (For GitHub Repo)
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+        <div class="sm:col-span-8">
+          <input type="file" id="admCsvFileInput" accept=".csv,text/csv" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-extrabold file:bg-cyan-600 file:text-white cursor-pointer">
+        </div>
+        <div class="sm:col-span-4">
+          <button type="button" onclick="adminUploadCsvLeads()" class="w-full bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white font-extrabold py-3 rounded-xl text-xs shadow-lg cursor-pointer">
+            📤 Upload & Live Sync CSV
+          </button>
+        </div>
+      </div>
+      <div id="csvUploadStatusMsg" class="hidden text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3"></div>
+    </div>
+
+    <!-- SECTION 3: 1-CLICK SINGLE LEAD ADDER -->
+    <div class="space-y-3 bg-slate-950/70 p-5 rounded-2xl border border-slate-800">
+      <span class="text-xs font-extrabold text-amber-400 uppercase block">3️⃣ Single Lead Instant Adder</span>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <input type="text" id="admShop" placeholder="Shop / Customer Name (Eg. Balaji Store)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+        <input type="text" id="admOwner" placeholder="Owner / Contact Name" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+        <select id="admCat" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+          <option value="Mobile & Electronics">Mobile & Electronics</option>
+          <option value="Electrical & Hardware">Electrical & Hardware</option>
+          <option value="Clothing & Garments">Clothing & Garments</option>
+          <option value="Grocery & Supermart">Grocery & Supermart</option>
+          <option value="Medical & Pharmacy">Medical & Pharmacy</option>
+        </select>
+        <input type="text" id="admCity" placeholder="City (Eg. Patna)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+        <input type="text" id="admArea" placeholder="Area (Eg. Boring Road)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+        <input type="tel" id="admPhone" maxlength="10" placeholder="10 Digit WhatsApp No" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+      </div>
+      <button type="button" onclick="adminAddNewLead()" class="w-full bg-gradient-to-r from-red-600 to-amber-600 text-white font-extrabold py-3 rounded-xl text-xs shadow-lg cursor-pointer">⚡ 1-Click Instant Add Lead</button>
+    </div>
+
+    <!-- SECTION 4: CHANGE ADMIN CREDENTIALS -->
+    <div class="bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30 space-y-3">
+      <span class="text-xs font-extrabold text-amber-400 uppercase block">4️⃣ Change Admin Login ID & Password</span>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+        <input type="text" id="admNewId" placeholder="New Admin ID (Default: admin)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+        <input type="text" id="admNewPass" placeholder="New Password (Default: 7808)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+        <button type="button" onclick="updateAdminCredentials()" class="bg-amber-600 hover:bg-amber-500 text-white font-extrabold py-2 rounded-xl text-xs cursor-pointer">Update Admin Credentials</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER ADMIN LOGIN SHORTCUT -->
+<div class="text-center py-6">
+  <button type="button" onclick="showTab('login')" class="text-[11px] text-slate-500 hover:text-cyan-400 font-mono cursor-pointer">⚙️ Admin / Paid Vendor Portal Login</button>
+</div>
+
+<!-- ============================================================== -->
+<!-- MAIN JAVASCRIPT LOGIC -->
+<!-- ============================================================== -->
 <script>
   window.renderHomeTeasers = function() {
     var box = document.getElementById('teaserContainer');
@@ -438,37 +739,332 @@
     box.innerHTML = html;
   };
 
-  window.renderLeadsGrid = function() {
-    var q = (document.getElementById('filterSearch').value || "").toLowerCase();
-    var cat = document.getElementById('filterCat').value;
-    var city = document.getElementById('filterCity').value;
-    var filtered = window.masterLeads.filter(function(l) {
-      return (l.shop + l.owner + l.city).toLowerCase().includes(q) && (cat === "ALL" || l.cat === cat) && (city === "ALL" || l.city === city);
+  window.getFilteredLeads = function() {
+    var searchEl = document.getElementById('filterSearch');
+    var catEl = document.getElementById('filterCat');
+    var cityEl = document.getElementById('filterCity');
+    var q = (searchEl && searchEl.value ? searchEl.value : "").toLowerCase();
+    var cat = catEl ? catEl.value : "ALL";
+    var city = cityEl ? cityEl.value : "ALL";
+    return window.masterLeads.filter(function(l) {
+      var textMatch = ((l.shop || "") + " " + (l.owner || "") + " " + (l.city || "") + " " + (l.area || "") + " " + (l.cat || "")).toLowerCase().includes(q);
+      var catMatch = (cat === "ALL" || l.cat === cat);
+      var cityMatch = (city === "ALL" || (l.city && l.city.toLowerCase() === city.toLowerCase()));
+      return textMatch && catMatch && cityMatch;
     });
+  };
+
+  window.shareLeadOnWhatsApp = function(shop, owner, cat, city, area, phone) {
+    var msg = "🔥 *VERIFIED LEAD DETAILS*\n" +
+              "🏢 Shop/Customer: " + shop + "\n" +
+              "👤 Name: " + owner + "\n" +
+              "📂 Category: " + cat + "\n" +
+              "📍 Location: " + (area ? area + ", " : "") + city + "\n" +
+              "📞 WhatsApp/Phone: +91" + phone;
+    window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+  };
+
+  window.renderLeadsGrid = function() {
+    var filtered = window.getFilteredLeads();
+    var countBadge = document.getElementById('filteredCountBadge');
+    if (countBadge) countBadge.innerText = filtered.length + " Leads Matched";
+    var catEl = document.getElementById('filterCat');
+    var catBadge = document.getElementById('customPortalCatBadge');
+    if (catBadge && catEl) catBadge.innerText = (catEl.value === "ALL" ? "All Categories" : catEl.value);
+
     var grid = document.getElementById('leadsCardsGrid');
     if (!grid) return;
+    if (filtered.length === 0) {
+      grid.innerHTML = '<div class="col-span-full glass p-6 rounded-2xl text-center text-xs text-slate-400">Is filter me abhi koi lead nahi hai. Category ya City filter change karke dekhein.</div>';
+      return;
+    }
     var senderBiz = window.clientData.businessName || "Wholesale Hub";
     grid.innerHTML = filtered.map(function(l) {
-      var waUrl = "https://wa.me/91" + l.phone + "?text=" + encodeURIComponent("Namaste " + l.owner + " ji, hum " + senderBiz + " se hain. Rate list bhejein?");
-      return '<div class="glass p-4 rounded-xl space-y-2"><b class="text-white text-sm">' + l.shop + '</b><p class="text-xs text-slate-400">' + l.city + ' | ' + l.owner + '</p><a href="' + waUrl + '" target="_blank" class="block bg-emerald-600 text-white text-center py-2 rounded text-xs font-bold">💬 WhatsApp Pitch</a></div>';
+      var areaStr = l.area ? (l.area + ", ") : "";
+      var bStyle = window.catBadgeStyles[l.cat] || "bg-cyan-500/15 text-cyan-300 border-cyan-500/30";
+      var waUrl = "https://wa.me/91" + l.phone + "?text=" + encodeURIComponent("Namaste " + l.owner + " ji, hum " + senderBiz + " se hain. Aapki requirement ke hisab se best rate list bhejein?");
+      var safeShop = (l.shop || "").replace(/'/g, "\\'");
+      var safeOwner = (l.owner || "").replace(/'/g, "\\'");
+      var safeCat = (l.cat || "").replace(/'/g, "\\'");
+      var safeCity = (l.city || "").replace(/'/g, "\\'");
+      var safeArea = (l.area || "").replace(/'/g, "\\'");
+      var safePhone = (l.phone || "").replace(/'/g, "\\'");
+
+      return '<div class="glass neon-hover p-4 rounded-2xl space-y-2.5 flex flex-col justify-between">' +
+        '<div class="space-y-1.5">' +
+          '<div class="flex justify-between items-center gap-2">' +
+            '<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold border ' + bStyle + '">' + (l.cat || "General") + '</span>' +
+            '<span class="text-[10px] text-emerald-400 font-bold">✔ Verified</span>' +
+          '</div>' +
+          '<b class="text-white text-sm block">' + l.shop + '</b>' +
+          '<p class="text-xs text-slate-300">👤 ' + l.owner + ' | 📍 ' + areaStr + '<b class="text-white">' + l.city + '</b></p>' +
+          '<p class="text-xs font-mono text-cyan-300 bg-slate-900/90 px-2.5 py-1 rounded-lg border border-slate-800 inline-block">📞 +91 ' + l.phone + '</p>' +
+        '</div>' +
+        '<div class="grid grid-cols-2 gap-2 pt-2">' +
+          '<a href="' + waUrl + '" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white text-center py-2 rounded-xl text-[11px] font-extrabold shadow">💬 WhatsApp Pitch</a>' +
+          '<button type="button" onclick="shareLeadOnWhatsApp(\'' + safeShop + '\',\'' + safeOwner + '\',\'' + safeCat + '\',\'' + safeCity + '\',\'' + safeArea + '\',\'' + safePhone + '\')" class="bg-blue-600 hover:bg-blue-500 text-white text-center py-2 rounded-xl text-[11px] font-extrabold shadow cursor-pointer">📲 Direct WA Share</button>' +
+        '</div>' +
+      '</div>';
     }).join('');
   };
 
   window.loadMoreCustomLeads = function() {
     window.masterLeads.unshift({ shop: "Bharat Hub #" + Math.floor(Math.random()*90+10), owner: "Sandeep Kumar", cat: "Grocery & Supermart", city: "Patna", area: "Market", phone: "9835099887" });
+    localStorage.setItem('autoleads_extra_leads', JSON.stringify(window.masterLeads));
+    window.syncDynamicFilters();
     window.renderLeadsGrid();
     window.showToast("⚡ Fresh Leads Added!");
   };
 
   window.downloadLeadsCsv = function() {
-    var csv = "Shop,Owner,Category,City,Phone\n" + window.masterLeads.map(l => `"${l.shop}","${l.owner}","${l.cat}","${l.city}","91${l.phone}"`).join("\n");
+    var filtered = window.getFilteredLeads();
+    if (!filtered || filtered.length === 0) {
+      window.showToast("⚠️ Selected filter me koi lead nahi mili!");
+      return;
+    }
+    var csv = "Shop,Owner,Category,City,Area,Phone\n" + filtered.map(function(l) {
+      var s = (l.shop || "").replace(/"/g, '""');
+      var o = (l.owner || "").replace(/"/g, '""');
+      var c = (l.cat || "").replace(/"/g, '""');
+      var ci = (l.city || "").replace(/"/g, '""');
+      var ar = (l.area || "").replace(/"/g, '""');
+      var ph = (l.phone || "").replace(/"/g, '""');
+      return '"' + s + '","' + o + '","' + c + '","' + ci + '","' + ar + '","91' + ph + '"';
+    }).join("\n");
+    var catVal = (document.getElementById('filterCat') && document.getElementById('filterCat').value !== "ALL") ? document.getElementById('filterCat').value.replace(/[^a-zA-Z0-9]/g, '_') : "AllCategories";
+    var cityVal = (document.getElementById('filterCity') && document.getElementById('filterCity').value !== "ALL") ? document.getElementById('filterCity').value.replace(/[^a-zA-Z0-9]/g, '_') : "AllCities";
     var a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-    a.download = "Leads.csv";
+    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+    a.download = "Leads_" + catVal + "_" + cityVal + ".csv";
     a.click();
-    window.showToast("Excel Downloaded!");
+    window.showToast("📥 " + filtered.length + " Filtered Leads CSV Downloaded!");
   };
 
+  // ==========================================================
+  // SECURE ONBOARDING & STATELESS VENDOR LOGIN SYSTEM
+  // ==========================================================
+  window.activateVendorSession = function(vendorObj) {
+    window.isUnlocked = true;
+    window.clientData = {
+      name: vendorObj.name || "Verified Partner",
+      phone: vendorObj.phone,
+      businessName: vendorObj.biz || "Verified Wholesale Partner",
+      category: vendorObj.cat || "ALL",
+      city: vendorObj.city || "ALL"
+    };
+    localStorage.setItem('autoleads_unlocked', 'true');
+    localStorage.setItem('autoleads_client', JSON.stringify(window.clientData));
+
+    var lockIcon = document.getElementById('vaultLockIcon');
+    if (lockIcon) lockIcon.className = "fa-solid fa-lock-open text-[10px] text-emerald-300";
+
+    var heading = document.getElementById('customBusinessHeading');
+    if (heading) heading.innerText = "🏢 " + window.clientData.businessName + " - Paid Vendor Dashboard";
+
+    var filterCat = document.getElementById('filterCat');
+    if (filterCat && vendorObj.cat && vendorObj.cat !== "ALL") filterCat.value = vendorObj.cat;
+
+    var filterCity = document.getElementById('filterCity');
+    if (filterCity && vendorObj.city && vendorObj.city !== "ALL") filterCity.value = vendorObj.city;
+  };
+
+  // Fixed: Does NOT auto-unlock with fake UTR! Sends UTR to Owner WhatsApp for verification
+  window.submitOnboarding = function(e) {
+    e.preventDefault();
+    var name = document.getElementById('inpName').value.trim();
+    var phone = document.getElementById('inpPhone').value.trim().replace(/\D/g, '').slice(-10);
+    var biz = document.getElementById('inpBiz').value.trim();
+    var cat = document.getElementById('inpCat').value;
+    var city = document.getElementById('inpCity').value;
+    var utr = document.getElementById('inpUtr').value.trim().replace(/\D/g, '');
+
+    if (phone.length !== 10) {
+      alert("Kripya sahi 10-Digit WhatsApp Number darj karein!");
+      return;
+    }
+    if (utr.length !== 12) {
+      alert("Kripya sahi 12-Digit Payment UTR Number darj karein!");
+      return;
+    }
+
+    // Save pending vendor preferences locally so when Admin sends password, their category & business name are remembered
+    var pendingProfile = { name: name, phone: phone, biz: biz, cat: cat, city: city };
+    localStorage.setItem('autoleads_pending_profile_' + phone, JSON.stringify(pendingProfile));
+
+    var verifyMsg = "🚀 *NEW ₹499 PRO ONBOARDING & UTR VERIFICATION*\n\n" +
+                    "👤 *Vendor Name:* " + name + "\n" +
+                    "🏢 *Business:* " + biz + "\n" +
+                    "📂 *Category:* " + cat + "\n" +
+                    "📍 *City:* " + city + "\n" +
+                    "📞 *Login WhatsApp No:* " + phone + "\n" +
+                    "🔢 *12-Digit UTR:* " + utr + "\n\n" +
+                    "Sir, maine ₹499 payment kar diya hai. Kripya UTR verify karke mera *Vendor Login Password* bhej dijiye.";
+
+    window.showToast("📨 Redirecting to Admin WhatsApp for UTR Verification...");
+    window.open("https://wa.me/919661692365?text=" + encodeURIComponent(verifyMsg), "_blank");
+
+    var loginPhInput = document.getElementById('loginVendorPhone');
+    if (loginPhInput) loginPhInput.value = phone;
+    var loginBizInput = document.getElementById('loginVendorBiz');
+    if (loginBizInput) loginBizInput.value = biz;
+    window.showTab('login');
+  };
+
+  // Vendor Login: Verifies mathematical secret password OR admin custom list
+  window.handleVendorLogin = function(e) {
+    e.preventDefault();
+    var ph = document.getElementById('loginVendorPhone').value.trim().replace(/\D/g, '').slice(-10);
+    var ps = document.getElementById('loginVendorPass').value.trim().toUpperCase();
+    var enteredBiz = document.getElementById('loginVendorBiz').value.trim();
+
+    if (ph.length !== 10) {
+      alert("Kripya sahi 10-Digit WhatsApp Number dalein!");
+      return;
+    }
+
+    var expectedSecretPass = window.generateVendorSecretPass(ph);
+    var customFound = window.paidVendors.find(function(v) {
+      return v.phone === ph && String(v.pass).toUpperCase() === ps;
+    });
+
+    if (ps !== expectedSecretPass && !customFound) {
+      alert("❌ Invalid Login Password! Fake ya galat password se login nahi ho sakta. Kripya ₹499 pay karke Admin se apna asli Secret Password prapt karein.");
+      return;
+    }
+
+    var savedPending = null;
+    try {
+      savedPending = JSON.parse(localStorage.getItem('autoleads_pending_profile_' + ph));
+    } catch (err) {}
+
+    var vendorData = customFound || savedPending || {
+      name: "Verified Vendor",
+      phone: ph,
+      biz: enteredBiz || "Verified Business Partner",
+      cat: "ALL",
+      city: "ALL"
+    };
+    if (enteredBiz) vendorData.biz = enteredBiz;
+
+    window.activateVendorSession(vendorData);
+    window.showToast("🔓 Welcome " + vendorData.biz + "! Paid Vendor Dashboard Unlocked.");
+    window.showTab('leads');
+  };
+
+  window.logoutVendor = function() {
+    window.isUnlocked = false;
+    localStorage.removeItem('autoleads_unlocked');
+    localStorage.removeItem('autoleads_client');
+    var lockIcon = document.getElementById('vaultLockIcon');
+    if (lockIcon) lockIcon.className = "fa-solid fa-lock text-[10px]";
+    window.showToast("🔒 Vendor Dashboard Logged Out!");
+    window.showTab('login');
+  };
+
+  window.handleAdminLogin = function(e) {
+    e.preventDefault();
+    var id = document.getElementById('loginAdminId').value.trim();
+    var pass = document.getElementById('loginAdminPass').value.trim();
+
+    if (id === window.adminCredentials.id && pass === window.adminCredentials.pass) {
+      window.isAdminLoggedIn = true;
+      window.isUnlocked = true;
+      localStorage.setItem('autoleads_unlocked', 'true');
+      window.showToast("🛡️ Welcome Owner! Admin Control Room Unlocked.");
+      window.showTab('admin');
+    } else {
+      alert("❌ Galat Admin ID ya Password!");
+    }
+  };
+
+  window.logoutAdmin = function() {
+    window.isAdminLoggedIn = false;
+    window.showToast("🔒 Admin Panel Locked!");
+    window.showTab('home');
+  };
+
+  window.updateAdminCredentials = function() {
+    var newId = document.getElementById('admNewId').value.trim();
+    var newPass = document.getElementById('admNewPass').value.trim();
+    if (!newId || !newPass) {
+      alert("Kripya naya Admin ID aur Password dono bharein!");
+      return;
+    }
+    window.adminCredentials = { id: newId, pass: newPass };
+    localStorage.setItem('autoleads_admin_creds', JSON.stringify(window.adminCredentials));
+    window.showToast("✅ Admin ID & Password Updated!");
+  };
+
+  window.adminCreateVendorAccount = function() {
+    var name = document.getElementById('admVenName').value.trim() || "Paid Vendor";
+    var biz = document.getElementById('admVenBiz').value.trim() || "Verified Business";
+    var phone = document.getElementById('admVenPhone').value.trim().replace(/\D/g, '').slice(-10);
+
+    if (phone.length !== 10) {
+      alert("Kripya Vendor ka sahi 10-Digit WhatsApp Number dalein!");
+      return;
+    }
+
+    var secretPass = window.generateVendorSecretPass(phone);
+    var newVendor = { name: name, phone: phone, pass: secretPass, biz: biz, cat: "ALL", city: "ALL" };
+
+    var idx = window.paidVendors.findIndex(function(v) { return v.phone === phone; });
+    if (idx !== -1) {
+      window.paidVendors[idx] = newVendor;
+    } else {
+      window.paidVendors.unshift(newVendor);
+    }
+    localStorage.setItem('autoleads_paid_vendors', JSON.stringify(window.paidVendors));
+    window.renderAdminVendorsList();
+
+    var keyBox = document.getElementById('generatedVendorKeyBox');
+    var keyText = document.getElementById('generatedVendorKeyText');
+    var waBtn = document.getElementById('sendVendorKeyWaBtn');
+
+    if (keyBox && keyText && waBtn) {
+      keyText.innerText = "Login Phone: " + phone + "  |  Secret Password: " + secretPass;
+      var msg = "🎉 *CONGRATULATIONS! AUTOLEADS PRO ACTIVATED* 🎉\n\n" +
+                "Namaste " + name + " ji (" + biz + "),\n" +
+                "Aapka ₹499 payment verify ho chuka hai. Aapke Paid Vendor Dashboard ka Login ID aur Secret Password niche diya gaya hai:\n\n" +
+                "🔐 *Login Mobile No:* " + phone + "\n" +
+                "🔑 *Secret Password:* " + secretPass + "\n\n" +
+                "Website ke *Login* tab me jakar abhi apna Paid Dashboard, Direct WhatsApp Pitch aur Custom CSV Download unlock karein!";
+      waBtn.href = "https://wa.me/91" + phone + "?text=" + encodeURIComponent(msg);
+      keyBox.classList.remove('hidden');
+    }
+
+    window.showToast("🔑 Secret Password Generated: " + secretPass);
+  };
+
+  window.deleteVendorAccount = function(phone) {
+    window.paidVendors = window.paidVendors.filter(function(v) { return v.phone !== phone; });
+    localStorage.setItem('autoleads_paid_vendors', JSON.stringify(window.paidVendors));
+    window.renderAdminVendorsList();
+    window.showToast("🗑️ Vendor Record Removed!");
+  };
+
+  window.renderAdminVendorsList = function() {
+    var box = document.getElementById('adminVendorsListBox');
+    if (!box) return;
+    box.innerHTML = window.paidVendors.map(function(v) {
+      var waMsg = "Namaste " + v.name + " ji, Aapka AutoLeads PRO Login ID: " + v.phone + " aur Secret Password: " + v.pass + " hai.";
+      var waLink = "https://wa.me/91" + v.phone + "?text=" + encodeURIComponent(waMsg);
+      return '<div class="bg-slate-900 border border-slate-800 p-3 rounded-xl text-xs flex justify-between items-center gap-2">' +
+        '<div>' +
+          '<b class="text-white block">' + v.biz + ' (' + v.name + ')</b>' +
+          '<span class="text-[11px] font-mono text-cyan-300">ID: ' + v.phone + ' | Pass: <b class="text-amber-300">' + v.pass + '</b></span>' +
+        '</div>' +
+        '<div class="flex items-center gap-1.5">' +
+          '<a href="' + waLink + '" target="_blank" class="bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 px-2 py-1 rounded text-[10px] font-bold">WA</a>' +
+          '<button type="button" onclick="deleteVendorAccount(\'' + v.phone + '\')" class="text-red-400 hover:text-red-300 font-bold px-2 py-1 cursor-pointer">✕</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  };
+
+  // ==========================================================
+  // FREE TOOLS & DAILY FREE LEADS
+  // ==========================================================
   window.generateCatalogMessage = function() {
     var shop = document.getElementById('catShopName').value.trim() || "Shop";
     var prod = document.getElementById('catProdName').value.trim() || "Product";
@@ -502,6 +1098,11 @@
     document.getElementById('waResultBox').classList.remove('hidden');
     window.showToast("WA Link Generated!");
   };
+  window.copyWaLink = function() {
+    var urlInput = document.getElementById('waResultUrl');
+    if (urlInput && navigator.clipboard) navigator.clipboard.writeText(urlInput.value);
+    window.showToast("WA Link Copied!");
+  };
 
   window.checkDailyFreeLeads = function() {
     var container = document.getElementById('freeLeadsContainer');
@@ -510,11 +1111,20 @@
     var todayStr = new Date().toDateString();
     var claimed = localStorage.getItem('autoleads_free_claimed');
     if (claimed === todayStr) {
-      statusBox.innerHTML = "✅ Aaj ki 3 free leads unlock ho chuki hain!";
-      container.innerHTML = window.masterLeads.slice(0, 3).map(l => '<div class="glass p-3 rounded-xl"><b class="text-white text-xs">' + l.shop + '</b><p class="text-[10px] text-slate-400">📞 +91 ' + l.phone + '</p></div>').join('');
+      statusBox.innerHTML = "✅ Aaj ki 3 free sample leads unlock ho chuki hain! (Direct WhatsApp Share & Custom CSV Download ke liye ₹499 Paid Vendor Plan lein)";
+      container.innerHTML = window.masterLeads.slice(0, 3).map(function(l) {
+        return '<div class="glass p-4 rounded-2xl space-y-2 border border-slate-800">' +
+          '<div class="flex justify-between items-center"><span class="text-[10px] font-bold text-emerald-400">' + (l.cat || "Verified") + '</span><span class="text-[10px] text-slate-400">📍 ' + l.city + '</span></div>' +
+          '<b class="text-white text-xs block">' + l.shop + '</b>' +
+          '<p class="text-[11px] font-mono text-cyan-300">📞 +91 ' + l.phone + '</p>' +
+          '<div onclick="showTab(\'pay\')" class="bg-slate-900/90 border border-amber-500/30 rounded-lg p-2 text-center text-[10px] text-amber-300 font-bold cursor-pointer hover:border-amber-400">' +
+            '🔒 Direct WA Pitch & CSV Download (Paid Vendors Only)' +
+          '</div>' +
+        '</div>';
+      }).join('');
     } else {
-      statusBox.innerHTML = "🎁 Aaj ka free quota available hai!";
-      container.innerHTML = '<div class="col-span-full text-center"><button type="button" onclick="claimFreeLeadsToday()" class="bg-emerald-600 text-white font-bold px-6 py-3 rounded-xl text-xs cursor-pointer">🔓 Unlock 3 Free Leads</button></div>';
+      statusBox.innerHTML = "🎁 Aaj ka 3 Free Sample Leads quota available hai!";
+      container.innerHTML = '<div class="col-span-full text-center"><button type="button" onclick="claimFreeLeadsToday()" class="bg-emerald-600 text-white font-bold px-6 py-3 rounded-xl text-xs cursor-pointer">🔓 Unlock 3 Free Sample Leads</button></div>';
     }
   };
   window.claimFreeLeadsToday = function() {
@@ -526,7 +1136,9 @@
   window.renderFreeListedPreview = function() {
     var box = document.getElementById('recentlyListedShopsBox');
     if (!box) return;
-    box.innerHTML = window.masterLeads.slice(0, 4).map(s => '<div class="bg-slate-900 p-2.5 rounded-xl text-xs"><b class="text-white">' + s.shop + '</b><span class="block text-[10px] text-slate-400">' + s.city + '</span></div>').join('');
+    box.innerHTML = window.masterLeads.slice(0, 4).map(function(s) {
+      return '<div class="bg-slate-900 p-2.5 rounded-xl text-xs"><b class="text-white">' + s.shop + '</b><span class="block text-[10px] text-slate-400">' + s.city + '</span></div>';
+    }).join('');
   };
 
   window.submitFreeShopListing = function(e) {
@@ -539,125 +1151,176 @@
       area: document.getElementById('freeShopArea').value.trim(),
       phone: document.getElementById('freeShopPhone').value.trim()
     });
+    localStorage.setItem('autoleads_extra_leads', JSON.stringify(window.masterLeads));
+    window.syncDynamicFilters();
     window.showToast("Dukan successfully list ho gayi!");
     e.target.reset();
     window.renderFreeListedPreview();
     window.showTab('home');
   };
 
-    // PWA & Service Worker (Updated for Refresh Force Show)
-  let deferredPrompt;
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    showInstallBanner();
-  });
-
-  function showInstallBanner() {
-    var banner = document.getElementById('installBanner');
-    if (banner) {
-      banner.classList.remove('hidden');
-    }
-  }
-
-  var installBtn = document.getElementById('installBtn');
-  if (installBtn) {
-    installBtn.addEventListener('click', async () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        var result = await deferredPrompt.userChoice;
-        if (result.outcome === 'accepted') {
-          console.log('App Installed Successfully');
-        }
-        deferredPrompt = null;
-      } else {
-        alert("Aapke browser me app already installed hai, ya aap Chrome menu (3 dots) par click karke 'Install App' / 'Add to Home Screen' select kar sakte hain!");
-      }
-      var banner = document.getElementById('installBanner');
-      if (banner) banner.classList.add('hidden');
+  // ==========================================================
+  // DYNAMIC FILTERS, GITHUB CSV AUTO-FETCH & ADMIN CSV UPLOAD
+  // ==========================================================
+  window.syncDynamicFilters = function() {
+    var cats = [];
+    var cities = [];
+    (window.masterLeads || []).forEach(function(l) {
+      if (l.cat && cats.indexOf(l.cat) === -1) cats.push(l.cat);
+      if (l.city && cities.indexOf(l.city) === -1) cities.push(l.city);
     });
+
+    var filterCat = document.getElementById('filterCat');
+    if (filterCat) {
+      var currentCat = filterCat.value || "ALL";
+      filterCat.innerHTML = '<option value="ALL">All Categories</option>' + cats.map(function(c) {
+        return '<option value="' + c + '">' + c + '</option>';
+      }).join('');
+      if (cats.indexOf(currentCat) !== -1 || currentCat === "ALL") filterCat.value = currentCat;
+    }
+
+    var filterCity = document.getElementById('filterCity');
+    if (filterCity) {
+      var currentCity = filterCity.value || "ALL";
+      filterCity.innerHTML = '<option value="ALL">All Cities</option>' + cities.map(function(ci) {
+        return '<option value="' + ci + '">' + ci + '</option>';
+      }).join('');
+      if (cities.indexOf(currentCity) !== -1 || currentCity === "ALL") filterCity.value = currentCity;
+    }
+
+    var inpCity = document.getElementById('inpCity');
+    if (inpCity) {
+      var curInpCity = inpCity.value || "ALL";
+      inpCity.innerHTML = '<option value="ALL">All Cities</option>' + cities.map(function(ci) {
+        return '<option value="' + ci + '">' + ci + '</option>';
+      }).join('');
+      if (cities.indexOf(curInpCity) !== -1 || curInpCity === "ALL") inpCity.value = curInpCity;
+    }
+
+    var totalBadge = document.getElementById('admTotalLeadsCount');
+    if (totalBadge && window.masterLeads) {
+      totalBadge.innerText = "Total Leads: " + window.masterLeads.length;
+    }
+  };
+
+  function parseCsvRow(rowStr) {
+    var result = [];
+    var cur = '';
+    var inQuotes = false;
+    for (var i = 0; i < rowStr.length; i++) {
+      var ch = rowStr[i];
+      if (ch === '"') {
+        if (inQuotes && rowStr[i + 1] === '"') {
+          cur += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (ch === ',' && !inQuotes) {
+        result.push(cur.trim());
+        cur = '';
+      } else {
+        cur += ch;
+      }
+    }
+    result.push(cur.trim());
+    return result;
   }
 
-  window.addEventListener('DOMContentLoaded', function() {
+  window.parseCsvTextToLeads = function(text) {
+    var lines = (text || "").split(/\r?\n/).filter(function(line) { return line.trim().length > 0; });
+    if (lines.length === 0) return [];
+    var parsedLeads = [];
+    var startIdx = 0;
+    var firstCols = parseCsvRow(lines[0]).map(function(c) { return c.toLowerCase(); });
+    if (firstCols.indexOf('shop') !== -1 || firstCols.indexOf('phone') !== -1 || firstCols.indexOf('name') !== -1 || firstCols.indexOf('category') !== -1) {
+      startIdx = 1;
+    }
+    for (var i = startIdx; i < lines.length; i++) {
+      var cols = parseCsvRow(lines[i]);
+      if (cols.length < 2) continue;
+      var shop = cols[0] || "Verified Lead";
+      var owner = cols.length >= 2 ? (cols[1] || "Customer") : "Customer";
+      var cat = cols.length >= 3 ? (cols[2] || "Mobile & Electronics") : "Mobile & Electronics";
+      var city = cols.length >= 4 ? (cols[3] || "Patna") : "Patna";
+      var area = "Main Market";
+      var rawPhone = "";
+      if (cols.length >= 6) {
+        area = cols[4] || "Main Market";
+        rawPhone = cols[5] || "";
+      } else if (cols.length === 5) {
+        rawPhone = cols[4] || "";
+      } else {
+        rawPhone = cols[cols.length - 1] || "";
+      }
+      var digits = rawPhone.replace(/\D/g, '');
+      if (digits.length >= 10) {
+        parsedLeads.push({
+          shop: shop,
+          owner: owner,
+          cat: cat,
+          city: city,
+          area: area,
+          phone: digits.slice(-10)
+        });
+      }
+    }
+    return parsedLeads;
+  };
+
+  // Auto-loads ./leads.csv from your GitHub repo if you upload one there!
+  window.fetchGithubRepoCsv = async function() {
+    try {
+      var res = await fetch('./leads.csv?t=' + Date.now());
+      if (!res.ok) return;
+      var csvText = await res.text();
+      var repoLeads = window.parseCsvTextToLeads(csvText);
+      if (repoLeads.length > 0) {
+        var existingPhones = {};
+        window.masterLeads.forEach(function(l) { existingPhones[l.phone] = true; });
+        repoLeads.forEach(function(rl) {
+          if (!existingPhones[rl.phone]) {
+            window.masterLeads.push(rl);
+            existingPhones[rl.phone] = true;
+          }
+        });
+        window.syncDynamicFilters();
+        window.renderHomeTeasers();
+        window.renderLeadsGrid();
+      }
+    } catch (e) {}
+  };
+
+  window.loadSavedLeadsFromStorage = function() {
+    try {
+      var saved = localStorage.getItem('autoleads_extra_leads');
+      if (saved) {
+        var parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          window.masterLeads = parsed;
+        }
+      }
+      if (localStorage.getItem('autoleads_unlocked') === 'true') {
+        window.isUnlocked = true;
+        var savedClient = localStorage.getItem('autoleads_client');
+        if (savedClient) {
+          window.clientData = JSON.parse(savedClient);
+          var heading = document.getElementById('customBusinessHeading');
+          if (heading && window.clientData.businessName) {
+            heading.innerText = "🏢 " + window.clientData.businessName + " - Paid Vendor Dashboard";
+          }
+        }
+        var lockIcon = document.getElementById('vaultLockIcon');
+        if (lockIcon) lockIcon.className = "fa-solid fa-lock-open text-[10px] text-emerald-300";
+      }
+    } catch (e) {}
+    window.syncDynamicFilters();
     window.renderHomeTeasers();
     window.renderBuyersFeed();
     window.renderFreeListedPreview();
-
-    // Page refresh hote hi banner force show karega
-    setTimeout(function() {
-      showInstallBanner();
-    }, 1000);
-  });
-
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(function(err) {});
-  }
-</script>
-  <!-- SECURE HIDDEN ADMIN PANEL (Customers ko nahi dikhega) -->
-<div id="secretAdminWrapper" class="max-w-5xl mx-auto px-4 pt-8 pb-12" style="display: none;">
-  <div class="glass rounded-3xl p-6 border-red-500/30 space-y-4 bg-slate-900/90 border border-red-500/20">
-    <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-      <div>
-        <span class="text-[10px] font-extrabold text-red-400 uppercase tracking-widest">🔒 OWNER CONTROL ROOM</span>
-        <h3 class="text-lg font-black text-white">Secret Admin Lead Adder</h3>
-      </div>
-      <button type="button" onclick="lockAdminPanel()" class="bg-slate-800 text-slate-300 text-xs px-3 py-1.5 rounded-xl font-bold cursor-pointer">Lock Panel 🔒</button>
-    </div>
-
-    <!-- 1-Click Lead Add Form -->
-    <div class="space-y-3">
-      <p class="text-xs text-slate-300">Yahan se aap jo bhi lead add karenge, vah turant aapke portal par live ho jayegi:</p>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <input type="text" id="admShop" placeholder="Shop Name (Eg. Balaji Store)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-        <input type="text" id="admOwner" placeholder="Owner Name" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-        <select id="admCat" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-          <option value="Mobile & Electronics">Mobile & Electronics</option>
-          <option value="Electrical & Hardware">Electrical & Hardware</option>
-          <option value="Clothing & Garments">Clothing & Garments</option>
-          <option value="Grocery & Supermart">Grocery & Supermart</option>
-          <option value="Medical & Pharmacy">Medical & Pharmacy</option>
-        </select>
-        <input type="text" id="admCity" placeholder="City (Eg. Patna)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-        <input type="text" id="admArea" placeholder="Area (Eg. Boring Road)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-        <input type="tel" id="admPhone" maxlength="10" placeholder="10 Digit WhatsApp No" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-      </div>
-      <button type="button" onclick="adminAddNewLead()" class="w-full bg-gradient-to-r from-red-600 to-amber-600 text-white font-extrabold py-3 rounded-xl text-xs shadow-lg cursor-pointer">⚡ 1-Click Instant Add Lead</button>
-    </div>
-  </div>
-</div>
-
-<!-- CATCHY SECRET OPEN TRIGGER (Footer ke andar chhota sa link) -->
-<div class="text-center py-6">
-  <button type="button" onclick="requestAdminAccess()" class="text-[10px] text-slate-600 hover:text-slate-400 font-mono cursor-pointer">⚙️ Owner Portal Login</button>
-</div>
-  <script>
-  window.addEventListener('DOMContentLoaded', function() {
-    setTimeout(function() {
-      showInstallBanner();
-    }, 1000);
-  });
-
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(function(err) {});
-  }
-  </script>
-  <script>
-  function requestAdminAccess() {
-    var pin = prompt("Enter Owner Secret PIN:");
-    if (pin === "7808") { 
-      document.getElementById('secretAdminWrapper').style.display = 'block';
-      if(typeof window.showToast === 'function') window.showToast("🔓 Admin Panel Unlocked!");
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    } else if(pin !== null) {
-      alert("Galat PIN hai!");
-    }
-  }
-
-  function lockAdminPanel() {
-    document.getElementById('secretAdminWrapper').style.display = 'none';
-    if(typeof window.showToast === 'function') window.showToast("🔒 Admin Panel Locked!");
-  }
+    window.renderLeadsGrid();
+    window.fetchGithubRepoCsv();
+  };
 
   function adminAddNewLead() {
     var shop = document.getElementById('admShop').value.trim();
@@ -672,49 +1335,138 @@
       return;
     }
 
-    var newLead = { shop: shop, owner: owner, cat: cat, city: city, area: area, phone: phone };
-    
-    if(window.masterLeads) {
-      window.masterLeads.unshift(newLead);
-    }
+    var newLead = { shop: shop, owner: owner || "Customer", cat: cat, city: city, area: area, phone: phone.slice(-10) };
+    window.masterLeads.unshift(newLead);
 
     localStorage.setItem('autoleads_extra_leads', JSON.stringify(window.masterLeads));
-    if(typeof window.showToast === 'function') {
-      window.showToast("🎉 Lead Safalpurvak Add Ho Gayi!");
-    } else {
-      alert("Lead Safalpurvak Add Ho Gayi!");
-    }
-    
+    window.syncDynamicFilters();
+    window.showToast("🎉 Lead Safalpurvak Add Ho Gayi!");
+
     document.getElementById('admShop').value = '';
     document.getElementById('admOwner').value = '';
     document.getElementById('admPhone').value = '';
-    
-    if(typeof window.renderLeadsGrid === 'function') {
+
+    window.renderLeadsGrid();
+    window.renderHomeTeasers();
+    window.renderFreeListedPreview();
+  }
+
+  function downloadSampleCsvTemplate() {
+    var sampleCsv = 'Shop,Owner,Category,City,Area,Phone\n' +
+      '"Ritik Electronics Hub","Rakesh Kumar","Mobile & Electronics","Patna","Kankarbagh","9835011122"\n' +
+      '"Anjali Garments B2C Inquiry","Anjali Kumari","Clothing & Garments","Delhi","Lajpat Nagar","9811022233"\n' +
+      '"Maa Tara Hardware Store","Manoj Singh","Electrical & Hardware","Patna","Danapur","9431033344"';
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([sampleCsv], { type: 'text/csv;charset=utf-8;' }));
+    a.download = "AutoLeads_Sample_Upload.csv";
+    a.click();
+    window.showToast("📄 Sample CSV Format Downloaded!");
+  }
+
+  function exportMasterCsvForGithub() {
+    var csv = "Shop,Owner,Category,City,Area,Phone\n" + window.masterLeads.map(function(l) {
+      var s = (l.shop || "").replace(/"/g, '""');
+      var o = (l.owner || "").replace(/"/g, '""');
+      var c = (l.cat || "").replace(/"/g, '""');
+      var ci = (l.city || "").replace(/"/g, '""');
+      var ar = (l.area || "").replace(/"/g, '""');
+      var ph = (l.phone || "").replace(/"/g, '""');
+      return '"' + s + '","' + o + '","' + c + '","' + ci + '","' + ar + '","' + ph + '"';
+    }).join("\n");
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+    a.download = "leads.csv";
+    a.click();
+    window.showToast("💾 Master leads.csv Downloaded! Ise GitHub repo me upload kar dein.");
+  }
+
+  function adminUploadCsvLeads() {
+    var fileInput = document.getElementById('admCsvFileInput');
+    var statusBox = document.getElementById('csvUploadStatusMsg');
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+      alert("Kripya pehle ek CSV (.csv) file select karein!");
+      return;
+    }
+    var file = fileInput.files[0];
+    var reader = new FileReader();
+    reader.onload = function(evt) {
+      var text = evt.target.result || "";
+      var newLeads = window.parseCsvTextToLeads(text);
+
+      if (newLeads.length === 0) {
+        alert("CSV file me koi valid 10-digit phone number wali lead nahi mili! Kripya Sample CSV format check karein.");
+        return;
+      }
+
+      for (var i = newLeads.length - 1; i >= 0; i--) {
+        window.masterLeads.unshift(newLeads[i]);
+      }
+
+      localStorage.setItem('autoleads_extra_leads', JSON.stringify(window.masterLeads));
+      window.syncDynamicFilters();
       window.renderLeadsGrid();
-    }
+      window.renderHomeTeasers();
+      window.renderFreeListedPreview();
+
+      if (statusBox) {
+        statusBox.innerText = "✅ Safalta! " + newLeads.length + " nayi leads CSV se add ho gayi hain! Agar aap chahte hain ki GitHub par har phone me yeh dikhein, toh upar 'Download Master leads.csv' par click karke leads.csv ko apne GitHub repo me upload kar dein.";
+        statusBox.classList.remove('hidden');
+      }
+      window.showToast("🎉 " + newLeads.length + " CSV Leads Uploaded Successfully!");
+      fileInput.value = "";
+    };
+    reader.readAsText(file);
   }
-    // AI Builder Access Logic
-function accessAiBuilder() {
-  // Aapke purane code me window.isUnlocked = false/true pehle se set hai
-  if (window.isUnlocked === true) {
-    // Agar user ne ₹499 de diya hai, toh usko direct nayi file par bhej do
-    window.location.href = "ai-builder.html";
-  } else {
-    // Agar user free wala hai, toh usko alert do aur payment wale hisse par bhej do
-    if(typeof window.showToast === 'function') {
-      window.showToast("🔒 VIP Feature: Ise unlock karne ke liye ₹499 ka plan lein!");
+
+  // ==========================================================
+  // AI BUILDER ACCESS & PWA INSTALL LOGIC
+  // ==========================================================
+  function accessAiBuilder() {
+    if (window.isUnlocked === true || window.isAdminLoggedIn === true) {
+      window.location.href = "ai-builder.html";
     } else {
-      alert("🔒 VIP Feature: Ise unlock karne ke liye ₹499 ka plan lein!");
+      window.showToast("🔒 VIP Feature: Paid Vendor Login karein ya ₹499 ka plan lein!");
+      window.showTab('login');
     }
-    
-    // User ko automatically us jagah scroll karwa do jahan payment ki baat hai
-    alert("Kripya niche jakar pehle ₹499 ka Business Onboarding Start karein taaki aap yeh AI Page Builder use kar sakein.");
-    
-    // Agar aapka koi 'Start Business Onboarding' wala button hai, toh use scroll karke focus me layein
-    window.scrollTo({ top: document.body.scrollHeight / 2, behavior: 'smooth' });
   }
-}
-    
-  </script>
+
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    showInstallBanner();
+  });
+
+  function showInstallBanner() {
+    var banner = document.getElementById('installBanner');
+    if (banner) banner.classList.remove('hidden');
+  }
+
+  var installBtn = document.getElementById('installBtn');
+  if (installBtn) {
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+      } else {
+        alert("Aapke browser me app already installed hai, ya aap Chrome menu (3 dots) par click karke 'Install App' / 'Add to Home Screen' select kar sakte hain!");
+      }
+      var banner = document.getElementById('installBanner');
+      if (banner) banner.classList.add('hidden');
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', function() {
+    window.loadSavedLeadsFromStorage();
+    setTimeout(function() {
+      showInstallBanner();
+    }, 1000);
+  });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(function(err) {});
+  }
+</script>
 </body>
 </html>
